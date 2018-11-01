@@ -15,7 +15,9 @@ pub fn test() -> Result<(), Box<Error>> {
         .index("_all")
         .body(json!({
             "query": {
-                "match_all": {}
+                "match":{
+                    "_id": "submoas-1539812700-36937=328312"
+                }
             }
         }))
         .send()?;
