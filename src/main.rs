@@ -26,7 +26,7 @@ fn files(file: PathBuf) -> Option<NamedFile> {
 #[get("/getten")]
 fn getten() -> content::Json<&'static str>{
     // test ajax
-    content::Json(r#"{ "value": 10 }"#)
+    content::Json(r#"{ "value": "ajax 10" }"#)
 }
 
 fn rocket() -> rocket::Rocket {
