@@ -1,12 +1,10 @@
-function load_ten()
-{
+function load_ten() {
     $.ajax({
         type: "GET",
         url: '/getten',
-        success: function(data) {
+        success: function (data) {
             $('#test_ajax').html(data["value"]);
         }
 
     });
-
 }
