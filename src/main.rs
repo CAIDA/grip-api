@@ -34,8 +34,6 @@ fn files(file: PathBuf) -> Option<NamedFile> {
 
 #[get("/example")]
 fn example() -> Json<serde_json::Value> {
-    // test ajax
-    // content::Json(r#"{ "value": "ajax 10" }"#)
     let object = &backend::elastic::get_example_object().unwrap()[0];
     Json(object.to_owned())
 }
