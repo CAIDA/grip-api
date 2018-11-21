@@ -33,8 +33,8 @@ fn files(file: PathBuf) -> Option<NamedFile> {
 }
 
 #[get("/example")]
-fn example() -> Json<serde_json::Value> {
-    let object = &backend::elastic::get_example_object().unwrap()[0];
+fn example() -> Json<Vec<serde_json::Value>> {
+    let object = &backend::elastic::get_example_object().unwrap();
     Json(object.to_owned())
 }
 

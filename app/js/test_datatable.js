@@ -56,17 +56,18 @@ function load_table() {
     $.ajax({
         type: "GET",
         url: '/example',
-        success: function (data) {
+        success: function (data_array) {
             var tableRef = document.getElementById("datatable");
             var head = tableRef.createTHead();
             var newRow = head.insertRow();
-            // var key_mapping = create_row(newRow, 'th', ['event_type','fingerprint','id','pfx_events','pfx_events_cnt','position','tags','tr_metrics','view_ts'])
             var key_mapping = create_row(newRow, 'th', ['event_type','fingerprint','id','pfx_events_cnt','position','view_ts'])
 
             var tbody = tableRef.createTBody();
-            newRow = tbody.insertRow();
-            fill_table_row(newRow, key_mapping, data);
+            for(index in data_array){
+                console.log(data_array[index])
+                newRow = tbody.insertRow();
+                fill_table_row(newRow, key_mapping, data_array[index]);
+            }
         }
-
     });
 }
