@@ -1,9 +1,7 @@
 #![feature(plugin)]
 #![plugin(rocket_codegen)]
 
-#[macro_use]
-extern crate serde_derive;
-#[macro_use]
+#[macro_use] extern crate serde_derive;
 extern crate elastic_derive;
 extern crate hijacks_dashboard;
 extern crate rocket;
@@ -13,8 +11,6 @@ use std::io;
 use std::path::{Path, PathBuf};
 
 use hijacks_dashboard::backend;
-use hijacks_dashboard::backend::event_structs::Event;
-use rocket::response::content;
 use rocket::response::NamedFile;
 use rocket_contrib::Json;
 
