@@ -14,12 +14,10 @@ impl Error for MyError {}
 
 pub fn get_event_by_id(id: &str) ->Result<Value, Box<Error>> {
 
-    println!("test!");
     let client = SyncClientBuilder::new()
         .base_url("http://hammer.caida.org:9200")
         .build()?;
 
-    // A search request with a freeform body.
     let res = client
         .search::<Value>()
         .index("hijacks*")
@@ -40,12 +38,10 @@ pub fn get_event_by_id(id: &str) ->Result<Value, Box<Error>> {
 }
 
 pub fn list_all_events() -> Result<Vec<Value>, Box<Error>> {
-    println!("test!");
     let client = SyncClientBuilder::new()
         .base_url("http://hammer.caida.org:9200")
         .build()?;
 
-    // A search request with a freeform body.
     let res = client
         .search::<Value>()
         .index("hijacks*")
