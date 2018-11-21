@@ -47,6 +47,7 @@ function load_table() {
                 newRow = tbody.insertRow();
                 fill_table_row(newRow, key_mapping, data_array[i]);
             }
+            $('#datatable').DataTable();
         }
     });
 }
