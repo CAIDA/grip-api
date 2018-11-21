@@ -27,8 +27,8 @@ pub fn get_event_by_id(id: &str) ->Result<Value, Box<Error>> {
             "size":1,
             "query": {
                 "match" : {
-            "id" : id
-        }
+                    "id.keyword" : id,
+                }
             }
         }))
         .send()?;

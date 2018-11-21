@@ -6,6 +6,8 @@ extern crate elastic_derive;
 extern crate hijacks_dashboard;
 extern crate rocket;
 extern crate rocket_contrib;
+#[macro_use]
+extern crate serde_json;
 
 use std::io;
 use std::path::{Path, PathBuf};
@@ -31,10 +33,11 @@ fn files(file: PathBuf) -> Option<NamedFile> {
 
 #[get("/json/<id>")]
 fn json(id: &RawStr) -> Json<serde_json::Value> {
-    // let object = &backend::elastic::list_all_events().unwrap();
-    // Json(object.to_owned())
-    let object = &backend::elastic::get_event_by_id(id).unwrap();
-    Json(object.to_owned())
+
+    match backend::elastic::get_event_by_id(id){
+        Ok(event) => Json(event.to_owned()),
+        Err(e) => Json(json!("Cannot find event"))
+    }
 }
 
 #[get("/example")]
