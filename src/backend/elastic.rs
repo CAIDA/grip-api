@@ -1,9 +1,8 @@
 use elastic::prelude::*;
 use std::error::Error;
-use super::event_structs::Event;
 use serde_json::Value;
 
-pub fn get_example_object() -> Result<Vec<Value>, Box<Error>> {
+pub fn list_all_events() -> Result<Vec<Value>, Box<Error>> {
     println!("test!");
     let client = SyncClientBuilder::new()
         .base_url("http://hammer.caida.org:9200")

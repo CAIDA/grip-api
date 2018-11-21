@@ -1,30 +1,7 @@
-table_data=` <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Position, yaaa</th>
-                    <th>Office</th>
-                    <th>Age</th>
-                    <th>Start date</th>
-                    <th>Salary</th>
-                  </tr>
-                </thead>
-
-
-                <tbody>
-                  <tr>
-                    <td>Donna Snider</td>
-                    <td>Customer Support</td>
-                    <td>New York</td>
-                    <td>27</td>
-                    <td>2011/01/25</td>
-                    <td>$112,000</td>
-                  </tr>
-                </tbody>
-                `
 function create_row(row, row_type, contents){
-    var mapping = {}
-    for(var i in contents){
-        var th = document.createElement(row_type);
+    let mapping = {};
+    for(let i in contents){
+        let th = document.createElement(row_type);
         th.innerHTML=contents[i];
         row.insertCell().appendChild(th);
         mapping[contents[i]] = i;
@@ -33,21 +10,24 @@ function create_row(row, row_type, contents){
 }
 
 function fill_table_row(row, mapping, data){
-    for(var key in mapping){
+    // TODO: add link to event id to call API and return the raw JSON object
+    // TODO: add link to pfx_event number to link to the pfx_event list page
+
+    for(let key in mapping){
         if(key in data){
-            if (["event_type", "fingerprint", "id", "pfx_events_cnt", "position", "view_ts"].indexOf(key)>=0) {
+            // key is the actual key string shown below
+            if (["event_type", "fingerprint", "pfx_events_cnt", "position", "view_ts"].indexOf(key)>=0) {
                 row.insertCell(mapping[key]).appendChild(document.createTextNode(data[key]))
             }
-            // if (key == "pfx_events") {
-            //     console.log("pfx_events "+ mapping[key]);
-            //     var a = document.createElement('a');
-            //     a.appendChild(document.createTextNode("here is a link to pfx events"));
-            //     row.insertCell(mapping[key]).appendChild(a)
-            // }
-            // if (key == "tags") {
-            //     console.log(data[key].join());
-            //     row.insertCell(mapping[key]).appendChild(document.createTextNode(data[key].join()))
-            // }
+
+            if (key === "id") {
+                let cell = row.insertCell(mapping[key]);
+
+                let a = document.createElement('a');
+                a.setAttribute('href',"/json/"+data[key]);
+                a.innerHTML = data[key];
+                cell.appendChild(a);
+            }
         }
     }
 }
@@ -57,16 +37,15 @@ function load_table() {
         type: "GET",
         url: '/example',
         success: function (data_array) {
-            var tableRef = document.getElementById("datatable");
-            var head = tableRef.createTHead();
-            var newRow = head.insertRow();
-            var key_mapping = create_row(newRow, 'th', ['event_type','fingerprint','id','pfx_events_cnt','position','view_ts'])
+            let tableRef = document.getElementById("datatable");
+            let head = tableRef.createTHead();
+            let newRow = head.insertRow();
+            let key_mapping = create_row(newRow, 'th', ['event_type','fingerprint','id','pfx_events_cnt','position','view_ts'])
 
-            var tbody = tableRef.createTBody();
-            for(index in data_array){
-                console.log(data_array[index])
+            let tbody = tableRef.createTBody();
+            for(let i in data_array){
                 newRow = tbody.insertRow();
-                fill_table_row(newRow, key_mapping, data_array[index]);
+                fill_table_row(newRow, key_mapping, data_array[i]);
             }
         }
     });
