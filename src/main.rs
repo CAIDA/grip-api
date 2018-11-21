@@ -30,10 +30,11 @@ fn files(file: PathBuf) -> Option<NamedFile> {
 }
 
 #[get("/json/<id>")]
-fn json(id: &RawStr) -> Json<&str> {
+fn json(id: &RawStr) -> Json<serde_json::Value> {
     // let object = &backend::elastic::list_all_events().unwrap();
     // Json(object.to_owned())
-    Json(id.as_str())
+    let object = &backend::elastic::get_event_by_id(id).unwrap();
+    Json(object.to_owned())
 }
 
 #[get("/example")]
