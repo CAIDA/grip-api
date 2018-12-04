@@ -1,13 +1,12 @@
 #![feature(plugin)]
 #![plugin(rocket_codegen)]
 
-#[macro_use] extern crate serde_derive;
+#[macro_use] extern crate serde_json;
+extern crate serde_derive;
 extern crate elastic_derive;
 extern crate hijacks_dashboard;
 extern crate rocket;
 extern crate rocket_contrib;
-#[macro_use]
-extern crate serde_json;
 
 use std::io;
 use std::path::{Path, PathBuf};
@@ -36,7 +35,7 @@ fn json(id: &RawStr) -> Json<serde_json::Value> {
 
     match backend::elastic::get_event_by_id(id){
         Ok(event) => Json(event.to_owned()),
-        Err(e) => Json(json!("Cannot find event"))
+        Err(_e) => Json(json!("Cannot find event"))
     }
 }
 

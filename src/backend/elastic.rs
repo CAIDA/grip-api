@@ -1,21 +1,18 @@
 use elastic::prelude::*;
-use std::error::Error;
 use serde_json::Value;
-use std::fmt;
+use std::error::Error;
+use backend::errors::MyError;
 
-#[derive(Debug)]
-struct MyError(String);
-impl fmt::Display for MyError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "There is an error: {}", self.0)
-    }
+struct ElasticSearchBackend {
+
 }
-impl Error for MyError {}
+
+
 
 pub fn get_event_by_id(id: &str) ->Result<Value, Box<Error>> {
 
     let client = SyncClientBuilder::new()
-        .base_url("http://hammer.caida.org:9200")
+        .base_url("http://clayface.caida.org:9200")
         .build()?;
 
     let res = client
@@ -39,7 +36,7 @@ pub fn get_event_by_id(id: &str) ->Result<Value, Box<Error>> {
 
 pub fn list_all_events() -> Result<Vec<Value>, Box<Error>> {
     let client = SyncClientBuilder::new()
-        .base_url("http://hammer.caida.org:9200")
+        .base_url("http://clayface.caida.org:9200")
         .build()?;
 
     let res = client

@@ -1,16 +1,22 @@
 [package]
 name = "hijacks_dashboard"
 version = "0.1.0"
-authors = ["Mingwei Zhang <mingwei@mwzhang.com>"]
+authors = ["Mingwei Zhang <mingwei@caida.org>"]
 
 [dependencies]
 # webframework
 rocket = "0.3.17"
 rocket_codegen = "0.3.17"
 rocket_contrib = "0.3.17"
+
 # elasticsearch
 elastic = "0.20.10"
 elastic_derive = "0.20.10"
+
+# serialization
 serde = "1.0"
 serde_json = "1.0"
 serde_derive = "1.0"
+
+# configuration
+config = "0.9"
