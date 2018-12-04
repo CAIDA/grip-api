@@ -1,7 +1,7 @@
 [development]
 address = "localhost"
-port = 8000
+port = 18000
 
 [production]
 address = "0.0.0.0"
-port = 8088
+port = 18088

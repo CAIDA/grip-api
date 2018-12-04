@@ -1,20 +1,22 @@
 #![feature(plugin)]
 #![plugin(rocket_codegen)]
 
-#[macro_use] extern crate serde_json;
-extern crate serde_derive;
 extern crate elastic_derive;
 extern crate hijacks_dashboard;
 extern crate rocket;
 extern crate rocket_contrib;
+extern crate serde_derive;
+#[macro_use]
+extern crate serde_json;
 
 use std::io;
 use std::path::{Path, PathBuf};
 
-use hijacks_dashboard::backend;
-use rocket::response::NamedFile;
 use rocket::http::RawStr;
+use rocket::response::NamedFile;
 use rocket_contrib::Json;
+
+use hijacks_dashboard::backend;
 
 #[get("/")]
 fn index() -> io::Result<NamedFile> {
@@ -32,8 +34,14 @@ fn files(file: PathBuf) -> Option<NamedFile> {
 
 #[get("/json/<id>")]
 fn json(id: &RawStr) -> Json<serde_json::Value> {
+    let backend_res = backend::elastic::ElasticSearchBackend::new("http://hammer.caida.org:9200");
 
-    match backend::elastic::get_event_by_id(id){
+    let backend = match backend_res {
+        Ok(backend) => backend,
+        Err(_e) => return Json(json!("Cannot connect to server"))
+    };
+
+    match backend.get_event_by_id(id) {
         Ok(event) => Json(event.to_owned()),
         Err(_e) => Json(json!("Cannot find event"))
     }
@@ -41,7 +49,9 @@ fn json(id: &RawStr) -> Json<serde_json::Value> {
 
 #[get("/example")]
 fn example() -> Json<Vec<serde_json::Value>> {
-    let object = &backend::elastic::list_all_events().unwrap();
+    let backend = backend::elastic::ElasticSearchBackend::new("http://hammer.caida.org:9200").unwrap();
+
+    let object = backend.list_all_events().unwrap();
     Json(object.to_owned())
 }
 
