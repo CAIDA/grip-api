@@ -1,7 +1,3 @@
-#![plugin(rocket_codegen)]
-#![feature(plugin)]
-#![feature(proc_macro_hygiene)]
-
 use std::collections::HashMap;
 use std::io;
 use std::path::Path;
@@ -15,6 +11,9 @@ use rocket_contrib::Template;
 
 use backend::elastic::ElasticSearchBackend;
 use backend::renderer::Renderer;
+use rocket::State;
+
+pub struct BaseUrl(pub String);
 
 #[get("/")]
 pub fn index() -> io::Result<NamedFile> {
@@ -31,8 +30,8 @@ pub fn files(file: PathBuf) -> Option<NamedFile> {
 }
 
 #[get("/json/<id>")]
-pub fn json(id: &RawStr) -> Json<serde_json::Value> {
-    let backend_res = ElasticSearchBackend::new("http://hammer.caida.org:9200");
+pub fn json(id: &RawStr, base_url: State<BaseUrl>) -> Json<serde_json::Value> {
+    let backend_res = ElasticSearchBackend::new(&base_url.0);
 
     let backend = match backend_res {
         Ok(backend) => backend,
@@ -46,8 +45,8 @@ pub fn json(id: &RawStr) -> Json<serde_json::Value> {
 }
 
 #[get("/example")]
-pub fn example() -> Json<Vec<serde_json::Value>> {
-    let backend = ElasticSearchBackend::new("http://hammer.caida.org:9200").unwrap();
+pub fn example(base_url: State<BaseUrl>) -> Json<Vec<serde_json::Value>> {
+    let backend = ElasticSearchBackend::new(&base_url.0).unwrap();
 
     let object = backend.list_all_events().unwrap();
     Json(object.to_owned())

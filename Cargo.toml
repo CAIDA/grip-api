@@ -23,4 +23,5 @@ serde_derive = "1.0"
 
 # configuration
 config = "0.9"
+toml = "0.4"
 

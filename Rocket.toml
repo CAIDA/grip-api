@@ -1,7 +1,9 @@
 [development]
 address = "localhost"
 port = 18000
+elastic_url = "http://clayface.caida.org:9200"
 
 [production]
 address = "0.0.0.0"
 port = 18088
+elastic_url = "http://hammer.caida.org:9200"

@@ -3,6 +3,7 @@ use std::error::Error;
 use elastic::prelude::*;
 use serde_json::Value;
 
+use backend;
 use backend::errors::MyError;
 
 pub struct ElasticSearchBackend {
