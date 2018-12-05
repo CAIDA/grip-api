@@ -4,22 +4,24 @@
 
 extern crate elastic_derive;
 extern crate hijacks_dashboard;
+extern crate maud;
 extern crate rocket;
 extern crate rocket_contrib;
 extern crate serde_derive;
 #[macro_use]
 extern crate serde_json;
-extern crate maud;
 
+use std::collections::HashMap;
 use std::io;
 use std::path::{Path, PathBuf};
 
+use maud::Markup;
 use rocket::http::RawStr;
 use rocket::response::NamedFile;
 use rocket_contrib::Json;
+use rocket_contrib::Template;
 
 use hijacks_dashboard::backend;
-use maud::Markup;
 
 #[get("/")]
 fn index() -> io::Result<NamedFile> {
@@ -64,10 +66,16 @@ fn maud() -> Markup {
     renderer.render_test()
 }
 
-fn rocket() -> rocket::Rocket {
-    rocket::ignite().mount("/", routes![index, files, json, example, maud])
+#[get("/template")]
+fn template() -> Template {
+    let mut context = HashMap::<String, String>::new();
+    context.insert("onload_function".to_owned(), "load_table()".to_owned());
+    Template::render("index", context)
 }
 
 fn main() {
-    rocket().launch();
+    rocket::ignite()
+        .mount("/", routes![index, files, json, example, maud, template])
+        .attach(Template::fairing())
+        .launch();
 }

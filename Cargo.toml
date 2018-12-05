@@ -7,7 +7,7 @@ authors = ["Mingwei Zhang <mingwei@caida.org>"]
 # webframework
 rocket = "0.3.17"
 rocket_codegen = "0.3.17"
-rocket_contrib = "0.3.17"
+rocket_contrib = {version = "0.3.17", features = ["tera_templates"]}
 
 # elasticsearch
 elastic = "0.20.10"
@@ -23,3 +23,4 @@ serde_derive = "1.0"
 
 # configuration
 config = "0.9"
+

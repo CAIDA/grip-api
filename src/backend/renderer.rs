@@ -1,5 +1,6 @@
-use maud::Markup;
 use maud::html;
+use maud::Markup;
+use maud::PreEscaped;
 
 pub struct Renderer {}
 
@@ -10,6 +11,10 @@ impl Renderer {
 
     pub fn render_test(&self) -> Markup {
         html! {
+        head{"test"}
+        title {"BGPHijacks Dashboard"}
+
+(PreEscaped("<script>alert(\"XSS\")</script>"))
             p {"lala"}
         }
     }
