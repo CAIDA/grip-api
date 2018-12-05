@@ -1,3 +1,4 @@
+#![feature(proc_macro_hygiene)]
 #![feature(plugin)]
 #![plugin(rocket_codegen)]
 
@@ -8,6 +9,7 @@ extern crate rocket_contrib;
 extern crate serde_derive;
 #[macro_use]
 extern crate serde_json;
+extern crate maud;
 
 use std::io;
 use std::path::{Path, PathBuf};
@@ -17,6 +19,7 @@ use rocket::response::NamedFile;
 use rocket_contrib::Json;
 
 use hijacks_dashboard::backend;
+use maud::Markup;
 
 #[get("/")]
 fn index() -> io::Result<NamedFile> {
@@ -55,8 +58,14 @@ fn example() -> Json<Vec<serde_json::Value>> {
     Json(object.to_owned())
 }
 
+#[get("/maud")]
+fn maud() -> Markup {
+    let renderer = backend::renderer::Renderer{};
+    renderer.render_test()
+}
+
 fn rocket() -> rocket::Rocket {
-    rocket::ignite().mount("/", routes![index, files, json, example])
+    rocket::ignite().mount("/", routes![index, files, json, example, maud])
 }
 
 fn main() {
