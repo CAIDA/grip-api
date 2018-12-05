@@ -13,7 +13,7 @@ use rocket::fairing::AdHoc;
 
 fn main() {
     rocket::ignite()
-        .mount("/", routes![index, files, json, event_query, list_all_events, template])
+        .mount("/", routes![index, files, json_event_by_id, json_all_events, ])
         .attach(AdHoc::on_attach(|rocket| {
             let base_url = rocket.config()
                 .get_str("elastic_url")

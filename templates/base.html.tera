@@ -24,6 +24,7 @@
     <link href="app/vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
     <!-- Custom Theme Style -->
     <link href="app/build/css/custom.min.css" rel="stylesheet">
+    <link href="app/custom/custom.css" rel="stylesheet">
 
 </head>
 
@@ -60,8 +61,7 @@
 <script src="app/vendors/datatables/jquery.dataTables.min.js"></script>
 
 <!-- Custom Theme Scripts -->
-<script src="app/js/test_ajax.js"></script>
-<script src="app/js/test_datatable.js"></script>
+<script src="app/custom/datatable.js"></script>
 
 </body>
 

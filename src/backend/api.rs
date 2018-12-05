@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::io;
 use std::path::Path;
 use std::path::PathBuf;
 
@@ -17,8 +16,12 @@ pub struct BaseUrl{
 }
 
 #[get("/")]
-pub fn index() -> io::Result<NamedFile> {
-    NamedFile::open("app/index.html")
+pub fn index() -> Template {
+    // NamedFile::open("app/index.html")
+    let context_content = json!({"onload_function":"datatable_load()"});
+    let mut context = HashMap::<String, Value>::new();
+    context.insert("context".to_owned(), context_content);
+    Template::render("index", context)
 }
 
 #[get("/app/<file..>")]
@@ -46,8 +49,13 @@ pub fn event_query(id: &RawStr, base_url: State<BaseUrl>) -> Json<serde_json::Va
     }
 }
 
-#[get("/json/<id>")]
-pub fn json(id: &RawStr, base_url: State<BaseUrl>) -> Json<serde_json::Value> {
+
+/*
+JSON QUERY APIS
+*/
+
+#[get("/json/event/id/<id>")]
+pub fn json_event_by_id(id: &RawStr, base_url: State<BaseUrl>) -> Json<serde_json::Value> {
     let backend_res = ElasticSearchBackend::new(&base_url.url);
 
     let backend = match backend_res {
@@ -61,23 +69,10 @@ pub fn json(id: &RawStr, base_url: State<BaseUrl>) -> Json<serde_json::Value> {
     }
 }
 
-#[get("/query/list_all/<max>")]
-pub fn list_all_events(max: usize, base_url: State<BaseUrl>) -> Json<Vec<serde_json::Value>> {
+#[get("/json/event/all/<max>")]
+pub fn json_all_events(max: usize, base_url: State<BaseUrl>) -> Json<serde_json::Value> {
     let backend = ElasticSearchBackend::new(&base_url.url).unwrap();
 
-    let object = backend.list_all_events(&max).unwrap();
+    let object = json!({"data":backend.list_all_events(&max).unwrap()});
     Json(object.to_owned())
-}
-
-#[get("/query")]
-pub fn events() {
-
-}
-
-#[get("/template")]
-pub fn template(base_url: State<BaseUrl>) -> Template {
-    let context_content = json!({"onload_function":"load_table()"});
-    let mut context = HashMap::<String, Value>::new();
-    context.insert("context".to_owned(), context_content);
-    Template::render("index", context)
 }
