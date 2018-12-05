@@ -20,3 +20,8 @@ TBD
 
 - [Elasticsearch](https://www.elastic.co/)
 - [Elasticsearch client for Rust](https://github.com/elastic-rs/elastic)
+
+## Configuration Files
+
+- Rocket.toml: configuring webservice basics
+- Config.toml: general configurations

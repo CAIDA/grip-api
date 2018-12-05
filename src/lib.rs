@@ -1,3 +1,5 @@
+#![plugin(rocket_codegen)]
+#![feature(plugin)]
 #![feature(proc_macro_hygiene)]
 
 extern crate rocket_contrib;
@@ -8,5 +10,6 @@ extern crate serde_json;
 
 extern crate elastic;
 extern crate maud;
+extern crate rocket;
 
 pub mod backend;
