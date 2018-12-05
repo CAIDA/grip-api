@@ -10,8 +10,6 @@ function create_row(row, row_type, contents){
 }
 
 function fill_table_row(row, mapping, data){
-    // TODO: add link to event id to call API and return the raw JSON object
-    // TODO: add link to pfx_event number to link to the pfx_event list page
 
     for(let key in mapping){
         if(key in data){
@@ -35,12 +33,14 @@ function fill_table_row(row, mapping, data){
 function load_table() {
     $.ajax({
         type: "GET",
-        url: '/example',
+        url: '/query/list_all/50',
         success: function (data_array) {
+            $('#querybox').toggle(true);
             let tableRef = document.getElementById("datatable");
             let head = tableRef.createTHead();
             let newRow = head.insertRow();
             let key_mapping = create_row(newRow, 'th', ['event_type','fingerprint','id','pfx_events_cnt','position','view_ts'])
+
 
             let tbody = tableRef.createTBody();
             for(let i in data_array){
@@ -48,6 +48,7 @@ function load_table() {
                 fill_table_row(newRow, key_mapping, data_array[i]);
             }
             $('#datatable').DataTable();
+            $('#querybox').toggle(false);
         }
     });
 }

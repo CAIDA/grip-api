@@ -13,13 +13,13 @@ use rocket::fairing::AdHoc;
 
 fn main() {
     rocket::ignite()
-        .mount("/", routes![index, files, json, example, maud, template])
+        .mount("/", routes![index, files, json, event_query, list_all_events, template])
         .attach(AdHoc::on_attach(|rocket| {
             let base_url = rocket.config()
                 .get_str("elastic_url")
                 .unwrap_or("http://hammer.caida.org:9200")
                 .to_string();
-            Ok(rocket.manage(BaseUrl(base_url)))
+            Ok(rocket.manage(BaseUrl{url:base_url}))
         }))
         .attach( Template::fairing())
         .launch();

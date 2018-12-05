@@ -3,7 +3,6 @@ use std::error::Error;
 use elastic::prelude::*;
 use serde_json::Value;
 
-use backend;
 use backend::errors::MyError;
 
 pub struct ElasticSearchBackend {
@@ -42,12 +41,12 @@ impl ElasticSearchBackend {
         Err(Box::new(MyError("Oops".into())))
     }
 
-    pub fn list_all_events(&self) -> Result<Vec<Value>, Box<Error>> {
+    pub fn list_all_events(&self, max: &usize) -> Result<Vec<Value>, Box<Error>> {
         let res = self.es_client
             .search::<Value>()
             .index("hijacks*")
             .body(json!({
-            "from":0, "size":20,
+            "from":0, "size":max,
             "query": {
                 "match_all": {}
             },

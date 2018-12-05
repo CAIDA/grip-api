@@ -2,6 +2,8 @@
 <html lang="en">
 
 <head>
+    <title>{% block title %} BGPHijacks Dashboard {% endblock title %}</title>
+
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <!-- Meta, title, CSS, favicons, etc. -->
     <meta charset="utf-8">
@@ -9,26 +11,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="app/images/favicon.ico" type="image/ico"/>
 
-    <title>BGPHijacks Dashboard</title>
-
     <!-- Bootstrap -->
     <link href="app/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="app/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
     <link href="app/vendors/datatables/jquery.dataTables.min.css" rel="stylesheet">
-
     <!-- bootstrap-progressbar -->
     <link href="app/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
     <!-- JQVMap -->
     <link href="app/vendors/jqvmap/dist/jqvmap.min.css" rel="stylesheet"/>
     <!-- bootstrap-daterangepicker -->
     <link href="app/vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
-
     <!-- Custom Theme Style -->
     <link href="app/build/css/custom.min.css" rel="stylesheet">
+
 </head>
 
-<body class="nav-md" onload="{{ onload_function }}">
+<body class="nav-md" onload="{{context.onload_function}}">
+
 {% block content %}
 {% endblock content %}
 
