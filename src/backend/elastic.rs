@@ -29,7 +29,7 @@ impl ElasticSearchBackend {
                 "query": {
                     "bool": {
                         "must": { "match": { "id.keyword" : id }},
-                          "must_not": { "match": { "position.keyword": "FINISHED"  }},
+                        "must_not": { "match": { "position.keyword": "FINISHED"  }},
                     }
                 }
             }))
@@ -50,13 +50,8 @@ impl ElasticSearchBackend {
                 "from":0, "size":max,
                 "query": {
                     "bool": {
-                        "must_not": [
-                            {
-                                "match": {
-                                    "position.keyword": "FINISHED"
-                                }
-                            }
-                        ]
+                        "must": { "term": { "inference.tr_worthy" : true }},
+                        "must_not": { "match": { "position.keyword": "FINISHED" } }
                     }
                 },
                 "sort": { "view_ts": { "order": "desc" }}

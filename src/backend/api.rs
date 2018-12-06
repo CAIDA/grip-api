@@ -16,6 +16,19 @@ pub struct BaseUrl {
     pub url: String,
 }
 
+#[get("/app/<file..>")]
+pub fn files(file: PathBuf) -> Option<NamedFile> {
+    let path_str = file.to_str().unwrap();
+    let mut file_path = String::from("app/");
+    file_path.push_str(path_str);
+
+    NamedFile::open(Path::new(&file_path)).ok()
+}
+
+/*
+LOAD WEB PAGES
+*/
+
 #[get("/")]
 pub fn event_list() -> Template {
     // NamedFile::open("app/index.html")
@@ -25,14 +38,6 @@ pub fn event_list() -> Template {
     Template::render("event_list", context)
 }
 
-#[get("/app/<file..>")]
-pub fn files(file: PathBuf) -> Option<NamedFile> {
-    let path_str = file.to_str().unwrap();
-    let mut file_path = String::from("app/");
-    file_path.push_str(path_str);
-
-    NamedFile::open(Path::new(&file_path)).ok()
-}
 
 #[get("/event/<event_type>/<id>")]
 pub fn event_detail(event_type: &RawStr, id: &RawStr, base_url: State<BaseUrl>) -> Template {
