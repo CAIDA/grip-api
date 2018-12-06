@@ -2,8 +2,8 @@ use std::error::Error;
 
 use elastic::prelude::*;
 use serde_json::Value;
-
-use backend::errors::MyError;
+use serde_json::json;
+use crate::backend::errors::MyError;
 
 pub struct ElasticSearchBackend {
     es_client: SyncClient,

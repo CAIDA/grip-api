@@ -2,6 +2,7 @@
 name = "hijacks_dashboard"
 version = "0.1.0"
 authors = ["Mingwei Zhang <mingwei@caida.org>"]
+edition = "2018"
 
 [dependencies]
 # webframework

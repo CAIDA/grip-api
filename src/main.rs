@@ -2,11 +2,6 @@
 #![feature(plugin)]
 #![plugin(rocket_codegen)]
 
-extern crate hijacks_dashboard;
-extern crate rocket;
-extern crate rocket_contrib;
-
-
 use rocket::fairing::AdHoc;
 use rocket_contrib::Template;
 
@@ -18,7 +13,7 @@ fn main() {
         .attach(AdHoc::on_attach(|rocket| {
             let base_url = rocket.config()
                 .get_str("elastic_url")
-                .unwrap_or("http://hammer.caida.org:9200")
+                .unwrap_or("http://clayface.caida.org:9200")
                 .to_string();
             Ok(rocket.manage(BaseUrl{url:base_url}))
         }))
