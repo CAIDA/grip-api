@@ -16,12 +16,12 @@ pub struct BaseUrl{
 }
 
 #[get("/")]
-pub fn index() -> Template {
+pub fn event_list() -> Template {
     // NamedFile::open("app/index.html")
-    let context_content = json!({"onload_function":"datatable_load()"});
+    let context_content = json!({"onload_function":"load_events_table()"});
     let mut context = HashMap::<String, Value>::new();
     context.insert("context".to_owned(), context_content);
-    Template::render("index", context)
+    Template::render("event_list", context)
 }
 
 #[get("/app/<file..>")]
@@ -33,20 +33,12 @@ pub fn files(file: PathBuf) -> Option<NamedFile> {
     NamedFile::open(Path::new(&file_path)).ok()
 }
 
-#[get("/event/<id>")]
-pub fn event_query(id: &RawStr, base_url: State<BaseUrl>) -> Json<serde_json::Value> {
-    // TODO: generate prefix events table
-    let backend_res = ElasticSearchBackend::new(&base_url.url);
-
-    let backend = match backend_res {
-        Ok(backend) => backend,
-        Err(_e) => return Json(json!("Cannot connect to server"))
-    };
-
-    match backend.get_event_by_id(id) {
-        Ok(event) => Json(event.to_owned()),
-        Err(_e) => Json(json!("Cannot find event"))
-    }
+#[get("/event/<event_type>/<id>")]
+pub fn event_detail(event_type: &RawStr, id: &RawStr, base_url: State<BaseUrl>) -> Template {
+    let context_content = json!({"onload_function": format!("{}_{}()","load_event_details", event_type)});
+    let mut context = HashMap::<String, Value>::new();
+    context.insert("context".to_owned(), context_content);
+    Template::render(format!("{}_{}","event_detail",event_type), context)
 }
 
 
@@ -64,7 +56,9 @@ pub fn json_event_by_id(id: &RawStr, base_url: State<BaseUrl>) -> Json<serde_jso
     };
 
     match backend.get_event_by_id(id) {
-        Ok(event) => Json(event.to_owned()),
+        Ok(event) => {
+            Json(json!({"data":event["pfx_events"].to_owned()}).to_owned())
+        },
         Err(_e) => Json(json!("Cannot find event"))
     }
 }

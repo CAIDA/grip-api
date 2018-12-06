@@ -1,69 +1,9 @@
-function create_row(row, row_type, contents) {
-    let mapping = {};
-    for (let i in contents) {
-        let th = document.createElement(row_type);
-        th.innerHTML = contents[i];
-        row.insertCell().appendChild(th);
-        mapping[contents[i]] = i;
-    }
-    return mapping;
-}
-
-function fill_table_row(row, mapping, data) {
-
-    for (let key in mapping) {
-        if (key in data) {
-            // key is the actual key string shown below
-            if (["event_type", "fingerprint", "pfx_events_cnt", "position", "view_ts"].indexOf(key) >= 0) {
-                row.insertCell(mapping[key]).appendChild(document.createTextNode(data[key]))
-            }
-
-            if (key === "id") {
-                let cell = row.insertCell(mapping[key]);
-
-                let a = document.createElement('a');
-                a.setAttribute('href', "/event/id/" + data[key]);
-                a.innerHTML = data[key];
-                cell.appendChild(a);
-            }
-        }
-    }
-}
-
-function load_table() {
-    $.ajax({
-        type: "GET",
-        url: '/json/event/all/20',
-        success: function (data_array) {
-            $("#loading").show()
-            let tableRef = document.getElementById("datatable");
-            let head = tableRef.createTHead();
-            let newRow = head.insertRow();
-            let key_mapping = create_row(newRow, 'th', ['event_type', 'fingerprint', 'id', 'pfx_events_cnt', 'position', 'view_ts'])
-
-
-            let tbody = tableRef.createTBody();
-            for (let i in data_array) {
-                newRow = tbody.insertRow();
-                fill_table_row(newRow, key_mapping, data_array[i]);
-            }
-            $('#datatable').DataTable();
-            $("#loading").hide()
-        }
-    });
-}
-
-function datatable_load() {
+function load_events_table() {
     $(document).ready(function () {
-
-        let tableRef = document.getElementById("datatable");
-        let head = tableRef.createTHead();
-        let newRow = head.insertRow();
-        let key_mapping = create_row(newRow, 'th', ['event_type', 'fingerprint', 'id', 'pfx_events_cnt', 'position', 'view_ts'])
 
         var table = $('#datatable').DataTable({
                 "ajax": {
-                    "url": "/json/event/all/20"
+                    "url": "/json/event/all/100"
                 },
                 "columns": [
                     {"data": 'event_type'},
@@ -96,12 +36,92 @@ function datatable_load() {
                 url: "/json/event/id/"+data['id'],
                 data: data,
                 success: function(data_array){
-                    alert(JSON.stringify(data_array['pfx_events'][[0]]))
+                    window.open("event/" + data['event_type'] + "/" + data['id'], "_self");
                 }
             });
 
 
         });
 
+    })
+}
+
+function load_event_details_submoas() {
+    $(document).ready(function () {
+        var id = window.location.pathname.replace(/\/$/, "").split("/").pop();
+
+        var table = $('#datatable').DataTable({
+                "ajax": {
+                    "url": "/json/event/id/" + id
+                },
+                "columns": [
+                    {"data": 'super_origins'},
+                    {"data": 'sub_origins'},
+                    {"data": 'super_pfx'},
+                    {"data": 'sub_pfx'},
+                    {"data": 'tr_worthy'},
+                    {"data": 'tags'},
+                ],
+            }
+        );
+    })
+}
+
+function load_event_details_moas() {
+    $(document).ready(function () {
+        var id = window.location.pathname.replace(/\/$/, "").split("/").pop();
+
+        var table = $('#datatable').DataTable({
+                "ajax": {
+                    "url": "/json/event/id/" + id
+                },
+                "columns": [
+                    {"data": 'origins'},
+                    {"data": 'newcomer_origins'},
+                    {"data": 'prefix'},
+                    {"data": 'tr_worthy'},
+                    {"data": 'tags'},
+                ],
+            }
+        );
+    })
+}
+
+function load_event_details_edges() {
+    $(document).ready(function () {
+        var id = window.location.pathname.replace(/\/$/, "").split("/").pop();
+
+        var table = $('#datatable').DataTable({
+                "ajax": {
+                    "url": "/json/event/id/" + id
+                },
+                "columns": [
+                    {"data": 'as1'},
+                    {"data": 'as2'},
+                    {"data": 'prefix'},
+                    {"data": 'tr_worthy'},
+                    {"data": 'tags'},
+                ],
+            }
+        );
+    })
+}
+
+function load_event_details_defcon() {
+    $(document).ready(function () {
+        var id = window.location.pathname.replace(/\/$/, "").split("/").pop();
+
+        var table = $('#datatable').DataTable({
+                "ajax": {
+                    "url": "/json/event/id/" + id
+                },
+                "columns": [
+                    {"data": 'super_pfx'},
+                    {"data": 'sub_pfx'},
+                    {"data": 'tr_worthy'},
+                    {"data": 'tags'},
+                ],
+            }
+        );
     })
 }

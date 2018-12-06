@@ -1,0 +1,12 @@
+{% extends "event_detail" %}
+
+{% block header_footer %}
+<thead>
+<tr>
+    <th>Super Prefix</th>
+    <th>Sub Prefix</th>
+    <th>Traceroute Worthy</th>
+    <th>Tags</th>
+</tr>
+</thead>
+{% endblock header_footer %}

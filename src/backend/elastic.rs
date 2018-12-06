@@ -28,8 +28,9 @@ impl ElasticSearchBackend {
             .body(json!({
             "size":1,
             "query": {
-                "match" : {
-                    "id.keyword" : id,
+                "bool": {
+                    "must": { "match": { "id.keyword" : id }},
+                      "must_not": { "match": { "position.keyword": "FINISHED"  }},
                 }
             }
         }))
@@ -46,12 +47,20 @@ impl ElasticSearchBackend {
             .search::<Value>()
             .index("hijacks*")
             .body(json!({
-            "from":0, "size":max,
-            "query": {
-                "match_all": {}
-            },
-            "sort": { "view_ts": { "order": "desc" }}
-        }))
+                "from":0, "size":max,
+                "query": {
+                    "bool": {
+                        "must_not": [
+                            {
+                                "match": {
+                                    "position.keyword": "FINISHED"
+                                }
+                            }
+                        ]
+                    }
+                },
+                "sort": { "view_ts": { "order": "desc" }}
+            }))
             .send()?;
 
         // Iterate through the hits in the response and build a vector.

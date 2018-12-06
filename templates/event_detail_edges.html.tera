@@ -1,0 +1,13 @@
+{% extends "event_detail" %}
+
+{% block header_footer %}
+<thead>
+<tr>
+    <th>AS1</th>
+    <th>AS2</th>
+    <th>Prefix</th>
+    <th>Traceroute Worthy</th>
+    <th>Tags</th>
+</tr>
+</thead>
+{% endblock header_footer %}
