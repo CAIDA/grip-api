@@ -1,3 +1,3 @@
-pub mod elastic;
 pub mod api;
+pub mod elastic;
 mod errors;

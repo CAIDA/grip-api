@@ -12,8 +12,8 @@ use serde_json::Value;
 
 use crate::backend::elastic::ElasticSearchBackend;
 
-pub struct BaseUrl{
-    pub url: String
+pub struct BaseUrl {
+    pub url: String,
 }
 
 #[get("/")]
@@ -36,12 +36,12 @@ pub fn files(file: PathBuf) -> Option<NamedFile> {
 
 #[get("/event/<event_type>/<id>")]
 pub fn event_detail(event_type: &RawStr, id: &RawStr, base_url: State<BaseUrl>) -> Template {
-    let context_content = json!({"onload_function": format!("{}_{}()","load_event_details", event_type)});
+    let context_content =
+        json!({ "onload_function": format!("{}_{}()", "load_event_details", event_type) });
     let mut context = HashMap::<String, Value>::new();
     context.insert("context".to_owned(), context_content);
-    Template::render(format!("{}_{}","event_detail",event_type), context)
+    Template::render(format!("{}_{}", "event_detail", event_type), context)
 }
-
 
 /*
 JSON QUERY APIS
@@ -53,14 +53,12 @@ pub fn json_event_by_id(id: &RawStr, base_url: State<BaseUrl>) -> Json<serde_jso
 
     let backend = match backend_res {
         Ok(backend) => backend,
-        Err(_e) => return Json(json!("Cannot connect to server"))
+        Err(_e) => return Json(json!("Cannot connect to server")),
     };
 
     match backend.get_event_by_id(id) {
-        Ok(event) => {
-            Json(json!({"data":event["pfx_events"].to_owned()}).to_owned())
-        },
-        Err(_e) => Json(json!("Cannot find event"))
+        Ok(event) => Json(json!({"data":event["pfx_events"].to_owned()}).to_owned()),
+        Err(_e) => Json(json!("Cannot find event")),
     }
 }
 

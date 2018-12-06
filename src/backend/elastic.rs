@@ -1,17 +1,15 @@
 use std::error::Error;
 
-use elastic::prelude::*;
-use serde_json::Value;
-use serde_json::json;
 use crate::backend::errors::MyError;
+use elastic::prelude::*;
+use serde_json::json;
+use serde_json::Value;
 
 pub struct ElasticSearchBackend {
     es_client: SyncClient,
 }
 
-
 impl ElasticSearchBackend {
-
     // constructor static method
     pub fn new(base_url: &str) -> Result<ElasticSearchBackend, Box<Error>> {
         let client = SyncClientBuilder::new()
@@ -22,28 +20,30 @@ impl ElasticSearchBackend {
     }
 
     pub fn get_event_by_id(&self, id: &str) -> Result<Value, Box<Error>> {
-        let res = self.es_client
+        let res = self
+            .es_client
             .search::<Value>()
             .index("hijacks*")
             .body(json!({
-            "size":1,
-            "query": {
-                "bool": {
-                    "must": { "match": { "id.keyword" : id }},
-                      "must_not": { "match": { "position.keyword": "FINISHED"  }},
+                "size":1,
+                "query": {
+                    "bool": {
+                        "must": { "match": { "id.keyword" : id }},
+                          "must_not": { "match": { "position.keyword": "FINISHED"  }},
+                    }
                 }
-            }
-        }))
+            }))
             .send()?;
 
         for hit in res.hits() {
-            return Ok(hit.document().unwrap().clone())
+            return Ok(hit.document().unwrap().clone());
         }
         Err(Box::new(MyError("Oops".into())))
     }
 
     pub fn list_all_events(&self, max: &usize) -> Result<Vec<Value>, Box<Error>> {
-        let res = self.es_client
+        let res = self
+            .es_client
             .search::<Value>()
             .index("hijacks*")
             .body(json!({
@@ -71,6 +71,4 @@ impl ElasticSearchBackend {
 
         Ok(res_vec)
     }
-
 }
-
