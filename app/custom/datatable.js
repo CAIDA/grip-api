@@ -55,7 +55,7 @@ function guid() {
   return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 }
 
-var traceroute_hash = {};;;;
+var traceroute_hash = {};
 
 function render_origins(origins) {
     let origin_lst = origins.split(",");
@@ -79,7 +79,36 @@ function render_traceroutes(data) {
 }
 
 function load_traceroute_page(uuid){
-    alert(JSON.stringify(traceroute_hash[uuid]))
+    let pfx_event = traceroute_hash[uuid];
+    let path = window.location.pathname.replace(/\/$/, "")
+    let path_segments = path.split("/");
+    let event_type = path_segments[path_segments.length -2];
+
+    let fingerprint = extract_pfx_event_fingerprint(pfx_event, event_type);
+    window.open(`${path}/${fingerprint}`)
+}
+
+function extract_pfx_event_fingerprint(pfx_event, event_type){
+    let fingerprint="";
+    console.log(pfx_event)
+    switch(event_type){
+        case "moas":
+            fingerprint=`${pfx_event["prefix"]}`;
+            break;
+        case "submoas":
+            fingerprint=`${pfx_event["sub_pfx"]}_${pfx_event["super_pfx"]}`;
+            break;
+        case "edges":
+            fingerprint=`${pfx_event["prefix"]}`;
+            break;
+        case "defcon":
+            fingerprint=`${pfx_event["sub_pfx"]}_${pfx_event["super_pfx"]}`;
+            break;
+        default:
+            alert(`wrong event type ${event_type}`)
+    }
+
+    return fingerprint.replace(/\//g, "-")
 }
 
 function load_event_details_submoas() {
@@ -106,8 +135,8 @@ function load_event_details_submoas() {
                         "targets": [0, 1]
                     },
                     {
-                        "render": function(data){
-                            return render_traceroutes(data)
+                        "render": function(data, type, row){
+                            return render_traceroutes(row)
                         },
                         "targets": [5]
                     }
@@ -140,8 +169,8 @@ function load_event_details_moas() {
                         "targets": [0, 1]
                     },
                     {
-                        "render": function(data){
-                            return render_traceroutes(data)
+                        "render": function(data, type, row){
+                            return render_traceroutes(row)
                         },
                         "targets": [4]
                     }
@@ -174,8 +203,8 @@ function load_event_details_edges() {
                         "targets": [0, 1]
                     },
                     {
-                        "render": function(data){
-                            return render_traceroutes(data)
+                        "render": function(data, type, row){
+                            return render_traceroutes(row)
                         },
                         "targets": [4]
                     }
@@ -208,8 +237,8 @@ function load_event_details_defcon() {
                         "targets": [2]
                     },
                     {
-                        "render": function(data){
-                            return render_traceroutes(data)
+                        "render": function(data, type, row){
+                            return render_traceroutes(row)
                         },
                         "targets": [4]
                     }

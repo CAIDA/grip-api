@@ -16,6 +16,7 @@ elastic_derive = "0.20.10"
 
 # templating
 maud = {version = "0.19.0", features = ["rocket"]}
+regex = "1"
 
 # serialization
 serde = "1.0"

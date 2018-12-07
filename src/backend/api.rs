@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::path::Path;
 use std::path::PathBuf;
 
+use regex::Regex;
 use rocket::http::RawStr;
 use rocket::response::NamedFile;
 use rocket::State;
@@ -76,8 +77,8 @@ pub fn json_event_by_id(id: &RawStr, base_url: State<BaseUrl>) -> Json<Value> {
     }
 }
 
-#[get("/json/pfx_event/id/<id>/<finger_print>")]
-pub fn json_pfx_event_by_id(id: &RawStr, finger_print: &RawStr, base_url: State<BaseUrl>) -> Json<Value> {
+#[get("/json/pfx_event/id/<id>/<fingerprint>")]
+pub fn json_pfx_event_by_id(id: &RawStr, fingerprint: &RawStr, base_url: State<BaseUrl>) -> Json<Value> {
     let backend_res = ElasticSearchBackend::new(&base_url.url);
 
     let backend = match backend_res {
@@ -87,15 +88,85 @@ pub fn json_pfx_event_by_id(id: &RawStr, finger_print: &RawStr, base_url: State<
 
     match backend.get_event_by_id(id) {
         Ok(event) => {
-            Json(json!(event["pfx_events"]).to_owned())
+            match filter_pfx_events_by_fingerprint(fingerprint.as_str(), &event) {
+                Some(event) => {
+                    Json(json!(event.to_owned()))
+                },
+                None => {
+                    Json(json!("Cannot find prefix event"))
+                }
+            }
         },
         Err(_e) => Json(json!("Cannot find event")),
     }
 }
 
+/// Find one specific prefix event from all prefix events in a event
+fn filter_pfx_events_by_fingerprint<'a>(fingerprint: &str, event: &'a Value) -> Option<&'a Value> {
+    let event_type = match event["event_type"].as_str() {
+        Some(t) => t,
+        None => return None
+    };
+
+    let re = Regex::new(r"-").unwrap();
+    let result = re.replace_all(fingerprint, "/");
+
+    let prefixes: Vec<&str> = result.split("_").collect();
+    if prefixes.len() == 0 {
+        return None
+    }
+
+    let pfx_events: &Vec<Value> = match event["pfx_events"].as_array() {
+        Some(events) => events,
+        None => return None
+    };
+
+    match event_type{
+        "moas" | "edges" => {
+
+            if prefixes.len()!=1 {
+                // must only have one prefix in the fingerprint for moas and edges cases
+                return None
+            }
+
+            for pfx_event in pfx_events {
+                match pfx_event["prefix"].as_str() {
+                    Some(pfx) => if pfx == prefixes[0] {return Some(&pfx_event)}
+                    None => continue
+                }
+            }
+            return None
+        }
+        "submoas" | "defcon" => {
+
+            if prefixes.len()!=2 {
+                // must only have one prefix in the fingerprint for defcon and submoas cases
+                return None
+            }
+
+            for pfx_event in pfx_events {
+                let sub_pfx = match pfx_event["sub_pfx"].as_str() {
+                    Some(pfx) => pfx,
+                    None => continue
+                };
+                let super_pfx = match pfx_event["super_pfx"].as_str() {
+                    Some(pfx) => pfx,
+                    None => continue
+                };
+
+                if sub_pfx == prefixes[0] && super_pfx == prefixes[1] {
+                    // if we found the one
+                    return Some(&pfx_event)
+                }
+            }
+            return None
+        }
+        _ => return None
+    }
+}
+
 #[get("/json/event/all/<max>")]
 pub fn json_all_events(max: usize, base_url: State<BaseUrl>) -> Json<Value> {
-    // TODO: need to strip unnecessary data
     let backend = ElasticSearchBackend::new(&base_url.url).unwrap();
     let object = json!({"data":backend.list_all_events(&max).unwrap()});
     Json(object.to_owned())

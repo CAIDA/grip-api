@@ -507,6 +507,7 @@ dependencies = [
  "elastic 0.20.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "elastic_derive 0.20.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "maud 0.19.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "regex 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "rocket 0.3.17 (registry+https://github.com/rust-lang/crates.io-index)",
  "rocket_codegen 0.3.17 (registry+https://github.com/rust-lang/crates.io-index)",
  "rocket_contrib 0.3.17 (registry+https://github.com/rust-lang/crates.io-index)",

@@ -9,3 +9,10 @@ tr.shown td.details-control {
 button:disabled {
     color : #C3C3C3;
 }
+
+pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+.string { color: green; }
+.number { color: darkorange; }
+.boolean { color: blue; }
+.null { color: magenta; }
+.key { color: red; }

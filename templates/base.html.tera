@@ -63,6 +63,7 @@
 <!-- Custom Scripts -->
 <script src="/app/custom/datatable.js"></script>
 <script src="/app/custom/traceroutes.js"></script>
+<script src="/app/custom/utils.js"></script>
 
 </body>
 
