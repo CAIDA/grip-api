@@ -60,8 +60,9 @@
 <!-- datatables -->
 <script src="/app/vendors/datatables/jquery.dataTables.min.js"></script>
 
-<!-- Custom Theme Scripts -->
+<!-- Custom Scripts -->
 <script src="/app/custom/datatable.js"></script>
+<script src="/app/custom/traceroutes.js"></script>
 
 </body>
 

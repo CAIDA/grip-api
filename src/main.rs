@@ -14,8 +14,10 @@ fn main() {
             routes![
                 event_list,
                 event_detail,
+                traceroutes,
                 files,
                 json_event_by_id,
+                json_pfx_event_by_id,
                 json_all_events,
             ],
         )
