@@ -5,3 +5,7 @@ td.details-control {
 tr.shown td.details-control {
     background: url('/app/images/details_close.png') no-repeat center center;
 }
+
+button:disabled {
+    color : #C3C3C3;
+}

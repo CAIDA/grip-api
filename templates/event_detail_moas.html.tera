@@ -6,8 +6,8 @@
     <th>Origins</th>
     <th>Newcomer Origins</th>
     <th>Prefix</th>
-    <th>Traceroute Worthy</th>
     <th>Tags</th>
+    <th>Traceroutes</th>
 </tr>
 </thead>
 {% endblock header_footer %}

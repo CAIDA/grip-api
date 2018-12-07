@@ -7,8 +7,8 @@
     <th>Sub Origins</th>
     <th>Super Prefix</th>
     <th>Sub Prefix</th>
-    <th>Traceroute Worthy</th>
     <th>Tags</th>
+    <th>Traceroutes</th>
 </tr>
 </thead>
 {% endblock header_footer %}

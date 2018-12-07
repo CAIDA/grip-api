@@ -46,6 +46,17 @@ function load_events_table() {
     })
 }
 
+function guid() {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+}
+
+var traceroute_hash = {};;;;
+
 function render_origins(origins) {
     let origin_lst = origins.split(",");
     let links = [];
@@ -55,6 +66,20 @@ function render_origins(origins) {
         }
     );
     return links.join(" ")
+}
+
+function render_traceroutes(data) {
+    if(data === undefined || data.length === 0){
+        return "<button disabled> no details </button>"
+    } else {
+        var uuid = guid();
+        traceroute_hash[uuid] = data;
+        return `<button onclick='load_traceroute_page("${uuid}")' value=''> details </button>`
+    }
+}
+
+function load_traceroute_page(uuid){
+    alert(JSON.stringify(traceroute_hash[uuid]))
 }
 
 function load_event_details_submoas() {
@@ -70,8 +95,8 @@ function load_event_details_submoas() {
                     {"data": 'sub_origins'},
                     {"data": 'super_pfx'},
                     {"data": 'sub_pfx'},
-                    {"data": 'tr_worthy'},
                     {"data": 'tags'},
+                    {"data": 'traceroutes'},
                 ],
                 "columnDefs": [
                     {
@@ -80,6 +105,12 @@ function load_event_details_submoas() {
                         },
                         "targets": [0, 1]
                     },
+                    {
+                        "render": function(data){
+                            return render_traceroutes(data)
+                        },
+                        "targets": [5]
+                    }
                 ]
             }
         );
@@ -98,8 +129,8 @@ function load_event_details_moas() {
                     {"data": 'origins'},
                     {"data": 'newcomer_origins'},
                     {"data": 'prefix'},
-                    {"data": 'tr_worthy'},
                     {"data": 'tags'},
+                    {"data": 'traceroutes'},
                 ],
                 "columnDefs": [
                     {
@@ -108,6 +139,12 @@ function load_event_details_moas() {
                         },
                         "targets": [0, 1]
                     },
+                    {
+                        "render": function(data){
+                            return render_traceroutes(data)
+                        },
+                        "targets": [4]
+                    }
                 ]
             }
         );
@@ -126,8 +163,8 @@ function load_event_details_edges() {
                     {"data": 'as1'},
                     {"data": 'as2'},
                     {"data": 'prefix'},
-                    {"data": 'tr_worthy'},
                     {"data": 'tags'},
+                    {"data": 'traceroutes'},
                 ],
                 "columnDefs": [
                     {
@@ -136,6 +173,12 @@ function load_event_details_edges() {
                         },
                         "targets": [0, 1]
                     },
+                    {
+                        "render": function(data){
+                            return render_traceroutes(data)
+                        },
+                        "targets": [4]
+                    }
                 ]
             }
         );
@@ -154,8 +197,8 @@ function load_event_details_defcon() {
                     {"data": 'super_pfx'},
                     {"data": 'sub_pfx'},
                     {"data": 'origins'},
-                    {"data": 'tr_worthy'},
                     {"data": 'tags'},
+                    {"data": 'traceroutes'},
                 ],
                 "columnDefs": [
                     {
@@ -164,6 +207,12 @@ function load_event_details_defcon() {
                         },
                         "targets": [2]
                     },
+                    {
+                        "render": function(data){
+                            return render_traceroutes(data)
+                        },
+                        "targets": [4]
+                    }
                 ]
             }
         );
