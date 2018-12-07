@@ -3,7 +3,7 @@ function load_events_table() {
 
         var table = $('#datatable').DataTable({
                 "ajax": {
-                    "url": "/json/event/all/100"
+                    "url": "/json/event/all/20"
                 },
                 "columns": [
                     {"data": 'event_type'},
@@ -33,9 +33,9 @@ function load_events_table() {
             var data = table.row($(this).parents('tr')).data();
 
             $.ajax({
-                url: "/json/event/id/"+data['id'],
+                url: "/json/event/id/" + data['id'],
                 data: data,
-                success: function(data_array){
+                success: function (data_array) {
                     window.open("event/" + data['event_type'] + "/" + data['id'], "_self");
                 }
             });
@@ -44,6 +44,17 @@ function load_events_table() {
         });
 
     })
+}
+
+function render_origins(origins) {
+    let origin_lst = origins.split(",");
+    let links = [];
+
+    origin_lst.forEach(function (origin) {
+            links.push('<a href="http://as-rank.caida.org/asns/' + origin + '"  target="_blank"> ' + origin + ' </a>')
+        }
+    );
+    return links.join(" ")
 }
 
 function load_event_details_submoas() {
@@ -62,6 +73,14 @@ function load_event_details_submoas() {
                     {"data": 'tr_worthy'},
                     {"data": 'tags'},
                 ],
+                "columnDefs": [
+                    {
+                        "render": function (data, type, row) {
+                            return render_origins(data + '');
+                        },
+                        "targets": [0, 1]
+                    },
+                ]
             }
         );
     })
@@ -82,6 +101,14 @@ function load_event_details_moas() {
                     {"data": 'tr_worthy'},
                     {"data": 'tags'},
                 ],
+                "columnDefs": [
+                    {
+                        "render": function (data, type, row) {
+                            return render_origins(data + '');
+                        },
+                        "targets": [0, 1]
+                    },
+                ]
             }
         );
     })
@@ -102,6 +129,14 @@ function load_event_details_edges() {
                     {"data": 'tr_worthy'},
                     {"data": 'tags'},
                 ],
+                "columnDefs": [
+                    {
+                        "render": function (data, type, row) {
+                            return render_origins(data + '');
+                        },
+                        "targets": [0, 1]
+                    },
+                ]
             }
         );
     })
@@ -118,9 +153,18 @@ function load_event_details_defcon() {
                 "columns": [
                     {"data": 'super_pfx'},
                     {"data": 'sub_pfx'},
+                    {"data": 'origins'},
                     {"data": 'tr_worthy'},
                     {"data": 'tags'},
                 ],
+                "columnDefs": [
+                    {
+                        "render": function (data, type, row) {
+                            return render_origins(data + '');
+                        },
+                        "targets": [2]
+                    },
+                ]
             }
         );
     })
