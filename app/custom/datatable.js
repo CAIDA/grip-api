@@ -3,7 +3,7 @@ function load_events_table() {
 
         var table = $('#datatable').DataTable({
                 "ajax": {
-                    "url": "/json/event/all/20"
+                    "url": "/json/event/all/100"
                 },
                 "columns": [
                     {"data": 'event_type'},
@@ -51,7 +51,7 @@ function render_origins(origins) {
     let links = [];
 
     origin_lst.forEach(function (origin) {
-            links.push('<a href="http://as-rank.caida.org/asns/' + origin + '"  target="_blank"> ' + origin + ' </a>')
+            links.push('<button class="origin-button" onclick="window.open(\'http:\/\/as-rank.caida.org\/asns\/' + origin + '\')"> ' + origin + ' </button>')
         }
     );
     return links.join(" ")
