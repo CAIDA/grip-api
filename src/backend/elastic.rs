@@ -66,4 +66,34 @@ impl ElasticSearchBackend {
 
         Ok(res_vec)
     }
+
+    pub fn list_events(&self, event_type: &str, max: &usize) -> Result<Vec<Value>, Box<Error>> {
+        let mut etype = event_type.to_owned();
+        if etype == "all" {
+            etype = "*".to_owned();
+        }
+        let res = self
+            .es_client
+            .search::<Value>()
+            .index(format!("hijacks-{}", etype))
+            .body(json!({
+                "from":0, "size":max,
+                "query": {
+                    "bool": {
+                        "must": { "term": { "inference.tr_worthy" : true }},
+                        "must_not": { "match": { "position.keyword": "FINISHED" } }
+                    }
+                },
+                "sort": { "view_ts": { "order": "desc" }}
+            }))
+            .send()?;
+
+        // Iterate through the hits in the response and build a vector.
+        let mut res_vec: Vec<Value> = Vec::new();
+        for hit in res.hits() {
+            res_vec.push(hit.document().unwrap().clone());
+        }
+
+        Ok(res_vec)
+    }
 }

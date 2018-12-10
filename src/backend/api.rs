@@ -6,6 +6,7 @@ use regex::Regex;
 use rocket::http::RawStr;
 use rocket::response::NamedFile;
 use rocket::State;
+use rocket::response::Redirect;
 use rocket_contrib::Json;
 use rocket_contrib::Template;
 use serde_json::json;
@@ -31,13 +32,17 @@ LOAD WEB PAGES
 */
 
 #[get("/")]
-pub fn event_list() -> Template {
-    let context_content = json!({"onload_function":"load_events_table()"});
+pub fn index() -> Redirect {
+    Redirect::to("/events/all")
+}
+
+#[get("/events/<event_type>")]
+pub fn event_list(event_type: &RawStr) -> Template {
+    let context_content = json!({"onload_function":format!("load_events_table('{}')",event_type) });
     let mut context = HashMap::<String, Value>::new();
     context.insert("context".to_owned(), context_content);
     Template::render("event_list", context)
 }
-
 
 #[get("/event/<event_type>/<id>")]
 pub fn event_detail(event_type: &RawStr, id: &RawStr, base_url: State<BaseUrl>) -> Template {
@@ -165,9 +170,9 @@ fn filter_pfx_events_by_fingerprint<'a>(fingerprint: &str, event: &'a Value) -> 
     }
 }
 
-#[get("/json/event/all/<max>")]
-pub fn json_all_events(max: usize, base_url: State<BaseUrl>) -> Json<Value> {
+#[get("/json/events/<event_type>/<max>")]
+pub fn json_list_events(event_type: &RawStr, max: usize, base_url: State<BaseUrl>) -> Json<Value> {
     let backend = ElasticSearchBackend::new(&base_url.url).unwrap();
-    let object = json!({"data":backend.list_all_events(&max).unwrap()});
+    let object = json!({"data":backend.list_events(event_type, &max).unwrap()});
     Json(object.to_owned())
 }

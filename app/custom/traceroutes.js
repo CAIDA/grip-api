@@ -33,9 +33,9 @@ function draw_traceroute_table(pfx_event) {
             "columnDefs": [
                 {
                     "render": function(data, type, row){
-                        return `<button class="origin-button" onclick="window.open('https://atlas.ripe.net/measurements/${data}/')"> ${data} </button>`
+                        return `<button class="origin-button" onclick="window.open('http://as-rank.caida.org/asns/${data}')"> ${data} </button>`
                     },
-                    "targets": [0]
+                    "targets": [1]
                 },
                 {
                     "render": function(data, type, row){

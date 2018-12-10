@@ -1,17 +1,17 @@
-function load_events_table() {
+function load_events_table(event_type) {
     $(document).ready(function () {
 
         var table = $('#datatable').DataTable({
                 "ajax": {
-                    "url": "/json/event/all/100"
+                    "url": `/json/events/${event_type}/100`
                 },
                 "columns": [
-                    {"data": 'event_type'},
-                    {"data": 'fingerprint'},
-                    {"data": 'id'},
-                    {"data": 'pfx_events_cnt'},
-                    {"data": 'position'},
-                    {"data": 'view_ts'},
+                    {title: "Event Type", "data": 'event_type'},
+                    {title: "Fingerprint", "data": 'fingerprint'},
+                    {title: "Event ID", "data": 'id'},
+                    {title: "Prefix Events", "data": 'pfx_events_cnt'},
+                    {title: "Status", "data": 'position'},
+                    {title: "Time Stamp", "data": 'view_ts'},
                 ],
                 "columnDefs": [
                     {
@@ -36,7 +36,7 @@ function load_events_table() {
                 url: "/json/event/id/" + data['id'],
                 data: data,
                 success: function (data_array) {
-                    window.open("event/" + data['event_type'] + "/" + data['id'], "_self");
+                    window.open("/event/" + data['event_type'] + "/" + data['id'], "_blank");
                 }
             });
 

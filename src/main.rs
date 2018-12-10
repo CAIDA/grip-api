@@ -12,13 +12,14 @@ fn main() {
         .mount(
             "/",
             routes![
+                index,
                 event_list,
                 event_detail,
                 traceroutes,
                 files,
                 json_event_by_id,
                 json_pfx_event_by_id,
-                json_all_events,
+                json_list_events,
             ],
         )
         .attach(AdHoc::on_attach(|rocket| {

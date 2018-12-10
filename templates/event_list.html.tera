@@ -37,26 +37,6 @@
                         </div>
                         <div class="x_content">
                             <table id="datatable" class="table table-striped table-bordered" style="max-width:95%;">
-                                <thead>
-                                <tr>
-                                    <th>Event Type</th>
-                                    <th>Fingerprint</th>
-                                    <th>Event ID</th>
-                                    <th>Pfx Events Count</th>
-                                    <th>Event Status</th>
-                                    <th>Start Time</th>
-                                </tr>
-                                </thead>
-                                <tfoot>
-                                <tr>
-                                    <th>Event Type</th>
-                                    <th>Fingerprint</th>
-                                    <th>Event ID</th>
-                                    <th>Pfx Events Count</th>
-                                    <th>Event Status</th>
-                                    <th>Start Time</th>
-                                </tr>
-                                </tfoot>
                             </table>
                         </div>
                     </div>
