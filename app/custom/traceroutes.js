@@ -13,7 +13,41 @@ function load_pfx_event() {
             $("#json_content").html(syntaxHighlight(JSON.stringify(pfx_event, undefined, 4)));
             draw_monitor_sankey(pfx_event);
             draw_tr_sankey(pfx_event);
+            draw_traceroute_table(pfx_event);
         }
+    });
+}
+
+function draw_traceroute_table(pfx_event) {
+
+    $(document).ready(function () {
+        $('#datatable').DataTable({
+            data: pfx_event["traceroutes"],
+            columns: [
+                {title: "Measurement ID", data: "msm_id"},
+                {title: "Target ASN", data: "target_asn"},
+                {title: "Target IP", data: "target_ip"},
+                {title: "Target Prefix", data: "target_pfx"},
+                {title: "Results (from RIPE)", data:""},
+            ],
+            "columnDefs": [
+                {
+                    "render": function(data, type, row){
+                        return `<button class="origin-button" onclick="window.open('https://atlas.ripe.net/measurements/${data}/')"> ${data} </button>`
+                    },
+                    "targets": [0]
+                },
+                {
+                    "render": function(data, type, row){
+                        let msm_id = row['msm_id'];
+                        return `<button class="origin-button" onclick="window.open('https://atlas.ripe.net/measurements/${msm_id}/')"> general </button>` +
+                            `<button class="origin-button" onclick="window.open('https://atlas.ripe.net/measurements/${msm_id}/#!openipmap')"> IP map </button>` +
+                            `<button class="origin-button" onclick="window.open('https://atlas.ripe.net/api/v2/measurements/${msm_id}/results/?format=json')"> JSON </button>`
+                    },
+                    "targets": [4]
+                },
+            ]
+        });
     });
 }
 
