@@ -51,11 +51,16 @@
                 <div class="col-md-12 col-sm-12 col-xs-12">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2 > Sankey Diagram</h2>
+                            <ul class="nav navbar-right panel_toolbox">
+                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                </li>
+                            </ul>
+                            <div class="clearfix"></div>
+                            <h2 > AS Traceroute Sankey Diagram </h2>
                             <div class="clearfix"></div>
                         </div>
                         <div class="x_content">
-                            <div id="sankey_diagram" style="width: 1200px;">
+                            <div id="tr_sankey_diagram" style="width: 1200px;">
                             </div>
                         </div>
                     </div>
@@ -68,6 +73,34 @@
                 <div class="col-md-12 col-sm-12 col-xs-12">
                     <div class="x_panel">
                         <div class="x_title">
+                            <ul class="nav navbar-right panel_toolbox">
+                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                </li>
+                            </ul>
+                            <div class="clearfix"></div>
+                            <h2 > Route Collectors Sankey Diagram</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="clearfix"></div>
+                            <div id="monitor_sankey_diagram" style="width: 1200px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <br />
+
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <ul class="nav navbar-right panel_toolbox">
+                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                </li>
+                            </ul>
+                            <div class="clearfix"></div>
                             <h2 > Traceroute Map </h2>
                             <div class="clearfix"></div>
                         </div>
@@ -85,10 +118,15 @@
                 <div class="col-md-12 col-sm-12 col-xs-12">
                     <div class="x_panel">
                         <div class="x_title">
+                            <ul class="nav navbar-right panel_toolbox">
+                                <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a>
+                                </li>
+                            </ul>
+                            <div class="clearfix"></div>
                             <h2 id="table_title_json"> JSON Details </h2>
                             <div class="clearfix"></div>
                         </div>
-                        <div class="x_content">
+                        <div class="x_content" style="display: none;">
                             <pre id="json_content">
 
                             </pre>

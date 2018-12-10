@@ -11,17 +11,23 @@ function load_pfx_event() {
         success: function (pfx_event) {
             // window.open("event/" + data['event_type'] + "/" + data['id'], "_self");
             $("#json_content").html(syntaxHighlight(JSON.stringify(pfx_event, undefined, 4)));
-            draw_sankey(pfx_event);
+            draw_monitor_sankey(pfx_event);
+            draw_tr_sankey(pfx_event);
         }
     });
 }
 
-function extract_sankey_data(path_lst){
+function extract_sankey_data(path_lst, space_separated = true) {
     path_count_dict = {};
 
     path_lst.forEach(function(path){
-        path = path.trim().replace(/ {2}/g, ' ');
-        let asns = path.split(" ");
+        let asns = [];
+        if (space_separated) {
+            path = path.trim().replace(/ {2}/g, ' ');
+            asns = path.split(" ");
+        } else {
+            asns = path.split(";");
+        }
         if(asns.length>1){
             for(let i=0;i<asns.length-1; i++){
                 if(asns[i] === asns[i+1]){
@@ -49,15 +55,15 @@ function extract_sankey_data(path_lst){
     return data
 }
 
-function draw_sankey(pfx_event) {
+function draw_monitor_sankey(pfx_event) {
     google.charts.load('current', {'packages': ['sankey']});
     google.charts.setOnLoadCallback(drawChart);
 
     let path_data = [];
     if("aspaths" in pfx_event) {
-        path_data = extract_sankey_data(pfx_event["aspaths"])
+        path_data = extract_sankey_data(pfx_event["aspaths"], true)
     } else if ("super_aspaths" in pfx_event) {
-        path_data = extract_sankey_data(pfx_event["super_aspaths"])
+        path_data = extract_sankey_data(pfx_event["super_aspaths"], true)
     } else {
         alert("no paths data available")
     }
@@ -76,11 +82,52 @@ function draw_sankey(pfx_event) {
         };
 
         // Instantiates and draws our chart, passing in some options.
-        var chart = new google.visualization.Sankey(document.getElementById('sankey_diagram'));
+        var chart = new google.visualization.Sankey(document.getElementById('monitor_sankey_diagram'));
         chart.draw(data, options);
     }
 }
 
-function draw_traceroute(pfx_event) {
+function draw_tr_sankey(pfx_event) {
 
+    let traceroutes = pfx_event["traceroutes"];
+    let as_routes = [];
+    traceroutes.forEach(function (traceroute) {
+        if ("results" in traceroute) {
+            traceroute["results"].forEach(function (result) {
+                as_routes.push(
+                    result["as_traceroute"].filter(asn => asn !== "*").join(";")
+                );
+            });
+        }
+    });
+
+    let path_data = extract_sankey_data(as_routes, false);
+
+    if (path_data.length === 0) {
+        $("#tr_sankey_diagram").html("No data available");
+    } else {
+
+
+        google.charts.load('current', {'packages': ['sankey']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'From');
+            data.addColumn('string', 'To');
+            data.addColumn('number', 'Weight');
+            data.addRows(path_data);
+
+            // Sets chart options.
+            var options = {
+                width: 1200,
+                height: data.getNumberOfRows() * 11 + 30
+            };
+
+            // Instantiates and draws our chart, passing in some options.
+            var chart = new google.visualization.Sankey(document.getElementById('tr_sankey_diagram'));
+            chart.draw(data, options);
+        }
+
+    }
 }
