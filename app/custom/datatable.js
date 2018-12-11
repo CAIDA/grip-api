@@ -3,7 +3,7 @@ function load_events_table(event_type) {
 
         var table = $('#datatable').DataTable({
                 "ajax": {
-                    "url": `/json/events/${event_type}/100`
+                    "url": `/json/events/${event_type}/50`
                 },
                 "columns": [
                     {title: "Event Type", "data": 'event_type'},
@@ -120,12 +120,12 @@ function load_event_details_submoas() {
                     "url": "/json/event/id/" + id
                 },
                 "columns": [
-                    {"data": 'super_origins'},
-                    {"data": 'sub_origins'},
-                    {"data": 'super_pfx'},
-                    {"data": 'sub_pfx'},
-                    {"data": 'tags'},
-                    {"data": 'traceroutes'},
+                    {title: "Super Origins", "data": 'super_origins'},
+                    {title: "Sub Origins", "data": 'sub_origins'},
+                    {title: "Super Prefix", "data": 'super_pfx'},
+                    {title: "Sub Prefix", "data": 'sub_pfx'},
+                    {title: "Tags", "data": 'tags'},
+                    {title: "Traceroutes", "data": 'traceroutes'},
                 ],
                 "columnDefs": [
                     {
@@ -155,11 +155,11 @@ function load_event_details_moas() {
                     "url": "/json/event/id/" + id
                 },
                 "columns": [
-                    {"data": 'origins'},
-                    {"data": 'newcomer_origins'},
-                    {"data": 'prefix'},
-                    {"data": 'tags'},
-                    {"data": 'traceroutes'},
+                    {title: "Origins", "data": 'origins'},
+                    {title: "Newcomer Origins", "data": 'newcomer_origins'},
+                    {title: "Prefix", "data": 'prefix'},
+                    {title: "Tags", "data": 'tags'},
+                    {title: "Traceroutes", "data": 'traceroutes'},
                 ],
                 "columnDefs": [
                     {
@@ -189,11 +189,11 @@ function load_event_details_edges() {
                     "url": "/json/event/id/" + id
                 },
                 "columns": [
-                    {"data": 'as1'},
-                    {"data": 'as2'},
-                    {"data": 'prefix'},
-                    {"data": 'tags'},
-                    {"data": 'traceroutes'},
+                    {title: "AS1", "data": 'as1'},
+                    {title: "AS2", "data": 'as2'},
+                    {title: "Prefix", "data": 'prefix'},
+                    {title: "Tags", "data": 'tags'},
+                    {title: "Traceroutes", "data": 'traceroutes'},
                 ],
                 "columnDefs": [
                     {
@@ -223,11 +223,11 @@ function load_event_details_defcon() {
                     "url": "/json/event/id/" + id
                 },
                 "columns": [
-                    {"data": 'super_pfx'},
-                    {"data": 'sub_pfx'},
-                    {"data": 'origins'},
-                    {"data": 'tags'},
-                    {"data": 'traceroutes'},
+                    {title: "Super Prefix", "data": 'super_pfx'},
+                    {title: "Sub Prefix", "data": 'sub_pfx'},
+                    {title: "Origins", "data": 'origins'},
+                    {title: "Tags", "data": 'tags'},
+                    {title: "Traceroutes", "data": 'traceroutes'},
                 ],
                 "columnDefs": [
                     {

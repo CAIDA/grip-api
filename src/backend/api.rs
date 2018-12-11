@@ -50,7 +50,7 @@ pub fn event_detail(event_type: &RawStr, id: &RawStr, base_url: State<BaseUrl>) 
         json!({ "onload_function": format!("{}_{}()", "load_event_details", event_type) });
     let mut context = HashMap::<String, Value>::new();
     context.insert("context".to_owned(), context_content);
-    Template::render(format!("{}_{}", "event_detail", event_type), context)
+    Template::render("event_detail", context)
 }
 
 #[get("/event/<event_type>/<id>/<pfx_finger_print>")]
