@@ -19,9 +19,8 @@ function load_pfx_event() {
 }
 
 function draw_traceroute_table(pfx_event) {
-
     $(document).ready(function () {
-        $('#datatable').DataTable({
+        $('#traceroutes_table').DataTable({
             data: pfx_event["traceroutes"],
             columns: [
                 {title: "Measurement ID", data: "msm_id"},
