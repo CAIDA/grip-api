@@ -1,7 +1,9 @@
 // Panel toolbox
+
 $(document).ready(function() {
     init_panel();
     init_sidebar();
+    init_daterangepicker();
 });
 // /Panel toolbox
 
@@ -171,3 +173,67 @@ function init_sidebar() {
     jQuery.fn[sr] = function(fn){  return fn ? this.bind('resize', debounce(fn)) : this.trigger(sr); };
 
 })(jQuery,'smartresize');
+
+
+
+/* DATERANGEPICKER */
+
+function init_daterangepicker() {
+
+    if( typeof ($.fn.daterangepicker) === 'undefined'){ return; }
+
+    var cb = function(start, end, label) {
+        $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+    };
+
+    var optionSet1 = {
+        startDate: moment().subtract(29, 'days').startOf('hour'),
+        endDate: moment().startOf('hour'),
+        showDropdowns: true,
+        showWeekNumbers: true,
+        timePicker: true,
+        timePickerIncrement: 10,
+        timePicker12Hour: true,
+        ranges: {
+            'Today': [moment().startOf('hour'), moment().subtract(2,'days').startOf('hour')],
+            'Yesterday': [moment().subtract(1, 'days').format('MMMM D, YYYY hh:mm A'), moment().subtract(1, 'days').format('MMMM D, YYYY hh:mm A')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        },
+        opens: 'left',
+        buttonClasses: ['btn btn-default'],
+        applyClass: 'btn-small btn-primary',
+        cancelClass: 'btn-small',
+        format: 'MM/DD/YYYY hh:mm A',
+        separator: ' to ',
+        locale: {
+            applyLabel: 'Submit',
+            cancelLabel: 'Clear',
+            fromLabel: 'From',
+            toLabel: 'To',
+            customRangeLabel: 'Custom',
+            daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+            monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            firstDay: 1
+        }
+    };
+
+    $('#reportrange span').html(moment().subtract(29, 'days').format('MMMM D, YYYY hh:mm A') + ' - ' + moment().format('MMMM D, YYYY hh:mm A'));
+    let daterange = $('#reportrange');
+    daterange.daterangepicker(optionSet1, cb);
+    daterange.on('show.daterangepicker', function() {
+        console.log("show event fired");
+    });
+    daterange.on('hide.daterangepicker', function() {
+        console.log("hide event fired");
+    });
+    daterange.on('apply.daterangepicker', function(ev, picker) {
+        $('#reportrange span').html(picker.startDate.format('MMMM D, YYYY hh:mm A') + ' - ' + picker.endDate.format('MMMM D, YYYY hh:mm A'));
+    });
+    daterange.on('cancel.daterangepicker', function(ev, picker) {
+        console.log("cancel event fired");
+    });
+
+}
