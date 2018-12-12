@@ -193,7 +193,7 @@ function init_daterangepicker() {
         showWeekNumbers: true,
         timePicker: true,
         timePickerIncrement: 10,
-        timePicker12Hour: true,
+        timePicker24Hour: true,
         ranges: {
             'Today': [moment().startOf('hour'), moment().subtract(2,'days').startOf('hour')],
             'Yesterday': [moment().subtract(1, 'days').format('MMMM D, YYYY hh:mm A'), moment().subtract(1, 'days').format('MMMM D, YYYY hh:mm A')],
@@ -220,7 +220,7 @@ function init_daterangepicker() {
         }
     };
 
-    $('#reportrange span').html(moment().subtract(29, 'days').format('MMMM D, YYYY hh:mm A') + ' - ' + moment().format('MMMM D, YYYY hh:mm A'));
+    $('#reportrange span').html(moment().subtract(29, 'days').format('YYYY-MM-DDThh:mm') + ' - ' + moment().format('YYYY-MM-DDThh:mm'));
     let daterange = $('#reportrange');
     daterange.daterangepicker(optionSet1, cb);
     daterange.on('show.daterangepicker', function() {
@@ -230,7 +230,7 @@ function init_daterangepicker() {
         console.log("hide event fired");
     });
     daterange.on('apply.daterangepicker', function(ev, picker) {
-        $('#reportrange span').html(picker.startDate.format('MMMM D, YYYY hh:mm A') + ' - ' + picker.endDate.format('MMMM D, YYYY hh:mm A'));
+        $('#reportrange span').html(picker.startDate.format('YYYY-MM-DDThh:mm') + ' - ' + picker.endDate.format('YYYY-MM-DDThh:mm'));
     });
     daterange.on('cancel.daterangepicker', function(ev, picker) {
         console.log("cancel event fired");

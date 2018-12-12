@@ -1,7 +1,7 @@
 function load_events_table(event_type) {
     $(document).ready(function () {
 
-        var table = $('#datatable').DataTable({
+        let table = $('#datatable').DataTable({
                 "ajax": {
                     "url": `/json/events?event_type=${event_type}&max=50`
                 },
@@ -43,7 +43,55 @@ function load_events_table(event_type) {
 
         });
 
-    })
+    });
+
+    $("#query-btn").click(function(){
+        let event_type = window.location.pathname.replace(/\/$/, "").split("/").pop();
+        let times = $('#reportrange span').html().split(" - ");
+        let url = `/json/events?event_type=${event_type}&start=${times[0]}&end=${times[1]}`
+
+        let table = $('#datatable').DataTable({
+                "ajax": {
+                    "url": url
+                },
+                "columns": [
+                    {title: "Event Type", "data": 'event_type'},
+                    {title: "Fingerprint", "data": 'fingerprint'},
+                    {title: "Event ID", "data": 'id'},
+                    {title: "Prefix Events", "data": 'pfx_events_cnt'},
+                    {title: "Status", "data": 'position'},
+                    {title: "Time Stamp", "data": 'view_ts'},
+                ],
+                "columnDefs": [
+                    {
+                        // The `data` parameter refers to the data for the cell (defined by the
+                        // `data` option, which defaults to the column being worked with, in
+                        // this case `data: 0`.
+                        "render": function (data, type, row) {
+                            return "<button>" + data + "</button>";
+                        },
+                        "targets": 2
+                    },
+                ]
+
+            }
+        );
+
+        $('#datatable tbody').on('click', 'button', function () {
+
+            var data = table.row($(this).parents('tr')).data();
+
+            $.ajax({
+                url: "/json/event/id/" + data['id'],
+                data: data,
+                success: function (data_array) {
+                    window.open("/event/" + data['event_type'] + "/" + data['id'], "_blank");
+                }
+            });
+
+
+        });
+    });
 }
 
 function guid() {
@@ -90,7 +138,6 @@ function load_traceroute_page(uuid){
 
 function extract_pfx_event_fingerprint(pfx_event, event_type){
     let fingerprint="";
-    console.log(pfx_event)
     switch(event_type){
         case "moas":
             fingerprint=`${pfx_event["prefix"]}`;
