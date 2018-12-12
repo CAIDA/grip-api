@@ -41,51 +41,45 @@ impl ElasticSearchBackend {
         Err(Box::new(MyError("Oops".into())))
     }
 
-    pub fn list_all_events(&self, max: &usize) -> Result<Vec<Value>, Box<Error>> {
-        let res = self
-            .es_client
-            .search::<Value>()
-            .index("hijacks*")
-            .body(json!({
-                "from":0, "size":max,
-                "query": {
-                    "bool": {
-                        "must": { "term": { "inference.tr_worthy" : true }},
-                        "must_not": { "match": { "position.keyword": "FINISHED" } }
-                    }
-                },
-                "sort": { "view_ts": { "order": "desc" }}
-            }))
-            .send()?;
-
-        // Iterate through the hits in the response and build a vector.
-        let mut res_vec: Vec<Value> = Vec::new();
-        for hit in res.hits() {
-            res_vec.push(hit.document().unwrap().clone());
-        }
-
-        Ok(res_vec)
-    }
-
-    pub fn list_events(&self, event_type: &str, max: &usize) -> Result<Vec<Value>, Box<Error>> {
+    pub fn list_events(&self, event_type: &str, max: &usize,
+                       start: &Option<String>, end: &Option<String>)-> Result<Vec<Value>, Box<Error>> {
         let mut etype = event_type.to_owned();
         if etype == "all" {
             etype = "*".to_owned();
         }
-        let res = self
-            .es_client
-            .search::<Value>()
-            .index(format!("hijacks-{}", etype))
-            .body(json!({
+
+
+        let mut range_filter = json!({"view_ts":{}});
+        match start {
+            Some(start_str) => range_filter["view_ts"]["gte"] = json!(start_str),
+            _ => {}
+        };
+        match end {
+            Some(end_str) => range_filter["view_ts"]["lte"] = json!(end_str),
+            _ => {}
+        };
+
+        let query = json!({
                 "from":0, "size":max,
                 "query": {
                     "bool": {
                         "must": { "term": { "inference.tr_worthy" : true }},
-                        "must_not": { "match": { "position.keyword": "FINISHED" } }
+                        "must_not": { "match": { "position.keyword": "FINISHED" } },
+                        "filter": {
+                            "range": range_filter
+                        }
                     }
                 },
                 "sort": { "view_ts": { "order": "desc" }}
-            }))
+            });
+
+
+
+        let res = self
+            .es_client
+            .search::<Value>()
+            .index(format!("hijacks-{}", etype))
+            .body(query)
             .send()?;
 
         // Iterate through the hits in the response and build a vector.

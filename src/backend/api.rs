@@ -7,8 +7,8 @@ use rocket::http::RawStr;
 use rocket::response::NamedFile;
 use rocket::State;
 use rocket::response::Redirect;
-use rocket_contrib::Json;
-use rocket_contrib::Template;
+use rocket_contrib::json::Json;
+use rocket_contrib::templates::Template;
 use serde_json::json;
 use serde_json::Value;
 
@@ -170,9 +170,10 @@ fn filter_pfx_events_by_fingerprint<'a>(fingerprint: &str, event: &'a Value) -> 
     }
 }
 
-#[get("/json/events/<event_type>/<max>")]
-pub fn json_list_events(event_type: &RawStr, max: usize, base_url: State<BaseUrl>) -> Json<Value> {
+#[get("/json/events?<event_type>&<max>&<start>&<end>")]
+pub fn json_list_events(event_type: &RawStr, max: usize, start: Option<String>, end: Option<String>,
+                        base_url: State<BaseUrl>) -> Json<Value> {
     let backend = ElasticSearchBackend::new(&base_url.url).unwrap();
-    let object = json!({"data":backend.list_events(event_type, &max).unwrap()});
+    let object = json!({"data":backend.list_events(event_type, &max, &start, &end).unwrap()});
     Json(object.to_owned())
 }

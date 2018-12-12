@@ -1,9 +1,8 @@
 #![feature(proc_macro_hygiene)]
-#![feature(plugin)]
-#![plugin(rocket_codegen)]
 
 use rocket::fairing::AdHoc;
-use rocket_contrib::Template;
+use rocket::routes;
+use rocket_contrib::templates::Template;
 
 use hijacks_dashboard::backend::api::*;
 
@@ -22,7 +21,7 @@ fn main() {
                 json_list_events,
             ],
         )
-        .attach(AdHoc::on_attach(|rocket| {
+        .attach(AdHoc::on_attach("get elastic search url", |rocket| {
             let base_url = rocket
                 .config()
                 .get_str("elastic_url")

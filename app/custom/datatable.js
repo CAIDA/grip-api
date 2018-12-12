@@ -3,7 +3,7 @@ function load_events_table(event_type) {
 
         var table = $('#datatable').DataTable({
                 "ajax": {
-                    "url": `/json/events/${event_type}/50`
+                    "url": `/json/events?event_type=${event_type}&max=50`
                 },
                 "columns": [
                     {title: "Event Type", "data": 'event_type'},

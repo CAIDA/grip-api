@@ -1,5 +1,6 @@
-#![plugin(rocket_codegen)]
-#![feature(plugin)]
-#![feature(proc_macro_hygiene)]
+#![feature(proc_macro_hygiene, decl_macro)]
+
+#[macro_use] extern crate rocket;
 
 pub mod backend;
+
