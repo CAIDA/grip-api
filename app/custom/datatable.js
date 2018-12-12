@@ -1,11 +1,17 @@
 let datatable = null;
 
 function load_events_table(event_type) {
+    $.extend(true, $.fn.dataTable.defaults, {
+        "searching": false,
+        "ordering": false
+    });
     $(document).ready(function () {
 
         datatable = $('#datatable').DataTable({
                 "processing": true,
                 "serverSide": true,
+                "searching": false,
+                "ordering": false,
                 "ajax": {
                     "url": `/json/events/${event_type}`,
                 },
