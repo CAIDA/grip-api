@@ -1,9 +1,13 @@
+let datatable = null;
+
 function load_events_table(event_type) {
     $(document).ready(function () {
 
-        let table = $('#datatable').DataTable({
+        datatable = $('#datatable').DataTable({
+                "processing": true,
+                "serverSide": true,
                 "ajax": {
-                    "url": `/json/events?event_type=${event_type}&max=50`
+                    "url": `/json/events/${event_type}`,
                 },
                 "columns": [
                     {title: "Event Type", "data": 'event_type'},
@@ -19,7 +23,7 @@ function load_events_table(event_type) {
                         // `data` option, which defaults to the column being worked with, in
                         // this case `data: 0`.
                         "render": function (data, type, row) {
-                            return "<button>" + data + "</button>";
+                            return "<button>" + data.substring(0, 40) + "</button>";
                         },
                         "targets": 2
                     },
@@ -30,77 +34,32 @@ function load_events_table(event_type) {
 
         $('#datatable tbody').on('click', 'button', function () {
 
-            var data = table.row($(this).parents('tr')).data();
+            var data = datatable.row($(this).parents('tr')).data();
 
-            $.ajax({
-                url: "/json/event/id/" + data['id'],
-                data: data,
-                success: function (data_array) {
-                    window.open("/event/" + data['event_type'] + "/" + data['id'], "_blank");
-                }
-            });
-
-
+            console.log("/json/event/id/" + data['id']);
+            window.open("/event/" + data['event_type'] + "/" + data['id'], "_blank");
         });
-
     });
 
-    $("#query-btn").click(function(){
+    $("#query-btn").click(function () {
         let event_type = window.location.pathname.replace(/\/$/, "").split("/").pop();
         let times = $('#reportrange span').html().split(" - ");
-        let url = `/json/events?event_type=${event_type}&start=${times[0]}&end=${times[1]}`
+        let url = `/json/events/${event_type}?start=${times[0]}&end=${times[1]}`
 
-        let table = $('#datatable').DataTable({
-                "ajax": {
-                    "url": url
-                },
-                "columns": [
-                    {title: "Event Type", "data": 'event_type'},
-                    {title: "Fingerprint", "data": 'fingerprint'},
-                    {title: "Event ID", "data": 'id'},
-                    {title: "Prefix Events", "data": 'pfx_events_cnt'},
-                    {title: "Status", "data": 'position'},
-                    {title: "Time Stamp", "data": 'view_ts'},
-                ],
-                "columnDefs": [
-                    {
-                        // The `data` parameter refers to the data for the cell (defined by the
-                        // `data` option, which defaults to the column being worked with, in
-                        // this case `data: 0`.
-                        "render": function (data, type, row) {
-                            return "<button>" + data + "</button>";
-                        },
-                        "targets": 2
-                    },
-                ]
+        console.log(url);
+        datatable.ajax.url(url).load();
 
-            }
-        );
-
-        $('#datatable tbody').on('click', 'button', function () {
-
-            var data = table.row($(this).parents('tr')).data();
-
-            $.ajax({
-                url: "/json/event/id/" + data['id'],
-                data: data,
-                success: function (data_array) {
-                    window.open("/event/" + data['event_type'] + "/" + data['id'], "_blank");
-                }
-            });
-
-
-        });
     });
 }
 
 function guid() {
-  function s4() {
-    return Math.floor((1 + Math.random()) * 0x10000)
-      .toString(16)
-      .substring(1);
-  }
-  return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+    }
+
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 }
 
 var traceroute_hash = {};
@@ -117,7 +76,7 @@ function render_origins(origins) {
 }
 
 function render_traceroutes(data) {
-    if(data === undefined || data.length === 0){
+    if (data === undefined || data.length === 0) {
         return "<button disabled> no details </button>"
     } else {
         var uuid = guid();
@@ -126,30 +85,30 @@ function render_traceroutes(data) {
     }
 }
 
-function load_traceroute_page(uuid){
+function load_traceroute_page(uuid) {
     let pfx_event = traceroute_hash[uuid];
     let path = window.location.pathname.replace(/\/$/, "")
     let path_segments = path.split("/");
-    let event_type = path_segments[path_segments.length -2];
+    let event_type = path_segments[path_segments.length - 2];
 
     let fingerprint = extract_pfx_event_fingerprint(pfx_event, event_type);
     window.open(`${path}/${fingerprint}`)
 }
 
-function extract_pfx_event_fingerprint(pfx_event, event_type){
-    let fingerprint="";
-    switch(event_type){
+function extract_pfx_event_fingerprint(pfx_event, event_type) {
+    let fingerprint = "";
+    switch (event_type) {
         case "moas":
-            fingerprint=`${pfx_event["prefix"]}`;
+            fingerprint = `${pfx_event["prefix"]}`;
             break;
         case "submoas":
-            fingerprint=`${pfx_event["sub_pfx"]}_${pfx_event["super_pfx"]}`;
+            fingerprint = `${pfx_event["sub_pfx"]}_${pfx_event["super_pfx"]}`;
             break;
         case "edges":
-            fingerprint=`${pfx_event["prefix"]}`;
+            fingerprint = `${pfx_event["prefix"]}`;
             break;
         case "defcon":
-            fingerprint=`${pfx_event["sub_pfx"]}_${pfx_event["super_pfx"]}`;
+            fingerprint = `${pfx_event["sub_pfx"]}_${pfx_event["super_pfx"]}`;
             break;
         default:
             alert(`wrong event type ${event_type}`)
@@ -182,7 +141,7 @@ function load_event_details_submoas() {
                         "targets": [0, 1]
                     },
                     {
-                        "render": function(data, type, row){
+                        "render": function (data, type, row) {
                             return render_traceroutes(row)
                         },
                         "targets": [5]
@@ -216,7 +175,7 @@ function load_event_details_moas() {
                         "targets": [0, 1]
                     },
                     {
-                        "render": function(data, type, row){
+                        "render": function (data, type, row) {
                             return render_traceroutes(row)
                         },
                         "targets": [4]
@@ -250,7 +209,7 @@ function load_event_details_edges() {
                         "targets": [0, 1]
                     },
                     {
-                        "render": function(data, type, row){
+                        "render": function (data, type, row) {
                             return render_traceroutes(row)
                         },
                         "targets": [4]
@@ -284,7 +243,7 @@ function load_event_details_defcon() {
                         "targets": [2]
                     },
                     {
-                        "render": function(data, type, row){
+                        "render": function (data, type, row) {
                             return render_traceroutes(row)
                         },
                         "targets": [4]

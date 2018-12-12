@@ -7,6 +7,7 @@ use rocket::http::RawStr;
 use rocket::response::NamedFile;
 use rocket::State;
 use rocket::response::Redirect;
+use rocket::request::Form;
 use rocket_contrib::json::Json;
 use rocket_contrib::templates::Template;
 use serde_json::json;
@@ -77,7 +78,7 @@ pub fn json_event_by_id(id: &RawStr, base_url: State<BaseUrl>) -> Json<Value> {
     };
 
     match backend.get_event_by_id(id) {
-        Ok(event) => Json(json!({"data":event["pfx_events"].to_owned()}).to_owned()),
+        Ok(event) => Json(json!({"data":event.results[0]["pfx_events"].to_owned()}).to_owned()),
         Err(_e) => Json(json!("Cannot find event")),
     }
 }
@@ -93,18 +94,39 @@ pub fn json_pfx_event_by_id(id: &RawStr, fingerprint: &RawStr, base_url: State<B
 
     match backend.get_event_by_id(id) {
         Ok(event) => {
-            match filter_pfx_events_by_fingerprint(fingerprint.as_str(), &event) {
+            match filter_pfx_events_by_fingerprint(fingerprint.as_str(), &event.results[0]) {
                 Some(event) => {
                     Json(json!(event.to_owned()))
-                },
+                }
                 None => {
                     Json(json!("Cannot find prefix event"))
                 }
             }
-        },
+        }
         Err(_e) => Json(json!("Cannot find event")),
     }
 }
+
+#[get("/json/events/<event_type>?<ts_start>&<ts_end>&<draw>&<start>&<length>")]
+pub fn json_list_events(event_type: &RawStr, ts_start: Option<String>, ts_end: Option<String>,
+                        draw: Option<usize>, start: Option<usize>, length: Option<usize>,
+                        base_url: State<BaseUrl>) -> Json<Value> {
+    let backend = ElasticSearchBackend::new(&base_url.url).unwrap();
+    let query_result = backend.list_events(event_type, &start, &length, &ts_start, &ts_end).unwrap();
+    let object = json!(
+        {
+            "data": query_result.results,
+            "draw": draw,
+            "recordsTotal": query_result.total,
+            "recordsFiltered": query_result.total,
+        }
+    );
+    Json(object.to_owned())
+}
+
+/*
+    Utilities
+*/
 
 /// Find one specific prefix event from all prefix events in a event
 fn filter_pfx_events_by_fingerprint<'a>(fingerprint: &str, event: &'a Value) -> Option<&'a Value> {
@@ -118,7 +140,7 @@ fn filter_pfx_events_by_fingerprint<'a>(fingerprint: &str, event: &'a Value) -> 
 
     let prefixes: Vec<&str> = result.split("_").collect();
     if prefixes.len() == 0 {
-        return None
+        return None;
     }
 
     let pfx_events: &Vec<Value> = match event["pfx_events"].as_array() {
@@ -126,27 +148,25 @@ fn filter_pfx_events_by_fingerprint<'a>(fingerprint: &str, event: &'a Value) -> 
         None => return None
     };
 
-    match event_type{
+    match event_type {
         "moas" | "edges" => {
-
-            if prefixes.len()!=1 {
+            if prefixes.len() != 1 {
                 // must only have one prefix in the fingerprint for moas and edges cases
-                return None
+                return None;
             }
 
             for pfx_event in pfx_events {
                 match pfx_event["prefix"].as_str() {
-                    Some(pfx) => if pfx == prefixes[0] {return Some(&pfx_event)}
+                    Some(pfx) => if pfx == prefixes[0] { return Some(&pfx_event); }
                     None => continue
                 }
             }
-            return None
+            return None;
         }
         "submoas" | "defcon" => {
-
-            if prefixes.len()!=2 {
+            if prefixes.len() != 2 {
                 // must only have one prefix in the fingerprint for defcon and submoas cases
-                return None
+                return None;
             }
 
             for pfx_event in pfx_events {
@@ -161,19 +181,12 @@ fn filter_pfx_events_by_fingerprint<'a>(fingerprint: &str, event: &'a Value) -> 
 
                 if sub_pfx == prefixes[0] && super_pfx == prefixes[1] {
                     // if we found the one
-                    return Some(&pfx_event)
+                    return Some(&pfx_event);
                 }
             }
-            return None
+            return None;
         }
         _ => return None
     }
 }
 
-#[get("/json/events?<event_type>&<max>&<start>&<end>")]
-pub fn json_list_events(event_type: &RawStr, max: usize, start: Option<String>, end: Option<String>,
-                        base_url: State<BaseUrl>) -> Json<Value> {
-    let backend = ElasticSearchBackend::new(&base_url.url).unwrap();
-    let object = json!({"data":backend.list_events(event_type, &max, &start, &end).unwrap()});
-    Json(object.to_owned())
-}
