@@ -6,6 +6,43 @@
     <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="x_panel">
             <div class="x_title">
+                <h2 id="event_title"> Event Information </h2>
+                <div class="clearfix"></div>
+            </div>
+
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModal">
+                Raw JSON
+            </button>
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Raw JSON</h4>
+                        </div>
+                        <div class="modal-body">
+                            <pre id="json_modal"> </pre>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary">Download</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br/>
+
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
                 <h2 id="table_title"> Traceroutes </h2>
                 <div class="clearfix"></div>
             </div>
@@ -17,7 +54,8 @@
     </div>
 </div>
 
-<br />
+<br/>
+
 
 <div class="row">
     <div class="col-md-12 col-sm-12 col-xs-12">
@@ -28,56 +66,11 @@
                     </li>
                 </ul>
                 <div class="clearfix"></div>
-                <h2 > AS Traceroute Sankey Diagram </h2>
+                <h2> AS Traceroute Sankey Diagram </h2>
                 <div class="clearfix"></div>
             </div>
             <div class="x_content">
                 <div id="tr_sankey_diagram" style="width: 1200px;">
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<br />
-
-<div class="row">
-    <div class="col-md-12 col-sm-12 col-xs-12">
-        <div class="x_panel">
-            <div class="x_title">
-                <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                    </li>
-                </ul>
-                <div class="clearfix"></div>
-                <h2 > Route Collectors Sankey Diagram</h2>
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
-                <div class="clearfix"></div>
-                <div id="monitor_sankey_diagram" style="width: 1200px;">
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<br />
-
-<div class="row">
-    <div class="col-md-12 col-sm-12 col-xs-12">
-        <div class="x_panel">
-            <div class="x_title">
-                <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                    </li>
-                </ul>
-                <div class="clearfix"></div>
-                <h2 > Traceroute Map </h2>
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
-                <div id="traceroute_map">
                 </div>
             </div>
         </div>
@@ -91,22 +84,20 @@
         <div class="x_panel">
             <div class="x_title">
                 <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a>
+                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                     </li>
                 </ul>
                 <div class="clearfix"></div>
-                <h2 id="table_title_json"> JSON Details </h2>
+                <h2> Route Collectors Sankey Diagram</h2>
                 <div class="clearfix"></div>
             </div>
-            <div class="x_content" style="display: none;">
-                <pre id="json_content">
-
-                </pre>
+            <div class="x_content">
+                <div class="clearfix"></div>
+                <div id="monitor_sankey_diagram" style="width: 1200px;">
+                </div>
             </div>
         </div>
     </div>
 </div>
-<br />
-
 
 {% endblock content %}

@@ -237,3 +237,5 @@ function init_daterangepicker() {
     });
 
 }
+
+$('[data-toggle="tooltip"]').tooltip();

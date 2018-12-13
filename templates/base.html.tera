@@ -84,8 +84,6 @@
 <script src="/app/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
 <!-- Chart.js -->
 <script src="/app/vendors/Chart.js/dist/Chart.min.js"></script>
-<!-- bootstrap-progressbar -->
-<script src="/app/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
 <!-- Flot -->
 <script src="/app/vendors/Flot/jquery.flot.js"></script>
 <script src="/app/vendors/Flot/jquery.flot.pie.js"></script>

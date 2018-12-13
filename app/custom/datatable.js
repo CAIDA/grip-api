@@ -68,14 +68,35 @@ function guid() {
 
 var traceroute_hash = {};
 
+function load_asrank_tooltips(origins) {
+    let origin_lst = origins.split(",");
+    origin_lst.forEach(function (origin) {
+            $.ajax({
+                url: `http://as-rank.caida.org/api/v1/asns/${origin}`,
+                success: function (asorg) {
+                    console.log(asorg);
+                    $(`.as-btn-${origin}`).each(function(){
+                        $(this).attr("title", `${asorg["data"]["country"]}, ${asorg["data"]["name"]}`)
+                    });
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    $(`.as-btn-${origin}`).each(function(link){
+                        link.attr("title", `${textStatus}`)
+                    });
+                },
+            })
+        }
+    );
+}
+
 function render_origins(origins) {
     let origin_lst = origins.split(",");
     let links = [];
 
     origin_lst.forEach(function (origin) {
-            links.push(`<a class="origin-button" href='http://as-rank.caida.org/asns/${origin}')> ${origin} </a>`)
-        }
-    );
+        links.push(`<a class="btn btn-default as-btn-${origin}" data-toggle="tooltip" title="" data-placement="top" href='http://as-rank.caida.org/asns/${origin}')> ${origin} </a>`)
+    });
+    load_asrank_tooltips(origins);
     return links.join(" ")
 }
 
@@ -272,7 +293,7 @@ function load_event_details_defcon() {
                         "render": function (data, type, row) {
                             return render_prefix(data + '');
                         },
-                        "targets": [0,1]
+                        "targets": [0, 1]
                     },
                     {
                         "render": function (data, type, row) {

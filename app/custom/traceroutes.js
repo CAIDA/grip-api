@@ -8,7 +8,7 @@ function load_pfx_event() {
     $.ajax({
         url: `/json/pfx_event/id/${event_id}/${pfx_fingerprint}`,
         success: function (pfx_event) {
-            $("#json_content").html(syntaxHighlight(JSON.stringify(pfx_event, undefined, 4)));
+            $("#json_modal").html(syntaxHighlight(JSON.stringify(pfx_event, undefined, 4)));
             draw_monitor_sankey(pfx_event);
             draw_tr_sankey(pfx_event);
             draw_traceroute_table(pfx_event);
