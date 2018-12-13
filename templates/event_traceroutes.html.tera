@@ -6,7 +6,7 @@
     <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="x_panel">
             <div class="x_title">
-                <h2 id="event_title"> Event Information </h2>
+                <h2 id="event_title"> Prefix Event Information </h2>
                 <div class="clearfix"></div>
             </div>
 
@@ -28,7 +28,8 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary">Download</button>
+                            <button id="pfx-event-modal-download" type="button" class="btn btn-primary">Download</button>
+                            <a id="downloadAnchorElem" style="display:none"></a>
                         </div>
                     </div>
                 </div>

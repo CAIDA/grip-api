@@ -8,11 +8,23 @@ function load_pfx_event() {
     $.ajax({
         url: `/json/pfx_event/id/${event_id}/${pfx_fingerprint}`,
         success: function (pfx_event) {
-            $("#json_modal").html(syntaxHighlight(JSON.stringify(pfx_event, undefined, 4)));
+            let download_path = event_id+"-"+pfx_fingerprint+".json";
+            draw_json_raw(JSON.stringify(pfx_event, undefined, 4),download_path);
             draw_monitor_sankey(pfx_event);
             draw_tr_sankey(pfx_event);
             draw_traceroute_table(pfx_event);
         }
+    });
+}
+
+function draw_json_raw(json_raw_str, download_path){
+    $("#json_modal").html(syntaxHighlight(json_raw_str));
+    $("#pfx-event-modal-download").click(function () {
+        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(json_raw_str);
+        var dlAnchorElem = document.getElementById('downloadAnchorElem');
+        dlAnchorElem.setAttribute("href",     dataStr     );
+        dlAnchorElem.setAttribute("download", download_path);
+        dlAnchorElem.click();
     });
 }
 
