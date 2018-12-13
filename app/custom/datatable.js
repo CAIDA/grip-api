@@ -50,7 +50,7 @@ function load_events_table(event_type) {
     $("#query-btn").click(function () {
         let event_type = window.location.pathname.replace(/\/$/, "").split("/").pop();
         let times = $('#reportrange span').html().split(" - ");
-        let url = `/json/events/${event_type}?start=${times[0]}&end=${times[1]}`
+        let url = `/json/events/${event_type}?ts_start=${times[0]}&ts_end=${times[1]}`
 
         console.log(url);
         datatable.ajax.url(url).load();

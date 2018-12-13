@@ -195,10 +195,10 @@ function init_daterangepicker() {
         timePickerIncrement: 10,
         timePicker24Hour: true,
         ranges: {
-            'Today': [moment().startOf('hour'), moment().subtract(2,'days').startOf('hour')],
-            'Yesterday': [moment().subtract(1, 'days').format('MMMM D, YYYY hh:mm A'), moment().subtract(1, 'days').format('MMMM D, YYYY hh:mm A')],
-            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'Today': [moment().startOf('day'), moment()],
+            'Yesterday': [moment().subtract(2, 'days').startOf('day'), moment().subtract(1, 'days').startOf('day')],
+            'Last 7 Days': [moment().subtract(6, 'days').startOf('day'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days').startOf('day'), moment()],
             'This Month': [moment().startOf('month'), moment().endOf('month')],
             'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
         },
@@ -206,7 +206,7 @@ function init_daterangepicker() {
         buttonClasses: ['btn btn-default'],
         applyClass: 'btn-small btn-primary',
         cancelClass: 'btn-small',
-        format: 'MM/DD/YYYY hh:mm A',
+        format: 'MM/DD/YYYY HH:mm',
         separator: ' to ',
         locale: {
             applyLabel: 'Submit',
@@ -220,7 +220,7 @@ function init_daterangepicker() {
         }
     };
 
-    $('#reportrange span').html(moment().subtract(29, 'days').format('YYYY-MM-DDThh:mm') + ' - ' + moment().format('YYYY-MM-DDThh:mm'));
+    $('#reportrange span').html(moment().subtract(29, 'days').format('YYYY-MM-DDTHH:mm') + ' - ' + moment().format('YYYY-MM-DDTHH:mm'));
     let daterange = $('#reportrange');
     daterange.daterangepicker(optionSet1, cb);
     daterange.on('show.daterangepicker', function() {
@@ -230,7 +230,7 @@ function init_daterangepicker() {
         console.log("hide event fired");
     });
     daterange.on('apply.daterangepicker', function(ev, picker) {
-        $('#reportrange span').html(picker.startDate.format('YYYY-MM-DDThh:mm') + ' - ' + picker.endDate.format('YYYY-MM-DDThh:mm'));
+        $('#reportrange span').html(picker.startDate.format('YYYY-MM-DDTHH:mm') + ' - ' + picker.endDate.format('YYYY-MM-DDTHH:mm'));
     });
     daterange.on('cancel.daterangepicker', function(ev, picker) {
         console.log("cancel event fired");
