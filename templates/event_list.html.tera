@@ -23,7 +23,7 @@
                     </div>
                 </div>
                 <div class="x_content">
-                    <table id="datatable" class="table table-striped table-bordered" style="max-width:95%;">
+                    <table id="datatable" class="table table-striped table-bordered hover" style="max-width:95%;cursor:pointer">
                     </table>
                 </div>
             </div>

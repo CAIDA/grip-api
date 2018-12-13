@@ -7,9 +7,7 @@ function load_pfx_event() {
 
     $.ajax({
         url: `/json/pfx_event/id/${event_id}/${pfx_fingerprint}`,
-        // url: `/json/pfx_event/id/moas-1544142600-12345_57767/pfx`,
         success: function (pfx_event) {
-            // window.open("event/" + data['event_type'] + "/" + data['id'], "_self");
             $("#json_content").html(syntaxHighlight(JSON.stringify(pfx_event, undefined, 4)));
             draw_monitor_sankey(pfx_event);
             draw_tr_sankey(pfx_event);

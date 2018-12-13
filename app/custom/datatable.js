@@ -3,7 +3,7 @@ let datatable = null;
 function load_events_table(event_type) {
     $.extend(true, $.fn.dataTable.defaults, {
         "searching": false,
-        "ordering": false
+        "ordering": false,
     });
     $(document).ready(function () {
 
@@ -18,30 +18,28 @@ function load_events_table(event_type) {
                 "columns": [
                     {title: "Event Type", "data": 'event_type'},
                     {title: "Fingerprint", "data": 'fingerprint'},
-                    {title: "Event ID", "data": 'id'},
+                    // {title: "Event ID", "data": 'id'},
                     {title: "Prefix Events", "data": 'pfx_events_cnt'},
                     {title: "Status", "data": 'position'},
                     {title: "Time Stamp", "data": 'view_ts'},
                 ],
-                "columnDefs": [
-                    {
-                        // The `data` parameter refers to the data for the cell (defined by the
-                        // `data` option, which defaults to the column being worked with, in
-                        // this case `data: 0`.
-                        "render": function (data, type, row) {
-                            return "<button>" + data.substring(0, 40) + "</button>";
-                        },
-                        "targets": 2
-                    },
-                ]
+                // "columnDefs": [
+                //     {
+                //         // The `data` parameter refers to the data for the cell (defined by the
+                //         // `data` option, which defaults to the column being worked with, in
+                //         // this case `data: 0`.
+                //         "render": function (data, type, row) {
+                //             return "<button>" + data.substring(0, 40) + "</button>";
+                //         },
+                //         "targets": 2
+                //     },
+                // ]
 
             }
         );
 
-        $('#datatable tbody').on('click', 'button', function () {
-
-            var data = datatable.row($(this).parents('tr')).data();
-
+        $('#datatable tbody').on('click', 'tr', function () {
+            var data = datatable.row($(this)).data();
             console.log("/json/event/id/" + data['id']);
             window.open("/event/" + data['event_type'] + "/" + data['id'], "_blank");
         });
@@ -75,10 +73,14 @@ function render_origins(origins) {
     let links = [];
 
     origin_lst.forEach(function (origin) {
-            links.push('<button class="origin-button" onclick="window.open(\'http:\/\/as-rank.caida.org\/asns\/' + origin + '\')"> ' + origin + ' </button>')
+            links.push(`<a class="origin-button" href='http://as-rank.caida.org/asns/${origin}')> ${origin} </a>`)
         }
     );
     return links.join(" ")
+}
+
+function render_prefix(prefix) {
+    return `<a class="origin-button" target="_blank" href='https://stat.ripe.net/${prefix}#tabId=at-a-glance')> ${prefix} </a>`
 }
 
 function render_traceroutes(data) {
@@ -148,6 +150,12 @@ function load_event_details_submoas() {
                     },
                     {
                         "render": function (data, type, row) {
+                            return render_prefix(data + '');
+                        },
+                        "targets": [2, 3]
+                    },
+                    {
+                        "render": function (data, type, row) {
                             return render_traceroutes(row)
                         },
                         "targets": [5]
@@ -179,6 +187,12 @@ function load_event_details_moas() {
                             return render_origins(data + '');
                         },
                         "targets": [0, 1]
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return render_prefix(data + '');
+                        },
+                        "targets": [2]
                     },
                     {
                         "render": function (data, type, row) {
@@ -216,6 +230,12 @@ function load_event_details_edges() {
                     },
                     {
                         "render": function (data, type, row) {
+                            return render_prefix(data + '');
+                        },
+                        "targets": [2]
+                    },
+                    {
+                        "render": function (data, type, row) {
                             return render_traceroutes(row)
                         },
                         "targets": [4]
@@ -247,6 +267,12 @@ function load_event_details_defcon() {
                             return render_origins(data + '');
                         },
                         "targets": [2]
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return render_prefix(data + '');
+                        },
+                        "targets": [0,1]
                     },
                     {
                         "render": function (data, type, row) {
