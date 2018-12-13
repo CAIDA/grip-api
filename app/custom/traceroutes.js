@@ -19,7 +19,7 @@ function load_pfx_event() {
 
 function draw_json_raw(json_raw_str, download_path){
     $("#json_modal").html(syntaxHighlight(json_raw_str));
-    $("#pfx-event-modal-download").click(function () {
+    $(".pfx-event-modal-download").click(function () {
         let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(json_raw_str);
         var dlAnchorElem = document.getElementById('downloadAnchorElem');
         dlAnchorElem.setAttribute("href",     dataStr     );

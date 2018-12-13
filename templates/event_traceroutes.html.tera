@@ -23,14 +23,18 @@
                                     aria-hidden="true">&times;</span></button>
                             <h4 class="modal-title" id="myModalLabel">Raw JSON</h4>
                         </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary pfx-event-modal-download">Download</button>
+                        </div>
                         <div class="modal-body">
                             <pre id="json_modal"> </pre>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button id="pfx-event-modal-download" type="button" class="btn btn-primary">Download</button>
-                            <a id="downloadAnchorElem" style="display:none"></a>
+                            <button type="button" class="btn btn-primary pfx-event-modal-download">Download</button>
                         </div>
+                        <a id="downloadAnchorElem" style="display:none"></a>
                     </div>
                 </div>
             </div>
