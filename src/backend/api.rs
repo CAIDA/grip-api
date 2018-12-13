@@ -79,7 +79,11 @@ pub fn json_event_by_id(id: &RawStr, base_url: State<BaseUrl>) -> Json<Value> {
 
     match backend.get_event_by_id(id) {
         Ok(event) => Json(json!({"data":event.results[0]["pfx_events"].to_owned()}).to_owned()),
-        Err(_e) => Json(json!("Cannot find event")),
+        Err(_e) => Json(json!(
+        {
+            "error": format!("Cannot find event {}",id)
+        }
+        )),
     }
 }
 
@@ -99,11 +103,19 @@ pub fn json_pfx_event_by_id(id: &RawStr, fingerprint: &RawStr, base_url: State<B
                     Json(json!(event.to_owned()))
                 }
                 None => {
-                    Json(json!("Cannot find prefix event"))
+                    Json(json!(
+                        {
+                            "error": "Cannot find prefix event"
+                        }
+                    ))
                 }
             }
         }
-        Err(_e) => Json(json!("Cannot find event")),
+        Err(_e) => Json(json!(
+        {
+            "error": "Cannot find event"
+        }
+        )),
     }
 }
 
