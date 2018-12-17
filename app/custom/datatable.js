@@ -65,12 +65,8 @@ function load_asrank_content(origins) {
                     if (asorg["data"] != null) {
                         let as_name = process_as_name(asorg["data"]);
                         $(`.as-btn-${origin}`).each(function () {
-                            $(this).html(`AS${origin} ${as_name}`)
+                            $(this).html(`AS${origin} ${asorg["data"]["country"]} ${as_name}`);
                             $(this).attr("title", `${asorg["data"]["country_name"]}, ${asorg["data"]["org"]["name"]}`)
-                        });
-                    } else {
-                        $(`.as-btn-${origin}`).each(function () {
-                            $(this).html(`AS${origin} UNKNOWN`)
                         });
                     }
                 },
@@ -82,7 +78,7 @@ function load_asrank_content(origins) {
 
 function process_as_name(as_org, max_length = 15) {
     if (!("name" in as_org)) {
-        return "UNKNOWN"
+        return ""
     }
 
     let as_name = as_org["name"];

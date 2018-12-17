@@ -1,9 +1,9 @@
 [development]
-address = "0.0.0.0"
-port = 18000
+address = "localhost"
+port = 8000
 elastic_url = "http://clayface.caida.org:9200"
 
 [production]
 address = "0.0.0.0"
-port = 18088
+port = 80
 elastic_url = "http://clayface.caida.org:9200"
