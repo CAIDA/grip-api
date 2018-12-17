@@ -56,25 +56,43 @@ function guid() {
 
 var traceroute_hash = {};
 
-function load_asrank_tooltips(origins) {
+function load_asrank_content(origins) {
     let origin_lst = origins.split(",");
     origin_lst.forEach(function (origin) {
             $.ajax({
                 url: `http://as-rank.caida.org/api/v1/asns/${origin}`,
                 success: function (asorg) {
-                    console.log(asorg);
-                    $(`.as-btn-${origin}`).each(function(){
-                        $(this).attr("title", `${asorg["data"]["country"]}, ${asorg["data"]["name"]}`)
-                    });
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    $(`.as-btn-${origin}`).each(function(link){
-                        link.attr("title", `${textStatus}`)
-                    });
+                    if (asorg["data"] != null) {
+                        let as_name = process_as_name(asorg["data"]);
+                        $(`.as-btn-${origin}`).each(function () {
+                            $(this).html(`AS${origin} ${as_name}`)
+                            $(this).attr("title", `${asorg["data"]["country_name"]}, ${asorg["data"]["org"]["name"]}`)
+                        });
+                    } else {
+                        $(`.as-btn-${origin}`).each(function () {
+                            $(this).html(`AS${origin} UNKNOWN`)
+                        });
+                    }
                 },
             })
         }
     );
+
+}
+
+function process_as_name(as_org, max_length = 15) {
+    if (!("name" in as_org)) {
+        return "UNKNOWN"
+    }
+
+    let as_name = as_org["name"];
+
+    if (as_name.length > max_length - 3) {
+        as_name = as_name.toString().substr(0, max_length - 3) + "..."
+    }
+
+    console.log(`AS ${as_name}`);
+    return as_name
 }
 
 function render_origins(origins) {
@@ -82,9 +100,10 @@ function render_origins(origins) {
     let links = [];
 
     origin_lst.forEach(function (origin) {
-        links.push(`<a class="btn btn-default as-btn-${origin}" data-toggle="tooltip" title="" data-placement="top" href='http://as-rank.caida.org/asns/${origin}' target="_blank")> ${origin} </a>`)
+        links.push(`<a class="btn btn-default as-btn as-btn-${origin}" data-toggle="tooltip" title="" data-placement="top" href='http://as-rank.caida.org/asns/${origin}' target="_blank")> AS${origin} </a>`)
     });
-    load_asrank_tooltips(origins);
+    load_asrank_content(origins);
+
     return links.join(" ")
 }
 
