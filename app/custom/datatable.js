@@ -23,18 +23,6 @@ function load_events_table(event_type) {
                     {title: "Status", "data": 'position'},
                     {title: "Time Stamp", "data": 'view_ts'},
                 ],
-                // "columnDefs": [
-                //     {
-                //         // The `data` parameter refers to the data for the cell (defined by the
-                //         // `data` option, which defaults to the column being worked with, in
-                //         // this case `data: 0`.
-                //         "render": function (data, type, row) {
-                //             return "<button>" + data.substring(0, 40) + "</button>";
-                //         },
-                //         "targets": 2
-                //     },
-                // ]
-
             }
         );
 
@@ -94,7 +82,7 @@ function render_origins(origins) {
     let links = [];
 
     origin_lst.forEach(function (origin) {
-        links.push(`<a class="btn btn-default as-btn-${origin}" data-toggle="tooltip" title="" data-placement="top" href='http://as-rank.caida.org/asns/${origin}')> ${origin} </a>`)
+        links.push(`<a class="btn btn-default as-btn-${origin}" data-toggle="tooltip" title="" data-placement="top" href='http://as-rank.caida.org/asns/${origin}' target="_blank")> ${origin} </a>`)
     });
     load_asrank_tooltips(origins);
     return links.join(" ")
