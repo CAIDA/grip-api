@@ -19,3 +19,13 @@ pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
 
 .bottom-border { border-bottom: 1px dashed black; }
 
+
+.container{
+}
+
+.child{
+   margin-left: 100px;
+   margin-right: 100px;
+   display:inline-block;
+}
+

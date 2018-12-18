@@ -76,16 +76,20 @@ function load_who_is(prefix) {
         $.ajax({
             url: `https://stat.ripe.net/data/whois/data.json?resource=${prefix}`,
             success: function (pfx_whois) {
-                let authorities = pfx_whois["data"]["authorities"].map(v => v.toLowerCase());
-                authorities.push("radb");
-                let records = pfx_whois["data"]["irr_records"];
-                let filtered_records = [];
-                console.log(authorities);
+                // let authorities = pfx_whois["data"]["authorities"].map(v => v.toLowerCase());
+                // authorities.push("radb");
+                let records = pfx_whois["data"]["records"];
                 console.log(records);
+                if(records.length === 1){
+                    whois_dict[prefix] = records;
+                    return
+                }
+
+                let filtered_records = [];
                 records.forEach(function(record){
                     let match = false;
                     record.some(function(elem){
-                        if(elem["key"]==="source" && authorities.includes(elem["value"].toLowerCase())){
+                        if(elem["key"]==="inetnum" || elem["key"]==="CIDR"){
                             match = true;
                             return true
                         }
@@ -94,8 +98,11 @@ function load_who_is(prefix) {
                         filtered_records.push(record);
                     }
                 });
-                whois_dict[prefix] = filtered_records;
-                console.log(filtered_records);
+                if(filtered_records.length===0){
+                    whois_dict[prefix] = records
+                } else {
+                    whois_dict[prefix] = filtered_records;
+                }
             }
         });
     }
@@ -201,16 +208,21 @@ function extract_pfx_event_fingerprint(pfx_event, event_type) {
 /* Formatting function for row details - modify as you need */
 function format_prefix_table(prefix) {
     // `d` is the original data object for the row
-    let records = whois_dict[prefix];
     let thead = '<table cellpadding="5" cellspacing="0" border="1" style="padding-left:50px;">';
     let tfoot = '</table>';
     let tbody = "";
-    records.forEach(function(record){
-        record.forEach(function(elem){
-            tbody += `<tr><td>${elem["key"]}</td><td>${elem["value"]}</td></tr>`
+
+    let records = whois_dict[prefix];
+    if(records.length>0){
+        records.forEach(function(record){
+            record.forEach(function(elem){
+                tbody += `<tr><td>${elem["key"]}</td><td>${elem["value"]}</td></tr>`
+            });
+            tbody += `<tr><td class="bottom-border"></td><td class="bottom-border"></td></tr>`
         });
-        tbody += `<tr><td class="bottom-border"></td><td class="bottom-border"></td></tr>`
-    });
+    } else {
+        tbody = "loading information ..."
+    }
     return thead+tbody+tfoot;
 }
 
@@ -264,7 +276,13 @@ function load_event_details_submoas() {
                 tr.removeClass('shown');
             } else {
                 // Open this row
-                row.child(format_prefix_table(row.data()["super_pfx"])+"<br/>"+format_prefix_table(row.data()["sub_pfx"])).show();
+                row.child(
+                    `<div class="container"> <div class="child"> <h3 class="right">super prefix</h3>` +
+                    format_prefix_table(row.data()["super_pfx"])
+                    +`</div><div class="child"><h3>sub prefix</h3>`+
+                    format_prefix_table(row.data()["sub_pfx"])
+                    +`</div></div>`
+                ).show();
                 tr.addClass('shown');
             }
         });
@@ -281,8 +299,7 @@ function load_event_details_moas() {
                 },
                 "columns": [
                     {title: "Origins", "data": 'origins'},
-                    {title: "Newcomer Origins", "data": 'newcomer_origins'},
-                    {title: "Prefix", "data": 'prefix'},
+                    {title: "Newcomer Origins", "data": 'newcomer_origins'}, {title: "Prefix", "data": 'prefix'},
                     {title: "Tags", "data": 'tags'},
                     {title: "Traceroutes", "data": 'traceroutes'},
                 ],
@@ -320,7 +337,9 @@ function load_event_details_moas() {
                 tr.removeClass('shown');
             } else {
                 // Open this row
-                row.child(format_prefix_table(row.data()["prefix"])).show();
+                row.child(
+                    `<div class="child"> <h3 class="right">${row.data()["prefix"]} </h3> ${format_prefix_table(row.data()["prefix"])} </div>`
+                ).show();
                 tr.addClass('shown');
             }
         });
@@ -376,7 +395,9 @@ function load_event_details_edges() {
                 tr.removeClass('shown');
             } else {
                 // Open this row
-                row.child(format_prefix_table(row.data()["prefix"])).show();
+                row.child(
+                    `<div class="child"> <h3 class="right">${row.data()["prefix"]} </h3> ${format_prefix_table(row.data()["prefix"])} </div>`
+                ).show();
                 tr.addClass('shown');
             }
         });
@@ -432,7 +453,13 @@ function load_event_details_defcon() {
                 tr.removeClass('shown');
             } else {
                 // Open this row
-                row.child(format_prefix_table(row.data()["super_pfx"])+"<br/>"+format_prefix_table(row.data()["sub_pfx"])).show();
+                row.child(
+                    `<div class="container"> <div class="child"> <h3 class="right">${row.data()["super_pfx"]}</h3>
+                    ${format_prefix_table(row.data()["super_pfx"])}
+                    </div><div class="child"><h3>${row.data()["sub_pfx"]}</h3>
+                    ${format_prefix_table(row.data()["sub_pfx"])}
+                    </div></div>`
+                ).show();
                 tr.addClass('shown');
             }
         });
