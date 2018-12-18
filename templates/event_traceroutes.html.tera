@@ -105,4 +105,34 @@
     </div>
 </div>
 
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <ul class="nav navbar-right panel_toolbox">
+                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+                <h2> Traceroutes </h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <div class="clearfix"></div>
+                <script src="https://atlas.ripe.net/resource/tracemon/tracemon-widget-main.js"></script>
+                <div id="place-here"></div>
+                <script>
+                    initTracemon(
+                        '#place-here',
+                        {autoStart: false}, // Tool options, see table below for more info
+                        {} // Query options, see table below for more info
+                    );
+                </script>
+                <div id="traceroutes" style="width: 1200px;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock content %}
