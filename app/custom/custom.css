@@ -17,3 +17,5 @@ pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
 .null { color: magenta; }
 .key { color: red; }
 
+.bottom-border { border-bottom: 1px dashed black; }
+

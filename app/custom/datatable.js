@@ -1,4 +1,5 @@
 let datatable = null;
+let whois_dict = {};
 
 function load_events_table(event_type) {
     $.extend(true, $.fn.dataTable.defaults, {
@@ -56,14 +57,48 @@ function guid() {
 
 var traceroute_hash = {};
 
-function load_ripe_data(prefix, prefix_class){
+function load_ripe_data(prefix, prefix_class) {
     $.ajax({
         url: `https://stat.ripe.net/data/prefix-overview/data.json?resource=${prefix}`,
-        success: function(pfx_info){
-            let asns = pfx_info["data"]["asns"].map(function(elem){return "AS"+elem["asn"]}).join(" ");
+        success: function (pfx_info) {
+            let asns = pfx_info["data"]["asns"].map(function (elem) {
+                return "AS" + elem["asn"]
+            }).join(" ");
             $(`.pfx-btn-${prefix_class}`).html(`${prefix} ${asns}`)
         }
     });
+}
+
+
+function load_who_is(prefix) {
+    if (!(prefix in whois_dict)){
+        whois_dict[prefix] = "";
+        $.ajax({
+            url: `https://stat.ripe.net/data/whois/data.json?resource=${prefix}`,
+            success: function (pfx_whois) {
+                let authorities = pfx_whois["data"]["authorities"].map(v => v.toLowerCase());
+                authorities.push("radb");
+                let records = pfx_whois["data"]["irr_records"];
+                let filtered_records = [];
+                console.log(authorities);
+                console.log(records);
+                records.forEach(function(record){
+                    let match = false;
+                    record.some(function(elem){
+                        if(elem["key"]==="source" && authorities.includes(elem["value"].toLowerCase())){
+                            match = true;
+                            return true
+                        }
+                    });
+                    if(match){
+                        filtered_records.push(record);
+                    }
+                });
+                whois_dict[prefix] = filtered_records;
+                console.log(filtered_records);
+            }
+        });
+    }
 }
 
 function load_asrank_content(origins) {
@@ -114,9 +149,10 @@ function render_origins(origins) {
 }
 
 function render_prefix(prefix) {
-    let asns="";
-    let prefix_class = prefix.replace("/","-").replace(/\./g,"-");
-    load_ripe_data(prefix, prefix_class);
+    let asns = "";
+    let prefix_class = prefix.replace("/", "-").replace(/\./g, "-");
+    // load_ripe_data(prefix, prefix_class);
+    load_who_is(prefix);
     return `<a class="btn btn-default pfx-btn-${prefix_class}" target="_blank" href='https://stat.ripe.net/${prefix}#tabId=at-a-glance')> ${prefix}</a>`
 }
 
@@ -162,6 +198,22 @@ function extract_pfx_event_fingerprint(pfx_event, event_type) {
     return fingerprint.replace(/\//g, "-")
 }
 
+/* Formatting function for row details - modify as you need */
+function format_prefix_table(prefix) {
+    // `d` is the original data object for the row
+    let records = whois_dict[prefix];
+    let thead = '<table cellpadding="5" cellspacing="0" border="1" style="padding-left:50px;">';
+    let tfoot = '</table>';
+    let tbody = "";
+    records.forEach(function(record){
+        record.forEach(function(elem){
+            tbody += `<tr><td>${elem["key"]}</td><td>${elem["value"]}</td></tr>`
+        });
+        tbody += `<tr><td class="bottom-border"></td><td class="bottom-border"></td></tr>`
+    });
+    return thead+tbody+tfoot;
+}
+
 function load_event_details_submoas() {
     $(document).ready(function () {
         var id = window.location.pathname.replace(/\/$/, "").split("/").pop();
@@ -200,6 +252,22 @@ function load_event_details_submoas() {
                 ]
             }
         );
+
+        // Add event listener for opening and closing details
+        $('#datatable tbody').on('click', 'tr', function () {
+            var tr = $(this);
+            var row = table.row(tr);
+
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            } else {
+                // Open this row
+                row.child(format_prefix_table(row.data()["super_pfx"])+"<br/>"+format_prefix_table(row.data()["sub_pfx"])).show();
+                tr.addClass('shown');
+            }
+        });
     })
 }
 
@@ -240,6 +308,22 @@ function load_event_details_moas() {
                 ]
             }
         );
+
+        // Add event listener for opening and closing details
+        $('#datatable tbody').on('click', 'tr', function () {
+            var tr = $(this);
+            var row = table.row(tr);
+
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            } else {
+                // Open this row
+                row.child(format_prefix_table(row.data()["prefix"])).show();
+                tr.addClass('shown');
+            }
+        });
     })
 }
 
@@ -280,6 +364,22 @@ function load_event_details_edges() {
                 ]
             }
         );
+
+        // Add event listener for opening and closing details
+        $('#datatable tbody').on('click', 'tr', function () {
+            var tr = $(this);
+            var row = table.row(tr);
+
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            } else {
+                // Open this row
+                row.child(format_prefix_table(row.data()["prefix"])).show();
+                tr.addClass('shown');
+            }
+        });
     })
 }
 
@@ -320,5 +420,21 @@ function load_event_details_defcon() {
                 ]
             }
         );
+
+        // Add event listener for opening and closing details
+        $('#datatable tbody').on('click', 'tr', function () {
+            var tr = $(this);
+            var row = table.row(tr);
+
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            } else {
+                // Open this row
+                row.child(format_prefix_table(row.data()["super_pfx"])+"<br/>"+format_prefix_table(row.data()["sub_pfx"])).show();
+                tr.addClass('shown');
+            }
+        });
     })
 }
