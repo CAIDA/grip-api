@@ -56,6 +56,16 @@ function guid() {
 
 var traceroute_hash = {};
 
+function load_ripe_data(prefix, prefix_class){
+    $.ajax({
+        url: `https://stat.ripe.net/data/prefix-overview/data.json?resource=${prefix}`,
+        success: function(pfx_info){
+            let asns = pfx_info["data"]["asns"].map(function(elem){return "AS"+elem["asn"]}).join(" ");
+            $(`.pfx-btn-${prefix_class}`).html(`${prefix} ${asns}`)
+        }
+    });
+}
+
 function load_asrank_content(origins) {
     let origin_lst = origins.split(",");
     origin_lst.forEach(function (origin) {
@@ -104,7 +114,10 @@ function render_origins(origins) {
 }
 
 function render_prefix(prefix) {
-    return `<a class="origin-button" target="_blank" href='https://stat.ripe.net/${prefix}#tabId=at-a-glance')> ${prefix} </a>`
+    let asns="";
+    let prefix_class = prefix.replace("/","-").replace(/\./g,"-");
+    load_ripe_data(prefix, prefix_class);
+    return `<a class="btn btn-default pfx-btn-${prefix_class}" target="_blank" href='https://stat.ripe.net/${prefix}#tabId=at-a-glance')> ${prefix}</a>`
 }
 
 function render_traceroutes(data) {
