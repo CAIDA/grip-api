@@ -4,7 +4,7 @@ function load_pfx_event() {
             url: url,
             dataType: 'script',
             success: callback,
-            async: true
+            async: false
         });
     };
 
@@ -18,12 +18,16 @@ function load_pfx_event() {
         success: function (pfx_event) {
             let download_path = event_id + "-" + pfx_fingerprint + ".json";
             draw_json_raw(JSON.stringify(pfx_event, undefined, 4), download_path);
-            draw_monitor_sankey(pfx_event);
-            draw_tr_sankey(pfx_event);
             let measurements = draw_traceroute_table(pfx_event);
             draw_traceroute_vis(measurements);
+            draw_sankeys(pfx_event)
         }
     });
+}
+
+function draw_sankeys(pfx_event){
+    draw_monitor_sankey(pfx_event);
+    draw_tr_sankey(pfx_event);
 }
 
 function draw_traceroute_vis(meaurements) {

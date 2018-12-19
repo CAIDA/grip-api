@@ -96,7 +96,8 @@
 <script src="/app/vendors/flot.curvedlines/curvedLines.js"></script>
 <!-- DateJS -->
 <script src="/app/vendors/DateJS/build/date.js"></script>
-<script src="/app/vendors/GoogleCharts/loader.js"></script>
+
+<!-- <script src="/app/vendors/GoogleCharts/loader.js"></script> -->
 <!-- bootstrap-daterangepicker -->
 <script src="/app/vendors/moment/min/moment.min.js"></script>
 <script src="/app/vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
