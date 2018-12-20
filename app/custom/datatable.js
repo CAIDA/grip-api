@@ -21,9 +21,21 @@ function load_events_table(event_type) {
                     {title: "Fingerprint", "data": 'fingerprint'},
                     // {title: "Event ID", "data": 'id'},
                     {title: "Prefix Events", "data": 'pfx_events_cnt'},
-                    {title: "Status", "data": 'position'},
+                    {title: "Status", "data": 'finished_ts'},
                     {title: "Time Stamp", "data": 'view_ts'},
                 ],
+                "columnDefs": [
+                    {
+                        "render": function (data, type, row) {
+                            if(data===null){
+                                return "On-Going"
+                            } else {
+                                return `Finished at ${data}`
+                            }
+                        },
+                        "targets": [3]
+                    },
+                ]
             }
         );
 

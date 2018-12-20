@@ -1,27 +1,21 @@
 function load_pfx_event() {
-    jQuery.loadScript = function (url, callback) {
-        jQuery.ajax({
-            url: url,
-            dataType: 'script',
-            success: callback,
-            async: false
+
+    $(document).ready(function () {
+        let path = window.location.pathname.replace(/\/$/, "");
+        let path_segments = path.split("/");
+        let event_id = path_segments[path_segments.length - 2];
+        let pfx_fingerprint = path_segments[path_segments.length - 1];
+
+        $.ajax({
+            url: `/json/pfx_event/id/${event_id}/${pfx_fingerprint}`,
+            success: function (pfx_event) {
+                let download_path = event_id + "-" + pfx_fingerprint + ".json";
+                draw_json_raw(JSON.stringify(pfx_event, undefined, 4), download_path);
+                let measurements = draw_traceroute_table(pfx_event);
+                draw_sankeys(pfx_event);
+                draw_traceroute_vis(measurements);
+            }
         });
-    };
-
-    let path = window.location.pathname.replace(/\/$/, "");
-    let path_segments = path.split("/");
-    let event_id = path_segments[path_segments.length - 2];
-    let pfx_fingerprint = path_segments[path_segments.length - 1];
-
-    $.ajax({
-        url: `/json/pfx_event/id/${event_id}/${pfx_fingerprint}`,
-        success: function (pfx_event) {
-            let download_path = event_id + "-" + pfx_fingerprint + ".json";
-            draw_json_raw(JSON.stringify(pfx_event, undefined, 4), download_path);
-            let measurements = draw_traceroute_table(pfx_event);
-            draw_traceroute_vis(measurements);
-            draw_sankeys(pfx_event)
-        }
     });
 }
 
@@ -30,12 +24,39 @@ function draw_sankeys(pfx_event){
     draw_tr_sankey(pfx_event);
 }
 
-function draw_traceroute_vis(meaurements) {
-    initTracemon(
-        '#traceroutes',
-        {}, // Tool options, see table below for more info
-        { measurements:meaurements } // Query options, see table below for more info
-    );
+function draw_traceroute_vis(measurements) {
+    if (measurements === undefined || measurements.length === 0) {
+        let map = $("#traceroute-map");
+        map.html("data not available");
+        map.css('height', '100px');
+        return
+    }
+
+    let map = new L.Map('traceroute-map');
+
+    // create the tile layer with correct attribution
+    var osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    var osmAttrib = 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
+    var osm = new L.TileLayer(osmUrl, {minZoom: 1, maxZoom: 18, attribution: osmAttrib});
+
+    // start the map in South-East England
+    map.setView(new L.LatLng(51.3, 0.7), 2);
+    map.addLayer(osm);
+
+    var plane = L.polyline([[-49.38237, -37.26562], [-1.75754, -14.41406], [51.61802, -23.20312]], {
+        weight: 1,
+        color: 'black',
+        dashArray: '2, 2'
+    }).addTo(map);
+    plane.setText('\u2708     ', {
+        repeat: true,
+        offset: 8,
+        attributes: {
+            'font-weight': 'bold',
+            'font-size': '24'
+        }
+    });
+    console.log("map loaded")
 }
 
 function draw_json_raw(json_raw_str, download_path) {

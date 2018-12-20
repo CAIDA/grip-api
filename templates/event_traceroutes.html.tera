@@ -61,8 +61,6 @@
 
 <br/>
 
-<script src="/app/vendors/GoogleCharts/loader.js"></script>
-
 <div class="row">
     <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="x_panel">
@@ -120,28 +118,7 @@
             </div>
             <div class="x_content">
                 <div class="clearfix"></div>
-                <script>
-                    window.__define = window.define;
-                    window.__require = window.require;
-                    window.define = undefined;
-                    window.require = undefined;
-                </script>
-                <script src="https://atlas.ripe.net/resource/tracemon/tracemon-widget-main.js"></script>
-                <script>
-                    window.define = window.__define;
-                    window.require = window.__require;
-                    window.__define = undefined;
-                    window.__require = undefined;
-                </script>
-                <div id="place-here"></div>
-                <script>
-                    initTracemon(
-                        '#place-here',
-                        {autoStart: false}, // Tool options, see table below for more info
-                        {measurement: [11111]} // Query options, see table below for more info
-                    );
-                </script>
-                <div id="traceroutes" style="width: 1200px;">
+                <div id="traceroute-map">
                 </div>
             </div>
         </div>

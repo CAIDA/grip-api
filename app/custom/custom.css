@@ -29,3 +29,4 @@ pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
    display:inline-block;
 }
 
+#traceroute-map { height: 1000px; }
