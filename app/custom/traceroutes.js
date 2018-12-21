@@ -84,7 +84,9 @@ function draw_traceroute_table(pfx_event) {
         "columnDefs": [
             {
                 "render": function (data, type, row) {
-                    return `<button class="origin-button" onclick="window.open('http://as-rank.caida.org/asns/${data}')"> ${data} </button>`
+                    load_origin_asrank(data);
+                    return `<a class="btn btn-default as-btn as-btn-${data}" data-toggle="tooltip" title="" data-placement="top" href='http://as-rank.caida.org/asns/${data}' target="_blank")> AS${data} </a>`
+                    // return `<button class="origin-button" onclick="window.open('http://as-rank.caida.org/asns/${data}')"> ${data} </button>`
                 },
                 "targets": [1]
             },

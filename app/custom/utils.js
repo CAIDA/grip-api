@@ -17,3 +17,37 @@ function syntaxHighlight(json) {
         return '<span class="' + cls + '">' + match + '</span>';
     });
 }
+function get_event_id_from_url(){
+  return window.location.pathname.replace(/\/$/, "").split("/").pop();
+}
+
+function get_event_type_from_url(){
+    const elems =  window.location.pathname.replace(/\/$/, "").split("/");
+    return elems[elems.length-2]
+}
+
+function get_guid() {
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+    }
+
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+}
+
+function process_as_name(as_org, max_length = 15) {
+    if (!("name" in as_org)) {
+        return ""
+    }
+
+    let as_name = as_org["name"];
+
+    if (as_name.length > max_length - 3) {
+        as_name = as_name.toString().substr(0, max_length - 3) + "..."
+    }
+
+    console.log(`AS ${as_name}`);
+    return as_name
+}
+

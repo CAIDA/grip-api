@@ -48,7 +48,7 @@ pub fn event_list(event_type: &RawStr) -> Template {
 #[get("/event/<event_type>/<id>")]
 pub fn event_detail(event_type: &RawStr, id: &RawStr, base_url: State<BaseUrl>) -> Template {
     let context_content =
-        json!({ "onload_function": format!("{}_{}()", "load_event_details", event_type) });
+        json!({ "onload_function": format!("{}()", "load_event_details") });
     let mut context = HashMap::<String, Value>::new();
     context.insert("context".to_owned(), context_content);
     Template::render("event_detail", context)
