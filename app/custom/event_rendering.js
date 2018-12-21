@@ -42,11 +42,20 @@ function load_event_scripts() {
 }
 
 
-function render_pfx_event_table(event_type, event, table_id = "#datatable") {
+function render_pfx_event_table(event_type, event, table_id = "#datatable", paging = true) {
+
+    if (isEmpty(table_info_dict)) {
+        load_event_scripts()
+    }
+
+    console.log("event:!");
+    console.log(event);
 
     // render table based on event types
     let table = $(table_id).DataTable({
-        data: event["data"],
+        data: event,
+        paging: paging,
+        searching: false,
         "columns": table_info_dict[event_type]["columns"],
         "columnDefs": table_info_dict[event_type]["columnDefs"],
     });

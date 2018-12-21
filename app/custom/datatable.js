@@ -99,7 +99,7 @@ function load_event_details() {
         $.ajax({
             url: "/json/event/id/" + event_id,
             success: function (event) {
-                render_pfx_event_table(event_type, event);
+                render_pfx_event_table(event_type, event["data"]);
             }
         });
     })

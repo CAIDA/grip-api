@@ -18,12 +18,14 @@ function syntaxHighlight(json) {
     });
 }
 function get_event_id_from_url(){
-  return window.location.pathname.replace(/\/$/, "").split("/").pop();
+    const elems = window.location.pathname.replace(/\/$/, "").split("/");
+    return elems[3]
+
 }
 
 function get_event_type_from_url(){
     const elems =  window.location.pathname.replace(/\/$/, "").split("/");
-    return elems[elems.length-2]
+    return elems[2]
 }
 
 function get_guid() {
@@ -50,4 +52,9 @@ function process_as_name(as_org, max_length = 15) {
     console.log(`AS ${as_name}`);
     return as_name
 }
+
+function isEmpty(obj) {
+  return Object.keys(obj).length === 0;
+}
+
 

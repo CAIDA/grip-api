@@ -1,5 +1,4 @@
 function load_pfx_event() {
-
     $(document).ready(function () {
         let path = window.location.pathname.replace(/\/$/, "");
         let path_segments = path.split("/");
@@ -11,6 +10,7 @@ function load_pfx_event() {
             success: function (pfx_event) {
                 let download_path = event_id + "-" + pfx_fingerprint + ".json";
                 draw_json_raw(JSON.stringify(pfx_event, undefined, 4), download_path);
+                draw_pfx_event_table(pfx_event);
                 let measurements = draw_traceroute_table(pfx_event);
                 draw_sankeys(pfx_event);
                 draw_traceroute_vis(measurements);
@@ -59,6 +59,11 @@ function draw_traceroute_vis(measurements) {
     console.log("map loaded")
 }
 
+function draw_pfx_event_table(pfx_event){
+    render_pfx_event_table(get_event_type_from_url(), [pfx_event], "#pfx_event_table", false)
+
+}
+
 function draw_json_raw(json_raw_str, download_path) {
     $("#json_modal").html(syntaxHighlight(json_raw_str));
     $(".pfx-event-modal-download").click(function () {
@@ -81,6 +86,8 @@ function draw_traceroute_table(pfx_event) {
             {title: "Target Prefix", data: "target_pfx"},
             {title: "Results (from RIPE)", data: ""},
         ],
+        paging: false,
+        searching: false,
         "columnDefs": [
             {
                 "render": function (data, type, row) {
