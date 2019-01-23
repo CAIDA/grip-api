@@ -1,6 +1,6 @@
 let datatable = null;
 let whois_dict = {};
-let cidr_loose_re = /^[0-9]+\.[0-9./]*$/;
+let cidr_loose_re = /^[0-9]+[.:][0-9.:/]*$/;
 const params = new Map(location.search.slice(1).split('&').map(kv => kv.split('=')))
 
 function load_events_table(event_type) {
