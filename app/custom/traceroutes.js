@@ -96,7 +96,6 @@ function draw_traceroute_vis(measurements) {
                 }
             }
 
-
             if(nodes.length>0) {
                 L.polyline(nodes, {
                     weight: 1,
@@ -118,6 +117,7 @@ function draw_traceroute_vis(measurements) {
         })
     });
 
+    // TODO: add layers to avoid the mess https://leafletjs.com/examples/layers-control/
     console.log("map loaded")
 }
 
@@ -154,7 +154,7 @@ function draw_traceroute_table(pfx_event) {
             {
                 "render": function (data, type, row) {
                     load_origin_asrank(data);
-                    return `<a class="btn btn-default as-btn as-btn-${data}" data-toggle="tooltip" title="" data-placement="top" href='http://as-rank.caida.org/asns/${data}' target="_blank")> AS${data} </a>`
+                    return `<a class="btn btn-default as-btn as-btn-${data}" data-toggle="tooltip" title="" data-placement="top" href='http://as-rank.caida.org/asns/${data}')> AS${data} </a>`
                     // return `<button class="origin-button" onclick="window.open('http://as-rank.caida.org/asns/${data}')"> ${data} </button>`
                 },
                 "targets": [1]

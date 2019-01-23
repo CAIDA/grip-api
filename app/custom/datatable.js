@@ -26,7 +26,7 @@ function load_events_table(event_type) {
                 "columnDefs": [
                     {
                         "render": function (data, type, row) {
-                            if(data===null){
+                            if (data === null) {
                                 return "On-Going"
                             } else {
                                 return `Finished at ${data}`
@@ -41,7 +41,7 @@ function load_events_table(event_type) {
         $('#datatable tbody').on('click', 'tr', function () {
             var data = datatable.row($(this)).data();
             console.log("/json/event/id/" + data['id']);
-            window.open("/event/" + data['event_type'] + "/" + data['id'], "_blank");
+            window.open("/event/" + data['event_type'] + "/" + data['id'], '_self', false);
         });
     });
 
@@ -54,6 +54,19 @@ function load_events_table(event_type) {
         datatable.ajax.url(url).load();
 
     });
+    $("#search-as-btn").click(function () {
+        let asn = parseInt($("#search-as-input").val());
+        if (!Number.isInteger(asn)) {
+            alert("not an interger")
+        } else {
+            alert(asn)
+        }
+    });
+
+    $("#search-prefix-btn").click(function () {
+        let prefix = $("#search-prefix-input").val();
+        alert(prefix);
+    })
 }
 
 var traceroute_hash = {};
@@ -65,7 +78,7 @@ function load_traceroute_page(uuid) {
     let event_type = path_segments[path_segments.length - 2];
 
     let fingerprint = extract_pfx_event_fingerprint(pfx_event, event_type);
-    window.open(`${path}/${fingerprint}`)
+    window.open(`${path}/${fingerprint}`, "_self", false)
 }
 
 function extract_pfx_event_fingerprint(pfx_event, event_type) {
