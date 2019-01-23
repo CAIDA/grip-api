@@ -1,6 +1,6 @@
 [development]
 address = "localhost"
-port = 8000
+port = 8001
 elastic_url = "http://clayface.caida.org:9200"
 
 [production]

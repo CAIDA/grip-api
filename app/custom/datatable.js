@@ -1,5 +1,6 @@
 let datatable = null;
 let whois_dict = {};
+let cidr_re = /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$/;
 
 function load_events_table(event_type) {
     $.extend(true, $.fn.dataTable.defaults, {
@@ -65,9 +66,14 @@ function load_events_table(event_type) {
 
     $("#search-prefix-btn").click(function () {
         let prefix = $("#search-prefix-input").val();
-        alert(prefix);
+        if (!cidr_re.test(prefix)){
+            alert("not a prefix");
+        } else {
+            alert(prefix)
+        }
     })
 }
+
 
 var traceroute_hash = {};
 
