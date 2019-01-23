@@ -63,12 +63,27 @@ function load_events_table(event_type) {
     });
 
     $("#range-btn").click(function () {
-        let event_type = window.location.pathname.replace(/\/$/, "").split("/").pop();
-        let times = $('#reportrange span').html().split(" - ");
-        let url = `/json/events/${event_type}?ts_start=${times[0]}&ts_end=${times[1]}`;
+        // let event_type = window.location.pathname.replace(/\/$/, "").split("/").pop();
+        // let times = $('#reportrange span').html().split(" - ");
+        // let url = `/json/events/${event_type}?ts_start=${times[0]}&ts_end=${times[1]}`;
 
+        let url = window.location.pathname.replace(/\?.*\/$/, "");
+        url+="?";
+        if(!params.has("")){
+            params.forEach(function(value, key, map){
+                if(!key.startsWith("ts_")) {
+                    // strip existing searching ranges
+                    url += `${key}=${value}&`;
+                }
+            });
+        }
+        let times = $('#reportrange span').html().split(" - ");
+        if(Date.parse(times[0]) !==null){
+            url += `ts_start=${times[0]}&ts_end=${times[1]}`;
+        }
+        url = url.replace(/[?&]$/i, "");
         console.log(url);
-        datatable.ajax.url(url).load();
+        window.open(url, '_self', false);
     });
 
     $("#search-btn").click(function () {
@@ -87,6 +102,7 @@ function load_events_table(event_type) {
                 prefix = v;
                 ready = true;
             }
+            v = v.replace(/as/i,"");
             if((/^[0-9]+$/).test(v)){
                 // it's a asn
                 asn = v;
