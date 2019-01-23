@@ -1,6 +1,7 @@
 let datatable = null;
 let whois_dict = {};
 let cidr_re = /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$/;
+let cidr_loose_re = /^[0-9./]*$/;
 
 function load_events_table(event_type) {
     $.extend(true, $.fn.dataTable.defaults, {
@@ -70,8 +71,8 @@ function load_events_table(event_type) {
 
 
     $("#search-prefix-btn").click(function () {
-        let prefix = $("#search-prefix-input").val();
-        if (!cidr_re.test(prefix)){
+        let prefix = $("#search-prefix-input").val().trim();
+        if (!cidr_loose_re.test(prefix)){
             alert("not a prefix");
         } else {
             // alert(prefix)
@@ -79,7 +80,19 @@ function load_events_table(event_type) {
             console.log(url);
             datatable.ajax.url(url).load();
         }
-    })
+    });
+
+    $("#search-as-input").keyup(function(event) {
+        if (event.keyCode === 13) {
+            $("#search-as-btn").click();
+        }
+    });
+
+    $("#search-prefix-input").keyup(function(event) {
+        if (event.keyCode === 13) {
+            $("#search-prefix-btn").click();
+        }
+    });
 }
 
 
