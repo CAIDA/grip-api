@@ -11,28 +11,19 @@
                     <h2 id="table_title">Hijacking Events </h2>
                 </div>
                 <div class="col-md-6">
-                    <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                    <div class="col-md-12 form-group pull-right top_search">
                         <div class="input-group">
-                            <input id="search-as-input" type="text" class="form-control"
-                                   placeholder="Search by AS number...">
+                            <input id="search-box" type="text" class="form-control"
+                                   placeholder="Search by prefix and ASN, separate by space...">
                             <span class="input-group-btn">
-                              <button id="search-as-btn" class="btn btn-default" type="button">Go!</button>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
-                        <div class="input-group">
-                            <input id="search-prefix-input" type="text" class="form-control"
-                                   placeholder="Search by prefix...">
-                            <span class="input-group-btn">
-                              <button id="search-prefix-btn" class="btn btn-default" type="button">Go!</button>
+                              <button id="search-btn" class="btn btn-default" type="button">Go!</button>
                             </span>
                         </div>
                     </div>
                     <div class="x_content">
-                        <button id="query-btn" type="button" class="btn btn-default pull-right"
+                        <button id="range-btn" type="button" class="btn btn-default pull-right"
                                 style="padding: 5px 10px; margin-left: 5px">
-                            List
+                            Filter
                         </button>
                         <div id="reportrange" class="pull-right"
                              style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">

@@ -1,7 +1,7 @@
 let datatable = null;
 let whois_dict = {};
-let cidr_re = /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$/;
-let cidr_loose_re = /^[0-9./]*$/;
+let cidr_loose_re = /^[0-9]+[.:][0-9.:/]*$/;
+const params = new Map(location.search.slice(1).split('&').map(kv => kv.split('=')))
 
 function load_events_table(event_type) {
     $.extend(true, $.fn.dataTable.defaults, {
@@ -9,14 +9,29 @@ function load_events_table(event_type) {
         "ordering": false,
     });
     $(document).ready(function () {
-
+        let url = `/json/events/${event_type}?`;
+        let search_text = [];
+        if(!params.has("")){
+            params.forEach(function(value, key, map){
+                url += `${key}=${value}&`;
+                if(key === "asn"){
+                    search_text.push("AS"+value)
+                } else if (key === "prefix") {
+                    search_text.push(value)
+                }
+            });
+        }
+        $("#search-box").val(search_text.join(" "));
+        url = url.replace(/[?&]$/i, "");
+        console.log(url);
         datatable = $('#datatable').DataTable({
                 "processing": true,
                 "serverSide": true,
                 "searching": false,
                 "ordering": false,
                 "ajax": {
-                    "url": `/json/events/${event_type}`,
+                    // "url": `/json/events/${event_type}`,
+                    "url": url,
                 },
                 "columns": [
                     {title: "Event Type", "data": 'event_type'},
@@ -47,50 +62,72 @@ function load_events_table(event_type) {
         });
     });
 
-    $("#query-btn").click(function () {
-        let event_type = window.location.pathname.replace(/\/$/, "").split("/").pop();
+    $("#range-btn").click(function () {
+        // let event_type = window.location.pathname.replace(/\/$/, "").split("/").pop();
+        // let times = $('#reportrange span').html().split(" - ");
+        // let url = `/json/events/${event_type}?ts_start=${times[0]}&ts_end=${times[1]}`;
+
+        let url = window.location.pathname.replace(/\?.*\/$/, "");
+        url+="?";
+        if(!params.has("")){
+            params.forEach(function(value, key, map){
+                if(!key.startsWith("ts_")) {
+                    // strip existing searching ranges
+                    url += `${key}=${value}&`;
+                }
+            });
+        }
         let times = $('#reportrange span').html().split(" - ");
-        let url = `/json/events/${event_type}?ts_start=${times[0]}&ts_end=${times[1]}`;
-
+        if(Date.parse(times[0]) !==null){
+            url += `ts_start=${times[0]}&ts_end=${times[1]}`;
+        }
+        url = url.replace(/[?&]$/i, "");
         console.log(url);
-        datatable.ajax.url(url).load();
-
+        window.open(url, '_self', false);
     });
 
-    $("#search-as-btn").click(function () {
-        let asn = parseInt($("#search-as-input").val());
-        if (!Number.isInteger(asn)) {
-            alert("not an interger")
-        } else {
-            // alert(asn)
-            let url = `/json/events/${event_type}?asn=${asn}`;
-            console.log(url);
-            datatable.ajax.url(url).load();
+    $("#search-btn").click(function () {
+        let fields = $("#search-box").val().trim().split(" ");
+        if(fields.length > 2){
+            alert("allow maximum searching for 1 ASN and 1 prefix")
+            return;
         }
-    });
-
-
-    $("#search-prefix-btn").click(function () {
-        let prefix = $("#search-prefix-input").val().trim();
-        if (!cidr_loose_re.test(prefix)){
-            alert("not a prefix");
-        } else {
-            // alert(prefix)
-            let url = `/json/events/${event_type}?prefix=${prefix}`;
-            console.log(url);
-            datatable.ajax.url(url).load();
+        let asn = "";
+        let prefix = "";
+        let ready = false;
+        for(let i in fields){
+            let v = fields[i].trim();
+            if(cidr_loose_re.test(v)){
+                // it's a prefix
+                prefix = v;
+                ready = true;
+            }
+            v = v.replace(/as/i,"");
+            if((/^[0-9]+$/).test(v)){
+                // it's a asn
+                asn = v;
+                ready = true;
+            }
         }
+        if(!ready){
+            alert("not enough search parameters");
+            return;
+        }
+        let url = `/events/${event_type}?`;
+        if(prefix!==""){
+            url+=`prefix=${prefix}&`;
+        }
+        if(asn!==""){
+            url+=`asn=${asn}&`;
+        }
+        url = url.replace(/[?&]$/i, "");
+        window.open(url, '_self', false);
     });
 
-    $("#search-as-input").keyup(function(event) {
+
+    $("#search-box").keyup(function(event) {
         if (event.keyCode === 13) {
-            $("#search-as-btn").click();
-        }
-    });
-
-    $("#search-prefix-input").keyup(function(event) {
-        if (event.keyCode === 13) {
-            $("#search-prefix-btn").click();
+            $("#search-btn").click();
         }
     });
 }
