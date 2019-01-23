@@ -1,9 +1,9 @@
-use std::error::Error;
-
-use crate::backend::errors::MyError;
 use elastic::prelude::*;
 use serde_json::json;
 use serde_json::Value;
+use std::error::Error;
+
+use crate::backend::errors::MyError;
 
 pub struct ElasticSearchBackend {
     es_client: SyncClient,
@@ -34,7 +34,7 @@ impl ElasticSearchBackend {
                 "query": {
                     "bool": {
                         "must": { "match": { "id.keyword" : id }},
-                        "must_not": { "match": { "position.keyword": "FINISHED"  }},
+                        "must_not": { "match": { "position.keyword": "FINISHED"  }},    // TODO: why?
                     }
                 }
             }))
@@ -49,7 +49,9 @@ impl ElasticSearchBackend {
     }
 
     pub fn list_events(&self, event_type: &str, start: &Option<usize>, max: &Option<usize>,
-                       ts_start: &Option<String>, ts_end: &Option<String>)-> Result<SearchResult, Box<Error>> {
+                       asn: &Option<usize>, prefix: &Option<String>,
+                       ts_start: &Option<String>, ts_end: &Option<String>)
+                       -> Result<SearchResult, Box<Error>> {
         let mut etype = event_type.to_owned();
         if etype == "all" {
             etype = "*".to_owned();
@@ -70,11 +72,19 @@ impl ElasticSearchBackend {
             None => 100 as i32
         };
 
+        // match must terms
+        let mut as_must = json!({});
+        let mut pfx_must = json!({});
+
+        let mut must_terms = vec!();
+        must_terms.push(json!({ "term": { "inference.tr_worthy" : true }}));
+        //must_terms["inference.tr_worthy"] = json!(true);
+
         let query = json!({
                 "from":start, "size":max_entries,
                 "query": {
                     "bool": {
-                        "must": { "term": { "inference.tr_worthy" : true }},
+                        "must": must_terms,
                         "must_not": { "match": { "position.keyword": "FINISHED" } },
                         "filter": {
                             "range": range_filter
