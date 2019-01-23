@@ -86,6 +86,17 @@ impl ElasticSearchBackend {
             },
             _ => {}
         }
+        match asn {
+            Some(value) => {
+                // https://stackoverflow.com/questions/40573981/multiple-should-queries-with-must-query
+                let mut asn_must = vec!();
+                asn_must.push(json!({ "match": { "pfx_events.origins" : value }}));
+                asn_must.push(json!({ "match": { "pfx_events.as1.keyword" : value }}));
+                asn_must.push(json!({ "match": { "pfx_events.as2.keyword" : value }}));
+                must_terms.push(json!({"bool": {"minimum_should_match": 1, "should": asn_must}}));
+            },
+            _ => {}
+        }
         //must_terms["inference.tr_worthy"] = json!(true);
 
         let query:serde_json::Value = json!({

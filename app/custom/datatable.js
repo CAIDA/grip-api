@@ -61,9 +61,13 @@ function load_events_table(event_type) {
         if (!Number.isInteger(asn)) {
             alert("not an interger")
         } else {
-            alert(asn)
+            // alert(asn)
+            let url = `/json/events/${event_type}?asn=${asn}`;
+            console.log(url);
+            datatable.ajax.url(url).load();
         }
     });
+
 
     $("#search-prefix-btn").click(function () {
         let prefix = $("#search-prefix-input").val();
