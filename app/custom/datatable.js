@@ -1,5 +1,7 @@
 let datatable = null;
 let whois_dict = {};
+let cidr_re = /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$/;
+let cidr_loose_re = /^[0-9./]*$/;
 
 function load_events_table(event_type) {
     $.extend(true, $.fn.dataTable.defaults, {
@@ -54,20 +56,45 @@ function load_events_table(event_type) {
         datatable.ajax.url(url).load();
 
     });
+
     $("#search-as-btn").click(function () {
         let asn = parseInt($("#search-as-input").val());
         if (!Number.isInteger(asn)) {
             alert("not an interger")
         } else {
-            alert(asn)
+            // alert(asn)
+            let url = `/json/events/${event_type}?asn=${asn}`;
+            console.log(url);
+            datatable.ajax.url(url).load();
         }
     });
 
+
     $("#search-prefix-btn").click(function () {
-        let prefix = $("#search-prefix-input").val();
-        alert(prefix);
-    })
+        let prefix = $("#search-prefix-input").val().trim();
+        if (!cidr_loose_re.test(prefix)){
+            alert("not a prefix");
+        } else {
+            // alert(prefix)
+            let url = `/json/events/${event_type}?prefix=${prefix}`;
+            console.log(url);
+            datatable.ajax.url(url).load();
+        }
+    });
+
+    $("#search-as-input").keyup(function(event) {
+        if (event.keyCode === 13) {
+            $("#search-as-btn").click();
+        }
+    });
+
+    $("#search-prefix-input").keyup(function(event) {
+        if (event.keyCode === 13) {
+            $("#search-prefix-btn").click();
+        }
+    });
 }
+
 
 var traceroute_hash = {};
 

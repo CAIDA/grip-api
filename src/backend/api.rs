@@ -119,12 +119,13 @@ pub fn json_pfx_event_by_id(id: &RawStr, fingerprint: &RawStr, base_url: State<B
     }
 }
 
-#[get("/json/events/<event_type>?<ts_start>&<ts_end>&<draw>&<start>&<length>")]
+#[get("/json/events/<event_type>?<ts_start>&<ts_end>&<draw>&<start>&<length>&<asn>&<prefix>")]
 pub fn json_list_events(event_type: &RawStr, ts_start: Option<String>, ts_end: Option<String>,
                         draw: Option<usize>, start: Option<usize>, length: Option<usize>,
+                        asn: Option<usize>, prefix: Option<String>,
                         base_url: State<BaseUrl>) -> Json<Value> {
     let backend = ElasticSearchBackend::new(&base_url.url).unwrap();
-    let query_result = backend.list_events(event_type, &start, &length, &ts_start, &ts_end).unwrap();
+    let query_result = backend.list_events(event_type, &start, &length, &asn, &prefix, &ts_start, &ts_end).unwrap();
     let object = json!(
         {
             "data": query_result.results,

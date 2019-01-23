@@ -1,9 +1,9 @@
-use std::error::Error;
-
-use crate::backend::errors::MyError;
 use elastic::prelude::*;
 use serde_json::json;
 use serde_json::Value;
+use std::error::Error;
+
+use crate::backend::errors::MyError;
 
 pub struct ElasticSearchBackend {
     es_client: SyncClient,
@@ -34,7 +34,7 @@ impl ElasticSearchBackend {
                 "query": {
                     "bool": {
                         "must": { "match": { "id.keyword" : id }},
-                        "must_not": { "match": { "position.keyword": "FINISHED"  }},
+                        "must_not": { "match": { "position.keyword": "FINISHED"  }},    // TODO: why?
                     }
                 }
             }))
@@ -49,7 +49,9 @@ impl ElasticSearchBackend {
     }
 
     pub fn list_events(&self, event_type: &str, start: &Option<usize>, max: &Option<usize>,
-                       ts_start: &Option<String>, ts_end: &Option<String>)-> Result<SearchResult, Box<Error>> {
+                       asn: &Option<usize>, prefix: &Option<String>,
+                       ts_start: &Option<String>, ts_end: &Option<String>)
+                       -> Result<SearchResult, Box<Error>> {
         let mut etype = event_type.to_owned();
         if etype == "all" {
             etype = "*".to_owned();
@@ -70,11 +72,38 @@ impl ElasticSearchBackend {
             None => 100 as i32
         };
 
-        let query = json!({
+        // match must terms
+        let mut must_terms = vec!();
+        must_terms.push(json!({ "term": { "inference.tr_worthy" : true }}));
+        match prefix {
+            Some(p) => {
+                // https://stackoverflow.com/questions/40573981/multiple-should-queries-with-must-query
+                let mut pfx_must = vec!();
+                pfx_must.push(json!({ "prefix": { "pfx_events.sub_pfx.keyword" : p }}));
+                pfx_must.push(json!({ "prefix": { "pfx_events.super_pfx.keyword" : p }}));
+                pfx_must.push(json!({ "prefix": { "pfx_events.prefix.keyword" : p }}));
+                must_terms.push(json!({"bool": {"minimum_should_match": 1, "should": pfx_must}}));
+            },
+            _ => {}
+        }
+        match asn {
+            Some(value) => {
+                // https://stackoverflow.com/questions/40573981/multiple-should-queries-with-must-query
+                let mut asn_must = vec!();
+                asn_must.push(json!({ "match": { "pfx_events.origins" : value }}));
+                asn_must.push(json!({ "match": { "pfx_events.as1.keyword" : value }}));
+                asn_must.push(json!({ "match": { "pfx_events.as2.keyword" : value }}));
+                must_terms.push(json!({"bool": {"minimum_should_match": 1, "should": asn_must}}));
+            },
+            _ => {}
+        }
+        //must_terms["inference.tr_worthy"] = json!(true);
+
+        let query:serde_json::Value = json!({
                 "from":start, "size":max_entries,
                 "query": {
                     "bool": {
-                        "must": { "term": { "inference.tr_worthy" : true }},
+                        "must": must_terms,
                         "must_not": { "match": { "position.keyword": "FINISHED" } },
                         "filter": {
                             "range": range_filter
@@ -84,7 +113,7 @@ impl ElasticSearchBackend {
                 "sort": { "view_ts": { "order": "desc" }}
             });
 
-
+        println!("{}", serde_json::to_string_pretty(&query).unwrap());
 
         let res = self
             .es_client
