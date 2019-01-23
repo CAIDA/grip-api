@@ -17,6 +17,11 @@ function syntaxHighlight(json) {
         return '<span class="' + cls + '">' + match + '</span>';
     });
 }
+
+function get_params(){
+    return params
+}
+
 function get_event_id_from_url(){
     const elems = window.location.pathname.replace(/\/$/, "").split("/");
     return elems[3]
