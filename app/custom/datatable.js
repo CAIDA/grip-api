@@ -55,6 +55,7 @@ function load_events_table(event_type) {
         datatable.ajax.url(url).load();
 
     });
+
     $("#search-as-btn").click(function () {
         let asn = parseInt($("#search-as-input").val());
         if (!Number.isInteger(asn)) {
@@ -69,7 +70,10 @@ function load_events_table(event_type) {
         if (!cidr_re.test(prefix)){
             alert("not a prefix");
         } else {
-            alert(prefix)
+            // alert(prefix)
+            let url = `/json/events/${event_type}?prefix=${prefix}`;
+            console.log(url);
+            datatable.ajax.url(url).load();
         }
     })
 }

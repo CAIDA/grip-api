@@ -73,14 +73,22 @@ impl ElasticSearchBackend {
         };
 
         // match must terms
-        let mut as_must = json!({});
-        let mut pfx_must = json!({});
-
         let mut must_terms = vec!();
         must_terms.push(json!({ "term": { "inference.tr_worthy" : true }}));
+        match prefix {
+            Some(p) => {
+                // https://stackoverflow.com/questions/40573981/multiple-should-queries-with-must-query
+                let mut pfx_must = vec!();
+                pfx_must.push(json!({ "prefix": { "pfx_events.sub_pfx.keyword" : p }}));
+                pfx_must.push(json!({ "prefix": { "pfx_events.super_pfx.keyword" : p }}));
+                pfx_must.push(json!({ "prefix": { "pfx_events.prefix.keyword" : p }}));
+                must_terms.push(json!({"bool": {"minimum_should_match": 1, "should": pfx_must}}));
+            },
+            _ => {}
+        }
         //must_terms["inference.tr_worthy"] = json!(true);
 
-        let query = json!({
+        let query:serde_json::Value = json!({
                 "from":start, "size":max_entries,
                 "query": {
                     "bool": {
@@ -94,7 +102,7 @@ impl ElasticSearchBackend {
                 "sort": { "view_ts": { "order": "desc" }}
             });
 
-
+        println!("{}", serde_json::to_string_pretty(&query).unwrap());
 
         let res = self
             .es_client
