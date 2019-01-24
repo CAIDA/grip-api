@@ -60,6 +60,22 @@ function render_pfx_event_table(event_type, event, table_id = "#datatable", pagi
         "columnDefs": table_info_dict[event_type]["columnDefs"],
     });
 
-    // render pfx details
-    table_info_dict[event_type]["pfx_details_func"](table);
+    $('#datatable tbody').on('click', 'tr', function () {
+        var data = table.row($(this)).data();
+        let path = window.location.pathname.replace(/\/$/, "");
+        let fingerprint = extract_pfx_event_fingerprint(data, event_type);
+        window.open(`${path}/${fingerprint}`, "_self", false)
+    });
+}
+
+function render_event_details_table(event_type, event){
+    console.log(event);
+    $("#event-details-victim").text(extract_victims(event["pfx_events"][0], event_type))
+    $("#event-details-attacker").text(extract_attackers(event["pfx_events"][0], event_type))
+    $("#event-details-prefix").text(extract_largest_prefix(event["pfx_events"]))
+    let [num_pfx, num_addrs] = extract_impact(event["pfx_events"]);
+    $("#event-details-impact").text(`${num_pfx} pfxs ${num_addrs} addresses`);
+    $("#event-details-startts").text(event["view_ts"]);
+    $("#event-details-endts").text(event["finished_ts"]);
+    $("#event-details-type").text(event_type_explain[event_type]);
 }

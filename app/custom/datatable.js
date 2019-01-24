@@ -45,93 +45,25 @@ function load_events_table(event_type) {
                 "columnDefs": [
                     {
                         "render": function (data, type, row) {
-                            let pfxevent = data[0];
-                            switch(row["event_type"]){
-                                case "moas":
-                                    let oldcomers = new Set();
-                                    for(let i in pfxevent["origins"]){
-                                        oldcomers.add(pfxevent['origins'][i]);
-                                    }
-                                    for(let i in pfxevent["newcomer_origins"]){
-                                        oldcomers.delete(pfxevent['newcomer_origins'][i])
-                                    }
-                                    return [...oldcomers].join(" ");
-                                case "submoas":
-                                    return pfxevent["sub_origins"].join(" ");
-                                case "defcon":
-                                    return pfxevent["origins"].join(" ");
-                                case "edges":
-                                    return [pfxevent["as1"], pfxevent["as2"]].join(" ");
-                                default:
-                                    return "wrong"
-                            }
+                            return extract_victims(data[0], row["event_type"]).join(" ");
                         },
                         "targets": [0]
                     },
                     {
                         "render": function (data, type, row) {
-                            let pfxevent = data[0];
-                            switch(row["event_type"]){
-                                case "moas":
-                                    return pfxevent["newcomer_origins"].join(" ");
-                                case "submoas":
-                                    return pfxevent["super_origins"].join(" ");
-                                case "defcon":
-                                    return "N/A";
-                                case "edges":
-                                    return [pfxevent["as1"], pfxevent["as2"]].join(" ");
-                                default:
-                                    return "wrong"
-                            }
+                            return extract_attackers(data[0], row["event_type"]).join(" ");
                         },
                         "targets": [1]
                     },
                     {
                         "render": function (data, type, row) {
-                            let largest_pfx_len = 1000;
-                            let largest_pfx = "";
-                            for(let i in data){
-                                let pfxevent = data[i];
-                                let p = "";
-                                if("prefix" in pfxevent){
-                                    p = pfxevent["prefix"];
-                                } else {
-                                    p = pfxevent["sub_pfx"];
-                                }
-                                let len = parseInt(p.split("/")[1])
-                                if(len <= largest_pfx_len){
-                                    largest_pfx = p;
-                                    largest_pfx_len = len;
-                                }
-                            }
-                            return largest_pfx;
+                            return extract_largest_prefix(data)
                         },
                         "targets": [2]
                     },
                     {
                         "render": function (data, type, row) {
-                            let num_pfx = 0;
-                            let num_addrs = 0;
-                            for(let i in data){
-                                num_pfx++;
-                                let pfxevent = data[i];
-                                let p = "";
-                                if("prefix" in pfxevent){
-                                    p = pfxevent["prefix"];
-                                } else {
-                                    p = pfxevent["sub_pfx"];
-                                }
-                                let len = parseInt(p.split("/")[1]);
-                                if(len<=32){
-                                    num_addrs += Math.pow(2, 32-len);
-                                } else {
-                                    num_addrs += Math.pow(2, 128-len);
-                                    console.log(len, num_addrs)
-                                }
-                            }
-                            if(num_addrs.toString().includes("e")){
-                                num_addrs = num_addrs.toPrecision(2)
-                            }
+                            [num_pfx, num_addrs] = extract_impact(data);
                             return `${num_pfx} pfxs ${num_addrs} addresses`
                         },
                         "targets": [3]
@@ -156,16 +88,7 @@ function load_events_table(event_type) {
                     },
                     {
                         "render": function (data, type, row) {
-                            switch( row["event_type"]){
-                                case 'moas':
-                                    return "origin hijack (moas)";
-                                case 'submoas':
-                                    return "origin hijack (submoas)";
-                                case 'edges':
-                                    return "path manipulation (new edge)";
-                                case 'defcon':
-                                    return "path manipulation (defcon)";
-                            }
+                            return event_type_explain[row["event_type"]];
                         },
                         "targets": [6]
                     },
@@ -294,7 +217,8 @@ function load_event_details() {
         $.ajax({
             url: "/json/event/id/" + event_id,
             success: function (event) {
-                render_pfx_event_table(event_type, event["data"]);
+                render_event_details_table(event_type, event);
+                render_pfx_event_table(event_type, event["pfx_events"]);
             }
         });
     })

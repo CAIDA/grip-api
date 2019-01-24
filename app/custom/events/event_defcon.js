@@ -1,8 +1,7 @@
 function get_defcon_columns() {
     return [
-        {"title": "Super Prefix", "data": 'super_pfx'},
         {"title": "Sub Prefix", "data": 'sub_pfx'},
-        {"title": "Origins", "data": 'origins'},
+        {"title": "Super Prefix", "data": 'super_pfx'},
         {"title": "Tags", "data": 'tags'},
         {"title": "Traceroutes", "data": 'traceroutes'},
     ];
@@ -12,21 +11,14 @@ function get_defcon_column_defs() {
     return [
         {
             "render": function (data, type, row) {
-                return render_origin_links(data + '');
+                if(data.length > 0){
+                    return "yes"
+                } else {
+                    return "no"
+                }
+                // return render_traceroutes_link(row)
             },
-            "targets": [2]
-        },
-        {
-            "render": function (data, type, row) {
-                return render_prefix_link(data + '');
-            },
-            "targets": [0, 1]
-        },
-        {
-            "render": function (data, type, row) {
-                return render_traceroutes_link(row)
-            },
-            "targets": [4]
+            "targets": [3]
         }
     ];
 }

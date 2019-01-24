@@ -78,7 +78,8 @@ pub fn json_event_by_id(id: &RawStr, base_url: State<BaseUrl>) -> Json<Value> {
     };
 
     match backend.get_event_by_id(id) {
-        Ok(event) => Json(json!({"data":event.results[0]["pfx_events"].to_owned()}).to_owned()),
+        // Ok(event) => Json(json!({"data":event.results[0]["pfx_events"].to_owned()}).to_owned()),
+        Ok(event) => Json(json!(event.results[0]).to_owned()),
         Err(_e) => Json(json!(
         {
             "error": format!("Cannot find event {}",id)
