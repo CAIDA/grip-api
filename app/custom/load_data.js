@@ -68,7 +68,7 @@ function load_origin_asrank(origin, style=1) {
                     if(as_name === "Null"){
                         as_name = `AS${origin}`
                     }
-                    $(this).html(`${as_name} ${asorg["data"]["country"]} `);
+                    $(this).html(`${as_name} (${asorg["data"]["country"]}) `);
                     $(this).attr("title", `AS${origin}, ${asorg["data"]["org"]["name"]}, ${asorg["data"]["country_name"]}, `)
                 });
             }

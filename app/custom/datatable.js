@@ -34,8 +34,8 @@ function load_events_table(event_type) {
                     "url": url,
                 },
                 "columns": [
-                    {title: "Poential Victim", "data": 'pfx_events'},
-                    {title: "Poential Attacker", "data": 'pfx_events'},
+                    {title: "Potential Victim", "data": 'pfx_events'},
+                    {title: "Potential Attacker", "data": 'pfx_events'},
                     {title: "Largest Prefix", "data": 'pfx_events'},
                     {title: "# Prefix Events", "data": 'pfx_events'},
                     {title: "Start Time", "data": 'view_ts'},
@@ -66,7 +66,7 @@ function load_events_table(event_type) {
                         "width": "12em",
                         "render": function (data, type, row) {
                             [num_pfx, num_addrs] = extract_impact(data);
-                            return `${num_pfx} pfxs ${num_addrs} addresses`
+                            return render_impact(num_pfx, num_addrs)
                         },
                         "targets": [3]
                     },

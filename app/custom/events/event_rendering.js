@@ -67,6 +67,22 @@ function render_pfx_event_table(event_type, event, table_id = "#datatable", pagi
     });
 }
 
+function render_impact(num_pfx, num_addrs){
+    let impact_str = "";
+    if(num_pfx === 1){
+        impact_str+= `${num_pfx} pfx `
+    } else {
+        impact_str+= `${num_pfx} pfxs `
+    }
+    if(num_addrs === 1){
+        impact_str+= `(${num_addrs} addr)`
+    } else {
+        impact_str+= `(${num_addrs} addrs)`
+    }
+    return impact_str
+}
+
+
 function render_event_details_table(event_type, event){
     console.log(event);
     $("#event-details-victim").html(
@@ -81,7 +97,7 @@ function render_event_details_table(event_type, event){
     );
     $("#event-details-prefix").text(extract_largest_prefix(event["pfx_events"]));
     let [num_pfx, num_addrs] = extract_impact(event["pfx_events"]);
-    $("#event-details-impact").text(`${num_pfx} pfxs ${num_addrs} addresses`);
+    $("#event-details-impact").text(render_impact(num_pfx,num_addrs));
     $("#event-details-startts").text(event["view_ts"]);
     $("#event-details-type").text(event_type_explain[event_type]);
 
