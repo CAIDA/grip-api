@@ -22,8 +22,8 @@
     <link href="/app/vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
     <link href="/app/vendors/leaflet/leaflet.css" rel="stylesheet">
     <!-- Custom Theme Style -->
-    <link href="/app/build/css/custom.min.css" rel="stylesheet">
     <link href="/app/custom/custom.css" rel="stylesheet">
+    <link href="/app/build/css/custom.min.css" rel="stylesheet">
 
 </head>
 
@@ -69,13 +69,6 @@
         </div>
         <!-- /page content -->
 
-        <!-- footer content -->
-        <footer>
-            <div class="pull-right">
-                CAIDA HIJACKS Project
-            </div>
-        </footer>
-        <!-- /footer content -->
     </div>
 </div>
 
