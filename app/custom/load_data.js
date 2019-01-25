@@ -49,23 +49,27 @@ function load_who_is(prefix) {
     }
 }
 
-function load_origins_asrank(origins) {
-    let origin_lst = origins.split(",");
+function load_origins_asrank(origin_lst, style) {
     origin_lst.forEach(function (origin) {
-            load_origin_asrank(origin)
+            load_origin_asrank(origin, style)
         }
     );
 }
 
-function load_origin_asrank(origin) {
+function load_origin_asrank(origin, style=1) {
     $.ajax({
         url: `http://as-rank.caida.org/api/v1/asns/${origin}`,
         success: function (asorg) {
             if (asorg["data"] != null) {
                 let as_name = process_as_name(asorg["data"]);
                 $(`.as-btn-${origin}`).each(function () {
-                    $(this).html(`AS${origin} ${asorg["data"]["country"]} ${as_name}`);
-                    $(this).attr("title", `${asorg["data"]["country_name"]}, ${asorg["data"]["org"]["name"]}`)
+                    // $(this).html(`AS${origin} ${asorg["data"]["country"]} ${as_name}`);
+                    // $(this).attr("title", `${asorg["data"]["country_name"]}, ${asorg["data"]["org"]["name"]}`)
+                    if(as_name === "Null"){
+                        as_name = `AS${origin}`
+                    }
+                    $(this).html(`${as_name} ${asorg["data"]["country"]} `);
+                    $(this).attr("title", `AS${origin}, ${asorg["data"]["org"]["name"]}, ${asorg["data"]["country_name"]}, `)
                 });
             }
         },

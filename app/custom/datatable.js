@@ -45,23 +45,25 @@ function load_events_table(event_type) {
                 "columnDefs": [
                     {
                         "render": function (data, type, row) {
-                            return extract_victims(data[0], row["event_type"]).join(" ");
+                            return render_origin_links( extract_victims(data[0], row["event_type"]));
                         },
                         "targets": [0]
                     },
                     {
                         "render": function (data, type, row) {
-                            return extract_attackers(data[0], row["event_type"]).join(" ");
+                            return render_origin_links( extract_attackers(data[0], row["event_type"]))
                         },
                         "targets": [1]
                     },
                     {
+                        "width": "8em",
                         "render": function (data, type, row) {
                             return extract_largest_prefix(data)
                         },
                         "targets": [2]
                     },
                     {
+                        "width": "12em",
                         "render": function (data, type, row) {
                             [num_pfx, num_addrs] = extract_impact(data);
                             return `${num_pfx} pfxs ${num_addrs} addresses`
@@ -69,12 +71,14 @@ function load_events_table(event_type) {
                         "targets": [3]
                     },
                     {
+                        "width": "10em",
                         "render": function (data, type, row) {
                             return data.split("T").join("  ")
                         },
                         "targets": [4]
                     },
                     {
+                        "width": "6em",
                         "render": function (data, type, row) {
                             if (data === null) {
                                 return "On-Going"
@@ -87,6 +91,7 @@ function load_events_table(event_type) {
                         "targets": [5]
                     },
                     {
+                        "width": "13em",
                         "render": function (data, type, row) {
                             return event_type_explain[row["event_type"]];
                         },

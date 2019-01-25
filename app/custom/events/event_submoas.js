@@ -11,6 +11,12 @@ function get_submoas_column_defs() {
     return [
         {
             "render": function (data, type, row) {
+                return render_tags(data)
+            },
+            "targets": [2]
+        },
+        {
+            "render": function (data, type, row) {
                 if(data.length > 0){
                     return "yes"
                 } else {

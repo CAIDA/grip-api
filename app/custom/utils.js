@@ -5,6 +5,21 @@ event_type_explain = {
     'defcon': "path manipulation (defcon)",
 };
 
+function abbrFit(string, nChars, divPos, sep) {
+        // The relative position where to place the '...'
+        divPos = divPos || 0.7;
+        sep = sep || '...';
+        if (nChars<=sep.length) sep=''; // If string is smaller than separator
+
+        nChars-=sep.length;
+
+        if (string.length<=nChars) return ""+string;
+
+        return string.substring(0,nChars*divPos)
+            + sep
+            + string.substring(string.length - nChars*(1-divPos), string.length);
+}
+
 // reference: https://stackoverflow.com/a/7220510/768793
 function syntaxHighlight(json) {
     json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -46,18 +61,12 @@ function get_guid() {
     return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 }
 
-function process_as_name(as_org, max_length = 15) {
+function process_as_name(as_org, max_length = 25) {
     if (!("name" in as_org)) {
-        return ""
+        return "Null"
     }
-
     let as_name = as_org["name"];
-
-    if (as_name.length > max_length - 3) {
-        as_name = as_name.toString().substr(0, max_length - 3) + "..."
-    }
-
-    console.log(`AS ${as_name}`);
+    as_name = abbrFit(as_name, max_length - 3);
     return as_name
 }
 
@@ -94,9 +103,10 @@ function extract_attackers(pfxevent, event_type){
         case "submoas":
             return pfxevent["super_origins"];
         case "defcon":
-            return ["N/A"];
+            return [""];
         case "edges":
-            return [pfxevent["as1"], pfxevent["as2"]];
+            // return [pfxevent["as1"], pfxevent["as2"]];
+            return [""];
         default:
             return ["wrong"]
     }
@@ -139,10 +149,9 @@ function extract_impact(pfx_events){
             num_addrs += Math.pow(2, 32-len);
         } else {
             num_addrs += Math.pow(2, 128-len);
-            console.log(len, num_addrs)
         }
     }
-    if(num_addrs.toString().includes("e")){
+    if(num_addrs.toString().length>10){
         num_addrs = num_addrs.toPrecision(2)
     }
 

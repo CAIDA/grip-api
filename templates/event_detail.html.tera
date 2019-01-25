@@ -18,7 +18,7 @@
                                 <td id="event-details-victim"></td>
                             </tr>
                             <tr>
-                                <th>Potential Attacker</th>
+                                <th>Potential Attacker:</th>
                                 <td id="event-details-attacker"></td>
                             </tr>
                             <tr>
