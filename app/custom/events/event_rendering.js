@@ -6,7 +6,6 @@ function load_event_scripts() {
         "/app/custom/events/event_moas.js",
         "/app/custom/events/event_defcon.js",
         "/app/custom/events/event_edges.js",
-        "/app/custom/events/common.js",
     ];
 
     for (let i in script_paths) {
