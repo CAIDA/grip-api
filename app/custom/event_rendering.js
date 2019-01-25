@@ -76,6 +76,15 @@ function render_event_details_table(event_type, event){
     let [num_pfx, num_addrs] = extract_impact(event["pfx_events"]);
     $("#event-details-impact").text(`${num_pfx} pfxs ${num_addrs} addresses`);
     $("#event-details-startts").text(event["view_ts"]);
-    $("#event-details-endts").text(event["finished_ts"]);
     $("#event-details-type").text(event_type_explain[event_type]);
+
+    if (event["finished_ts"] === null) {
+        $("#event-details-duration").text("On-Going");
+        $("#event-details-endts").text("N/A");
+    } else {
+        start_ts = Date.parse(event["view_ts"]);
+        end_ts = Date.parse(event["finished_ts"]);
+        $("#event-details-duration").text(`${(end_ts-start_ts)/1000/60} min`);
+        $("#event-details-endts").text(event["finished_ts"]);
+    }
 }
