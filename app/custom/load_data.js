@@ -69,6 +69,8 @@ function load_origin_asrank(origin, style=1) {
                         as_name = `AS${origin}`
                     }
                     $(this).html(`${as_name} (${asorg["data"]["country"]}) `);
+                    // pity, the following looks nice if only a few badges is on
+                    // $(this).html(`${as_name} <span class="badge">${asorg["data"]["country"]}</span> `);
                     $(this).attr("title", `AS${origin}, ${asorg["data"]["org"]["name"]}, ${asorg["data"]["country_name"]}, `)
                 });
             }

@@ -328,10 +328,10 @@ worthy_tag_dict = {
 tag_type = {};
 tag_type_ready = false;
 
-type_color = {
-    "yes": "red",
-    "no": "green",
-    "na": "grey",
+type_label = {
+    "yes": "label-danger",
+    "no": "label-success",
+    "na": "label-default",
 };
 
 function update_tag_type(){
@@ -366,7 +366,7 @@ function render_tags(tags){
         if(!(tag in tag_type)){
             entries.push(`<span style="color: purple; ">${tag}</span>`)
         }
-        entries.push(`<span style="color: ${type_color[tag_type[tag]]};border-bottom: 1px solid; " data-toggle='tooltip' title='${tag_type[tag]}'>${render_tag_name(tag)}</span>`)
+        entries.push(`<span class="label ${type_label[tag_type[tag]]}" style="font-size: 12px;" data-toggle='tooltip' title='${tag_type[tag]}'>${render_tag_name(tag)}</span></h4>`)
     }
     return entries.join(" &nbsp; ")
 }
