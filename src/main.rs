@@ -5,6 +5,7 @@ use rocket::routes;
 use rocket_contrib::templates::Template;
 
 use hijacks_dashboard::backend::api::*;
+use hijacks_dashboard::backend::api_redirects::*;
 
 fn main() {
     rocket::ignite()
@@ -13,8 +14,10 @@ fn main() {
             routes![
                 index,
                 event_list,
-                event_detail,
-                traceroutes,
+                event_details_old,      // backward compatible api route change
+                traceroutes_page_old,   // backward compatible api route change
+                event_details,
+                traceroutes_page,
                 files,
                 json_event_by_id,
                 json_pfx_event_by_id,

@@ -14,6 +14,7 @@ use serde_json::json;
 use serde_json::Value;
 
 use crate::backend::elastic::ElasticSearchBackend;
+use crate::backend::utils::*;
 
 pub struct BaseUrl {
     pub url: String,
@@ -29,39 +30,31 @@ pub fn files(file: PathBuf) -> Option<NamedFile> {
 }
 
 /*
-LOAD WEB PAGES
+LOAD HTML PAGES
 */
 
-#[get("/")]
-pub fn index() -> Redirect {
-    Redirect::to("/events/all")
-}
 
+/// load events list page
 #[get("/events/<event_type>")]
 pub fn event_list(event_type: &RawStr) -> Template {
-    let context_content = json!({"onload_function":format!("load_events_table('{}')",event_type) });
     let mut context = HashMap::<String, Value>::new();
-    context.insert("context".to_owned(), context_content);
+    context.insert("context".to_owned(), json!({"onload_function":"load_events_table()" }));
     Template::render("event_list", context)
 }
 
-#[get("/event/<event_type>/<id>")]
-pub fn event_detail(event_type: &RawStr, id: &RawStr, base_url: State<BaseUrl>) -> Template {
-    let context_content =
-        json!({ "onload_function": format!("{}()", "load_event_details") });
+/// load event details page
+#[get("/events/<event_type>/<id>")]
+pub fn event_details(event_type: &RawStr, id: &RawStr) -> Template {
     let mut context = HashMap::<String, Value>::new();
-    context.insert("context".to_owned(), context_content);
+    context.insert("context".to_owned(), json!({"onload_function":"load_event_details()"}));
     Template::render("event_detail", context)
 }
 
-#[get("/event/<event_type>/<id>/<pfx_finger_print>")]
-pub fn traceroutes(event_type: &RawStr, id: &RawStr, pfx_finger_print: &RawStr, base_url: State<BaseUrl>) -> Template {
-    let context_content =
-        json!({ "onload_function": format!("{}()", "load_pfx_event") });
-
+/// load pfx_event details page
+#[get("/events/<event_type>/<id>/<pfx_finger_print>")]
+pub fn traceroutes_page(event_type: &RawStr, id: &RawStr, pfx_finger_print: &RawStr) -> Template {
     let mut context = HashMap::<String, Value>::new();
-    context.insert("context".to_owned(), context_content);
-    Template::render(format!("{}", "event_traceroutes"), context)
+    Template::render("event_traceroutes", context)
 }
 
 /*
@@ -138,69 +131,4 @@ pub fn json_list_events(event_type: &RawStr, ts_start: Option<String>, ts_end: O
     Json(object.to_owned())
 }
 
-/*
-    Utilities
-*/
-
-/// Find one specific prefix event from all prefix events in a event
-fn filter_pfx_events_by_fingerprint<'a>(fingerprint: &str, event: &'a Value) -> Option<&'a Value> {
-    let event_type = match event["event_type"].as_str() {
-        Some(t) => t,
-        None => return None
-    };
-
-    let re = Regex::new(r"-").unwrap();
-    let result = re.replace_all(fingerprint, "/");
-
-    let prefixes: Vec<&str> = result.split("_").collect();
-    if prefixes.len() == 0 {
-        return None;
-    }
-
-    let pfx_events: &Vec<Value> = match event["pfx_events"].as_array() {
-        Some(events) => events,
-        None => return None
-    };
-
-    match event_type {
-        "moas" | "edges" => {
-            if prefixes.len() != 1 {
-                // must only have one prefix in the fingerprint for moas and edges cases
-                return None;
-            }
-
-            for pfx_event in pfx_events {
-                match pfx_event["prefix"].as_str() {
-                    Some(pfx) => if pfx == prefixes[0] { return Some(&pfx_event); }
-                    None => continue
-                }
-            }
-            return None;
-        }
-        "submoas" | "defcon" => {
-            if prefixes.len() != 2 {
-                // must only have one prefix in the fingerprint for defcon and submoas cases
-                return None;
-            }
-
-            for pfx_event in pfx_events {
-                let sub_pfx = match pfx_event["sub_pfx"].as_str() {
-                    Some(pfx) => pfx,
-                    None => continue
-                };
-                let super_pfx = match pfx_event["super_pfx"].as_str() {
-                    Some(pfx) => pfx,
-                    None => continue
-                };
-
-                if sub_pfx == prefixes[0] && super_pfx == prefixes[1] {
-                    // if we found the one
-                    return Some(&pfx_event);
-                }
-            }
-            return None;
-        }
-        _ => return None
-    }
-}
 

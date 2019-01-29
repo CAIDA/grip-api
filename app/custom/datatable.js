@@ -3,7 +3,8 @@ let whois_dict = {};
 let cidr_loose_re = /^[0-9]+[.:][0-9.:/]*$/;
 const params = new Map(location.search.slice(1).split('&').map(kv => kv.split('=')))
 
-function load_events_table(event_type) {
+function load_events_table() {
+    const event_type = get_event_type_from_url();
     $.extend(true, $.fn.dataTable.defaults, {
         "searching": false,
         "ordering": false,
@@ -104,7 +105,7 @@ function load_events_table(event_type) {
         $('#datatable tbody').on('click', 'tr', function () {
             var data = datatable.row($(this)).data();
             console.log("/json/event/id/" + data['id']);
-            window.open("/event/" + data['event_type'] + "/" + data['id'], '_self', false);
+            window.open("/events/" + data['event_type'] + "/" + data['id'], '_self', false);
         });
     });
 
