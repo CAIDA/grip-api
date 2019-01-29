@@ -62,17 +62,32 @@ function load_origin_asrank(origin, style=1) {
         success: function (asorg) {
             if (asorg["data"] != null) {
                 let as_name = process_as_name(asorg["data"]);
-                $(`.as-btn-${origin}`).each(function () {
-                    // $(this).html(`AS${origin} ${asorg["data"]["country"]} ${as_name}`);
-                    // $(this).attr("title", `${asorg["data"]["country_name"]}, ${asorg["data"]["org"]["name"]}`)
-                    if(as_name === "Null"){
-                        as_name = `AS${origin}`
-                    }
-                    $(this).html(`${as_name} (${asorg["data"]["country"]}) `);
-                    // pity, the following looks nice if only a few badges is on
-                    // $(this).html(`${as_name} <span class="badge">${asorg["data"]["country"]}</span> `);
-                    $(this).attr("title", `AS${origin}, ${asorg["data"]["org"]["name"]}, ${asorg["data"]["country_name"]}, `)
-                });
+                if(style === 1){
+                    $(`.as-btn-${origin}`).each(function () {
+                        // $(this).html(`AS${origin} ${asorg["data"]["country"]} ${as_name}`);
+                        // $(this).attr("title", `${asorg["data"]["country_name"]}, ${asorg["data"]["org"]["name"]}`)
+                        if(as_name === "Null"){
+                            as_name = `AS${origin}`
+                        }
+                        $(this).html(`${as_name} (${asorg["data"]["country"]}) `);
+                        // pity, the following looks nice if only a few badges is on
+                        // $(this).html(`${as_name} <span class="badge">${asorg["data"]["country"]}</span> `);
+                        $(this).attr("title", `AS${origin}, ${asorg["data"]["org"]["name"]}, ${asorg["data"]["country_name"]}, `)
+                    });
+                } else if (style === 2){
+                    $(`.as-btn-${origin}`).each(function () {
+                        // $(this).html(`AS${origin} ${asorg["data"]["country"]} ${as_name}`);
+                        // $(this).attr("title", `${asorg["data"]["country_name"]}, ${asorg["data"]["org"]["name"]}`)
+                        if(as_name === "Null"){
+                            as_name = `AS${origin}`
+                        }
+                        $(this).html(`AS${origin} ${as_name} (${asorg["data"]["country"]}) `);
+                        // pity, the following looks nice if only a few badges is on
+                        // $(this).html(`${as_name} <span class="badge">${asorg["data"]["country"]}</span> `);
+                        $(this).attr("title", `AS${origin}, ${asorg["data"]["org"]["name"]}, ${asorg["data"]["country_name"]}, `)
+                    });
+
+                }
             }
         },
     })

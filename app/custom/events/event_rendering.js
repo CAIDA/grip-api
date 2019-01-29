@@ -87,12 +87,12 @@ function render_event_details_table(event_type, event){
     console.log(event);
     $("#event-details-victim").html(
         render_origin_links(
-            extract_victims(event["pfx_events"][0], event_type)
+            extract_victims(event["pfx_events"][0], event_type,), 2
         )
     );
     $("#event-details-attacker").html(
         render_origin_links(
-            extract_attackers(event["pfx_events"][0], event_type)
+            extract_attackers(event["pfx_events"][0], event_type), 2
         )
     );
     $("#event-details-prefix").text(extract_largest_prefix(event["pfx_events"]));
