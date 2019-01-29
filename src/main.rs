@@ -30,7 +30,7 @@ fn main() {
                 .get_str("elastic_url")
                 .unwrap_or("http://clayface.caida.org:9200")
                 .to_string();
-            Ok(rocket.manage(BaseUrl { url: base_url }))
+            Ok(rocket.manage(BaseUrl { es_url: base_url }))
         }))
         .attach(Template::fairing())
         .launch();
