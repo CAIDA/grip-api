@@ -12,11 +12,8 @@ use serde_json::Value;
 
 use crate::backend::elastic::ElasticSearchBackend;
 use crate::backend::utils::*;
+use crate::backend::data::SharedData;
 
-/// shared state across rocket threads
-pub struct BaseUrl {
-    pub es_url: String,
-}
 
 /*
 LOAD HTML PAGES
@@ -61,8 +58,13 @@ pub fn traceroutes_page(_event_type: &RawStr, _id: &RawStr, _pfx_finger_print: &
 JSON QUERY APIS
 */
 
+#[get("/json/tags")]
+pub fn json_get_tags(data: State<SharedData>) -> Json<Value> {
+    Json(data.tag_dict.to_owned())
+}
+
 #[get("/json/event/id/<id>")]
-pub fn json_event_by_id(id: &RawStr, base_url: State<BaseUrl>) -> Json<Value> {
+pub fn json_event_by_id(id: &RawStr, base_url: State<SharedData>) -> Json<Value> {
     let backend_res = ElasticSearchBackend::new(&base_url.es_url);
 
     let backend = match backend_res {
@@ -82,7 +84,7 @@ pub fn json_event_by_id(id: &RawStr, base_url: State<BaseUrl>) -> Json<Value> {
 }
 
 #[get("/json/pfx_event/id/<id>/<fingerprint>")]
-pub fn json_pfx_event_by_id(id: &RawStr, fingerprint: &RawStr, base_url: State<BaseUrl>) -> Json<Value> {
+pub fn json_pfx_event_by_id(id: &RawStr, fingerprint: &RawStr, base_url: State<SharedData>) -> Json<Value> {
     let backend_res = ElasticSearchBackend::new(&base_url.es_url);
 
     let backend = match backend_res {
@@ -113,11 +115,13 @@ pub fn json_pfx_event_by_id(id: &RawStr, fingerprint: &RawStr, base_url: State<B
     }
 }
 
+
+
 #[get("/json/events/<event_type>?<ts_start>&<ts_end>&<draw>&<start>&<length>&<asn>&<prefix>")]
 pub fn json_list_events(event_type: &RawStr, ts_start: Option<String>, ts_end: Option<String>,
                         draw: Option<usize>, start: Option<usize>, length: Option<usize>,
                         asn: Option<usize>, prefix: Option<String>,
-                        base_url: State<BaseUrl>) -> Json<Value> {
+                        base_url: State<SharedData>) -> Json<Value> {
     let backend = ElasticSearchBackend::new(&base_url.es_url).unwrap();
     let query_result = backend.list_events(event_type, &start, &length, &asn, &prefix, &ts_start, &ts_end).unwrap();
     let object = json!(
