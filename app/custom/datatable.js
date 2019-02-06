@@ -104,9 +104,11 @@ function load_events_table() {
             }
         );
 
-        $('#datatable tbody').on('click', 'tr', function () {
+        $('#datatable tbody').on('click', 'tr', function (e) {
+            if(e.target.tagName === 'A'){
+                return;
+            }
             var data = datatable.row($(this)).data();
-            console.log("/json/event/id/" + data['id']);
             window.open("/events/" + data['event_type'] + "/" + data['id'], '_self', false);
         });
     });

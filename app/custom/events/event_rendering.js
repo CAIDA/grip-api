@@ -65,18 +65,6 @@ function render_pfx_event_table(event_type, event, table_id = "#datatable", pagi
         searching: false,
         "columns": table_info_dict[event_type]["columns"],
         "columnDefs": table_info_dict[event_type]["columnDefs"],
-        // "initComplete": function(settings){
-        //     /* adding tooltip to the table headers */
-        //     $('#datatable thead th').each(function () {
-        //        var $td = $(this);
-        //        $td.attr('title', $td.text());
-        //     });
-        //     /* Apply the tooltips */
-        //     $('#datatable thead th[title]').tooltip(
-        //     {
-        //        "container": 'body'
-        //     });
-        // }
     });
 
     $('#datatable tbody').on('click', 'tr', function () {
