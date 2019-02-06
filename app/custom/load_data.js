@@ -56,8 +56,10 @@ function load_origins_asrank(origin_lst, style) {
 }
 
 function _construct_asrank_table(asorg, simple=false){
+    console.log(asorg)
     if(simple){
         return `
+asn: ${asorg["data"]["id"]} <br/>
 name: ${asorg["data"]["org"]["name"]} <br/>
 country: ${asorg["data"]["country_name"]} <br/>
 rank: ${asorg["data"]["rank"]} <br/>
@@ -69,6 +71,10 @@ prefixes: ${asorg["data"]["cone"]["prefixes"]} <br/>
 
     return `
         <table>
+            <tr>
+                <td>ASN: </td>
+                <td> ${asorg["data"]["id"]} </td>
+            </tr>
             <tr>
                 <td>name: </td>
                 <td> ${asorg["data"]["org"]["name"]} </td>
