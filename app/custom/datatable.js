@@ -160,10 +160,10 @@ function load_events_table() {
                 ready = true;
             }
         }
-        if(!ready){
-            alert("not enough search parameters");
-            return;
-        }
+        // if(!ready){
+        //     alert("not enough search parameters");
+        //     return;
+        // }
         let url = `/events/${event_type}?`;
         if(prefix!==""){
             url+=`prefix=${prefix}&`;
