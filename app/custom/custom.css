@@ -49,3 +49,13 @@ a:active  {
     text-decoration: underline;
     padding-right: 10px;
 }
+
+.tooltip {
+  text-align:left;
+}
+
+.tooltip-inner {
+    text-align: left;
+}
+
+

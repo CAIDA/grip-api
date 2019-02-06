@@ -59,12 +59,12 @@ function _construct_asrank_table(asorg, simple=false){
     console.log(asorg)
     if(simple){
         return `
-asn: ${asorg["data"]["id"]} <br/>
-name: ${asorg["data"]["org"]["name"]} <br/>
-country: ${asorg["data"]["country_name"]} <br/>
-rank: ${asorg["data"]["rank"]} <br/>
-cone size: ${asorg["data"]["cone"]["asns"]} <br/>
-prefixes: ${asorg["data"]["cone"]["prefixes"]} <br/>
+ASN: ${asorg["data"]["id"]} <br/>
+Name: ${asorg["data"]["org"]["name"]} <br/>
+Country: ${asorg["data"]["country_name"]} <br/>
+Rank: ${asorg["data"]["rank"]} <br/>
+Cone size: ${asorg["data"]["cone"]["asns"]} <br/>
+Prefixes: ${asorg["data"]["cone"]["prefixes"]} <br/>
     `
 
     } else {
@@ -128,8 +128,12 @@ function load_origin_asrank(origin, style=1) {
                                 placement: "auto"
                             });
                         }
-                        $(this).html(`${as_name} ${render_country(asorg)} `);
+                        $(this).html(`${as_name}`);
                     });
+                    $(`.as-country-${origin}`).each(function () {
+                        $(this).html(`${render_country(asorg)}`);
+                    })
+
                 } else if (style === 2){
                     $(`.as-btn-${origin}`).each(function () {
                         // $(this).html(`AS${origin} ${asorg["data"]["country"]} ${as_name}`);
@@ -141,16 +145,19 @@ function load_origin_asrank(origin, style=1) {
                                 html: true,
                                 placement: "auto"
                             });
+                            $(this).html(`AS${origin}`);
                         } else {
                             $(this).tooltip({
                                 title: _construct_asrank_table(asorg),
                                 html: true,
                                 placement: "auto"
                             });
+                            $(this).html(`AS${origin} ${as_name}`);
                         }
-                        $(this).html(`AS${origin} ${as_name} ${render_country(asorg)} `);
                     });
-
+                    $(`.as-country-${origin}`).each(function () {
+                        $(this).html(`${render_country(asorg)}`);
+                    })
                 }
             } else {
                 // as org information not found
