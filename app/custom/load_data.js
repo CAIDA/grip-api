@@ -20,7 +20,6 @@ function load_who_is(prefix) {
                 // let authorities = pfx_whois["data"]["authorities"].map(v => v.toLowerCase());
                 // authorities.push("radb");
                 let records = pfx_whois["data"]["records"];
-                console.log(records);
                 if (records.length === 1) {
                     whois_dict[prefix] = records;
                     return
@@ -95,6 +94,12 @@ prefixes: ${asorg["data"]["cone"]["prefixes"]} <br/>
     }
 }
 
+function render_country(asorg) {
+    let country_code = asorg["data"]["country"];
+    // return country_code+flag(country_code)
+    return flag(country_code)
+}
+
 function load_origin_asrank(origin, style=1) {
     $.ajax({
         url: `http://as-rank.caida.org/api/v1/asns/${origin}`,
@@ -105,42 +110,39 @@ function load_origin_asrank(origin, style=1) {
                     $(`.as-btn-${origin}`).each(function () {
                         if(as_name === "Null"){
                             as_name = `AS${origin}`;
-                            $(this).html(`${as_name} (${asorg["data"]["country"]}) `);
                             $(this).tooltip({
                                 title: "Unknown",
                                 html: true,
                                 placement: "auto"
                             });
                         } else{
-                            $(this).html(`${as_name} (${asorg["data"]["country"]}) `);
                             $(this).tooltip({
                                 title: _construct_asrank_table(asorg, true),
                                 html: true,
                                 placement: "auto"
                             });
                         }
-                        console.log(_construct_asrank_table(asorg))
+                        $(this).html(`${as_name} ${render_country(asorg)} `);
                     });
                 } else if (style === 2){
                     $(`.as-btn-${origin}`).each(function () {
                         // $(this).html(`AS${origin} ${asorg["data"]["country"]} ${as_name}`);
                         // $(this).attr("title", `${asorg["data"]["country_name"]}, ${asorg["data"]["org"]["name"]}`)
                         if(as_name === "Null"){
-                            as_name = `AS${origin}`
-                            $(this).html(`AS${origin} ${as_name} (${asorg["data"]["country"]}) `);
+                            as_name = `AS${origin}`;
                             $(this).tooltip({
                                 title: "Unknown",
                                 html: true,
                                 placement: "auto"
                             });
                         } else {
-                            $(this).html(`AS${origin} ${as_name} (${asorg["data"]["country"]}) `);
                             $(this).tooltip({
                                 title: _construct_asrank_table(asorg),
                                 html: true,
                                 placement: "auto"
                             });
                         }
+                        $(this).html(`AS${origin} ${as_name} ${render_country(asorg)} `);
                     });
 
                 }
