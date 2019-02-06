@@ -34,7 +34,7 @@
         <div class="col-md-3 left_col">
             <div class="left_col scroll-view">
                 <div class="navbar nav_title" style="border: 0;">
-                    <a href="/events/all" class="site_title"><i class="fa fa-paw"></i> <span>BGPHijacks Dashboard</span></a>
+                    <a href="/events/moas" class="site_title"><i class="fa fa-paw"></i> <span>BGPHijacks Dashboard</span></a>
                 </div>
 
                 <div class="clearfix"></div>
@@ -44,13 +44,13 @@
                     <div class="menu_section">
                         <!--<h3>General</h3>-->
                         <ul class="nav side-menu">
-                            <li><a href="/events/all"><i class="fa fa-home"></i> Home </a></li>
-                            <li><a><i class="fa fa-table"></i> Events <span class="fa fa-chevron-down"></span></a>
+                            <li><a href="/events/all"><i class="fa fa-home"></i> All Events </a></li>
+                            <li><a><i class="fa fa-table"></i> Event Types <span class="fa fa-chevron-down"></span></a>
                                 <ul class="nav child_menu">
-                                    <li><a href="/events/moas">Moas</a></li>
-                                    <li><a href="/events/submoas">Submoas</a></li>
-                                    <li><a href="/events/defcon">Defcon</a></li>
-                                    <li><a href="/events/edges">Edges</a></li>
+                                    <li><a href="/events/moas">MOAS</a></li>
+                                    <li><a href="/events/submoas">SUBMOAS</a></li>
+                                    <li><a href="/events/defcon">DEFCON</a></li>
+                                    <li><a href="/events/edges">NEW EDGE</a></li>
                                 </ul>
                             </li>
                         </ul>

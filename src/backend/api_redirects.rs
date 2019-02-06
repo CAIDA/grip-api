@@ -3,7 +3,7 @@ use rocket::http::RawStr;
 
 #[get("/")]
 pub fn index() -> Redirect {
-    Redirect::to("/events/all")
+    Redirect::to("/events/moas")
 }
 
 #[get("/event/<event_type>/<id>")]

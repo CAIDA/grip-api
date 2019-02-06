@@ -10,6 +10,7 @@ function load_events_table() {
         "ordering": false,
     });
     $(document).ready(function () {
+        $('body').tooltip({selector: '[data-toggle="tooltip"]'});
         let url = `/json/events/${event_type}?`;
         let search_text = [];
         if(!params.has("")){
@@ -30,6 +31,7 @@ function load_events_table() {
                 "serverSide": true,
                 "searching": false,
                 "ordering": false,
+                "pageLength": 25,
                 "ajax": {
                     // "url": `/json/events/${event_type}`,
                     "url": url,
@@ -82,7 +84,7 @@ function load_events_table() {
                         "width": "6em",
                         "render": function (data, type, row) {
                             if (data === null) {
-                                return "On-Going"
+                                return "ongoing"
                             } else {
                                 start_ts = Date.parse(row["view_ts"]);
                                 end_ts = Date.parse(data);
@@ -216,6 +218,7 @@ function extract_pfx_event_fingerprint(pfx_event, event_type) {
 
 function load_event_details() {
     $(document).ready(function () {
+        $('body').tooltip({selector: '[data-toggle="tooltip"]'});
         const event_id = get_event_id_from_url();
         const event_type = get_event_type_from_url();
         load_event_scripts();

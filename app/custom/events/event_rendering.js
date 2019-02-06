@@ -65,6 +65,18 @@ function render_pfx_event_table(event_type, event, table_id = "#datatable", pagi
         searching: false,
         "columns": table_info_dict[event_type]["columns"],
         "columnDefs": table_info_dict[event_type]["columnDefs"],
+        // "initComplete": function(settings){
+        //     /* adding tooltip to the table headers */
+        //     $('#datatable thead th').each(function () {
+        //        var $td = $(this);
+        //        $td.attr('title', $td.text());
+        //     });
+        //     /* Apply the tooltips */
+        //     $('#datatable thead th[title]').tooltip(
+        //     {
+        //        "container": 'body'
+        //     });
+        // }
     });
 
     $('#datatable tbody').on('click', 'tr', function () {
@@ -110,7 +122,7 @@ function render_event_details_table(event_type, event){
     $("#event-details-type").text(event_type_explain[event_type]);
 
     if (event["finished_ts"] === null) {
-        $("#event-details-duration").text("On-Going");
+        $("#event-details-duration").text("ongoing");
         $("#event-details-endts").text("N/A");
     } else {
         start_ts = Date.parse(event["view_ts"]);
@@ -219,7 +231,7 @@ function render_tags(tags){
         if(!(tag in tag_type)){
             entries.push(`<span style="color: purple; ">${tag}</span>`)
         }
-        entries.push(`<span class="label ${type_label[tag_type[tag]]}" style="font-size: 12px;" data-toggle='tooltip' title='${tag_type[tag]}'>${render_tag_name(tag)}</span></h4>`)
+        entries.push(`<span class="label ${type_label[tag_type[tag]]}" style="font-size: 12px;" data-toggle='tooltip' title='${tag}'>${render_tag_name(tag)}</span></h4>`)
     }
     return entries.join(" &nbsp; ")
 }

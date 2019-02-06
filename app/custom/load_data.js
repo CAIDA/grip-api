@@ -56,6 +56,45 @@ function load_origins_asrank(origin_lst, style) {
     );
 }
 
+function _construct_asrank_table(asorg, simple=false){
+    if(simple){
+        return `
+name: ${asorg["data"]["org"]["name"]} <br/>
+country: ${asorg["data"]["country_name"]} <br/>
+rank: ${asorg["data"]["rank"]} <br/>
+cone size: ${asorg["data"]["cone"]["asns"]} <br/>
+prefixes: ${asorg["data"]["cone"]["prefixes"]} <br/>
+    `
+
+    } else {
+
+    return `
+        <table>
+            <tr>
+                <td>name: </td>
+                <td> ${asorg["data"]["org"]["name"]} </td>
+            </tr>
+            <tr>
+                <td>country: </td>
+                <td> ${asorg["data"]["country_name"]} </td>
+            </tr>
+            <tr>
+                <td>rank: </td>
+                <td> ${asorg["data"]["rank"]} </td>
+            </tr>
+            <tr>
+                <td>cone size: </td>
+                <td> ${asorg["data"]["cone"]["asns"]} </td>
+            </tr>
+            <tr>
+                <td>prefixes: </td>
+                <td> ${asorg["data"]["cone"]["prefixes"]} </td>
+            </tr>
+        </table>
+    `
+    }
+}
+
 function load_origin_asrank(origin, style=1) {
     $.ajax({
         url: `http://as-rank.caida.org/api/v1/asns/${origin}`,
@@ -64,15 +103,23 @@ function load_origin_asrank(origin, style=1) {
                 let as_name = process_as_name(asorg["data"]);
                 if(style === 1){
                     $(`.as-btn-${origin}`).each(function () {
-                        // $(this).html(`AS${origin} ${asorg["data"]["country"]} ${as_name}`);
-                        // $(this).attr("title", `${asorg["data"]["country_name"]}, ${asorg["data"]["org"]["name"]}`)
                         if(as_name === "Null"){
-                            as_name = `AS${origin}`
+                            as_name = `AS${origin}`;
+                            $(this).html(`${as_name} (${asorg["data"]["country"]}) `);
+                            $(this).tooltip({
+                                title: "Unknown",
+                                html: true,
+                                placement: "auto"
+                            });
+                        } else{
+                            $(this).html(`${as_name} (${asorg["data"]["country"]}) `);
+                            $(this).tooltip({
+                                title: _construct_asrank_table(asorg, true),
+                                html: true,
+                                placement: "auto"
+                            });
                         }
-                        $(this).html(`${as_name} (${asorg["data"]["country"]}) `);
-                        // pity, the following looks nice if only a few badges is on
-                        // $(this).html(`${as_name} <span class="badge">${asorg["data"]["country"]}</span> `);
-                        $(this).attr("title", `AS${origin}, ${asorg["data"]["org"]["name"]}, ${asorg["data"]["country_name"]}, `)
+                        console.log(_construct_asrank_table(asorg))
                     });
                 } else if (style === 2){
                     $(`.as-btn-${origin}`).each(function () {
@@ -80,14 +127,34 @@ function load_origin_asrank(origin, style=1) {
                         // $(this).attr("title", `${asorg["data"]["country_name"]}, ${asorg["data"]["org"]["name"]}`)
                         if(as_name === "Null"){
                             as_name = `AS${origin}`
+                            $(this).html(`AS${origin} ${as_name} (${asorg["data"]["country"]}) `);
+                            $(this).tooltip({
+                                title: "Unknown",
+                                html: true,
+                                placement: "auto"
+                            });
+                        } else {
+                            $(this).html(`AS${origin} ${as_name} (${asorg["data"]["country"]}) `);
+                            $(this).tooltip({
+                                title: _construct_asrank_table(asorg),
+                                html: true,
+                                placement: "auto"
+                            });
                         }
-                        $(this).html(`AS${origin} ${as_name} (${asorg["data"]["country"]}) `);
-                        // pity, the following looks nice if only a few badges is on
-                        // $(this).html(`${as_name} <span class="badge">${asorg["data"]["country"]}</span> `);
-                        $(this).attr("title", `AS${origin}, ${asorg["data"]["org"]["name"]}, ${asorg["data"]["country_name"]}, `)
                     });
 
                 }
+            } else {
+                // as org information not found
+                $(`.as-btn-${origin}`).each(function () {
+                    let as_name = `AS${origin}`;
+                    $(this).html(`${as_name}`);
+                    $(this).tooltip({
+                        title: "Unknown",
+                        html: true,
+                        placement: "auto"
+                    });
+                });
             }
         },
     })
