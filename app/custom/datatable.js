@@ -5,12 +5,17 @@ const params = new Map(location.search.slice(1).split('&').map(kv => kv.split('=
 
 function load_events_table() {
     const event_type = get_event_type_from_url();
+    let frame_type = event_type;
+    if(frame_type==="all"){
+        frame_type = "overall"
+    }
     $.extend(true, $.fn.dataTable.defaults, {
         "searching": false,
         "ordering": false,
     });
     $(document).ready(function () {
         $('body').tooltip({selector: '[data-toggle="tooltip"]'});
+        $("#stats-frame").html(`<iframe src="https://ioda.caida.org/public/hijacks-trworthy-${frame_type}" width="100%" height="500" frameborder="0"></iframe>`);
         let url = `/json/events/${event_type}?`;
         let search_text = [];
         if(!params.has("")){
