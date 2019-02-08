@@ -3,17 +3,35 @@ let whois_dict = {};
 let cidr_loose_re = /^[0-9]+[.:][0-9.:/]*$/;
 const params = new Map(location.search.slice(1).split('&').map(kv => kv.split('=')))
 
-function load_events_table(event_type) {
+function load_events_table() {
+    const event_type = get_event_type_from_url();
+    let frame_type = event_type;
+    if(frame_type==="all"){
+        frame_type = "overall"
+    }
     $.extend(true, $.fn.dataTable.defaults, {
         "searching": false,
         "ordering": false,
     });
     $(document).ready(function () {
+        $('body').tooltip({selector: '[data-toggle="tooltip"]'});
+        $("#stats-frame").html(`<iframe src="https://ioda.caida.org/public/hijacks-trworthy-${frame_type}" width="100%" height="500" frameborder="0"></iframe>`);
         let url = `/json/events/${event_type}?`;
         let search_text = [];
+        let start_ts = "";
+        let end_ts = "";
         if(!params.has("")){
             params.forEach(function(value, key, map){
-                url += `${key}=${value}&`;
+                if(!key.startsWith("ts_")) {
+                    // strip existing searching ranges
+                    url += `${key}=${value}&`;
+                }else{
+                    if(key==="ts_start"){
+                        start_ts = value
+                    } else if(key==="ts_end"){
+                        end_ts = value
+                    }
+                }
                 if(key === "asn"){
                     search_text.push("AS"+value)
                 } else if (key === "prefix") {
@@ -21,7 +39,14 @@ function load_events_table(event_type) {
                 }
             });
         }
+        if(start_ts!==""){
+            $('#reportrange span').html(start_ts + ' - ' + end_ts);
+        }
         $("#search-box").val(search_text.join(" "));
+        let times = $('#reportrange span').html().split(" - ");
+        if(Date.parse(times[0]) !==null){
+            url += `ts_start=${times[0]}&ts_end=${times[1]}`;
+        }
         url = url.replace(/[?&]$/i, "");
         console.log(url);
         datatable = $('#datatable').DataTable({
@@ -29,13 +54,14 @@ function load_events_table(event_type) {
                 "serverSide": true,
                 "searching": false,
                 "ordering": false,
+                "pageLength": 25,
                 "ajax": {
                     // "url": `/json/events/${event_type}`,
                     "url": url,
                 },
                 "columns": [
-                    {title: "Poential Victim", "data": 'pfx_events'},
-                    {title: "Poential Attacker", "data": 'pfx_events'},
+                    {title: "Potential Victim", "data": 'pfx_events'},
+                    {title: "Potential Attacker", "data": 'pfx_events'},
                     {title: "Largest Prefix", "data": 'pfx_events'},
                     {title: "# Prefix Events", "data": 'pfx_events'},
                     {title: "Start Time", "data": 'view_ts'},
@@ -45,107 +71,43 @@ function load_events_table(event_type) {
                 "columnDefs": [
                     {
                         "render": function (data, type, row) {
-                            let pfxevent = data[0];
-                            switch(row["event_type"]){
-                                case "moas":
-                                    let oldcomers = new Set();
-                                    for(let i in pfxevent["origins"]){
-                                        oldcomers.add(pfxevent['origins'][i]);
-                                    }
-                                    for(let i in pfxevent["newcomer_origins"]){
-                                        oldcomers.delete(pfxevent['newcomer_origins'][i])
-                                    }
-                                    return [...oldcomers].join(" ");
-                                case "submoas":
-                                    return pfxevent["sub_origins"].join(" ");
-                                case "defcon":
-                                    return pfxevent["origins"].join(" ");
-                                case "edges":
-                                    return [pfxevent["as1"], pfxevent["as2"]].join(" ");
-                                default:
-                                    return "wrong"
-                            }
+                            return render_origin_links( extract_victims(data[0], row["event_type"]));
                         },
                         "targets": [0]
                     },
                     {
                         "render": function (data, type, row) {
-                            let pfxevent = data[0];
-                            switch(row["event_type"]){
-                                case "moas":
-                                    return pfxevent["newcomer_origins"].join(" ");
-                                case "submoas":
-                                    return pfxevent["super_origins"].join(" ");
-                                case "defcon":
-                                    return "N/A";
-                                case "edges":
-                                    return [pfxevent["as1"], pfxevent["as2"]].join(" ");
-                                default:
-                                    return "wrong"
-                            }
+                            return render_origin_links( extract_attackers(data[0], row["event_type"]))
                         },
                         "targets": [1]
                     },
                     {
+                        "width": "8em",
                         "render": function (data, type, row) {
-                            let largest_pfx_len = 1000;
-                            let largest_pfx = "";
-                            for(let i in data){
-                                let pfxevent = data[i];
-                                let p = "";
-                                if("prefix" in pfxevent){
-                                    p = pfxevent["prefix"];
-                                } else {
-                                    p = pfxevent["sub_pfx"];
-                                }
-                                let len = parseInt(p.split("/")[1])
-                                if(len <= largest_pfx_len){
-                                    largest_pfx = p;
-                                    largest_pfx_len = len;
-                                }
-                            }
-                            return largest_pfx;
+                            return extract_largest_prefix(data)
                         },
                         "targets": [2]
                     },
                     {
+                        "width": "12em",
                         "render": function (data, type, row) {
-                            let num_pfx = 0;
-                            let num_addrs = 0;
-                            for(let i in data){
-                                num_pfx++;
-                                let pfxevent = data[i];
-                                let p = "";
-                                if("prefix" in pfxevent){
-                                    p = pfxevent["prefix"];
-                                } else {
-                                    p = pfxevent["sub_pfx"];
-                                }
-                                let len = parseInt(p.split("/")[1]);
-                                if(len<=32){
-                                    num_addrs += Math.pow(2, 32-len);
-                                } else {
-                                    num_addrs += Math.pow(2, 128-len);
-                                    console.log(len, num_addrs)
-                                }
-                            }
-                            if(num_addrs.toString().includes("e")){
-                                num_addrs = num_addrs.toPrecision(2)
-                            }
-                            return `${num_pfx} pfxs ${num_addrs} addresses`
+                            [num_pfx, num_addrs] = extract_impact(data);
+                            return render_impact(num_pfx, num_addrs)
                         },
                         "targets": [3]
                     },
                     {
+                        "width": "10em",
                         "render": function (data, type, row) {
                             return data.split("T").join("  ")
                         },
                         "targets": [4]
                     },
                     {
+                        "width": "6em",
                         "render": function (data, type, row) {
                             if (data === null) {
-                                return "On-Going"
+                                return "ongoing"
                             } else {
                                 start_ts = Date.parse(row["view_ts"]);
                                 end_ts = Date.parse(data);
@@ -155,17 +117,9 @@ function load_events_table(event_type) {
                         "targets": [5]
                     },
                     {
+                        "width": "13em",
                         "render": function (data, type, row) {
-                            switch( row["event_type"]){
-                                case 'moas':
-                                    return "origin hijack (moas)";
-                                case 'submoas':
-                                    return "origin hijack (submoas)";
-                                case 'edges':
-                                    return "path manipulation (new edge)";
-                                case 'defcon':
-                                    return "path manipulation (defcon)";
-                            }
+                            return event_type_explain[row["event_type"]];
                         },
                         "targets": [6]
                     },
@@ -173,10 +127,12 @@ function load_events_table(event_type) {
             }
         );
 
-        $('#datatable tbody').on('click', 'tr', function () {
+        $('#datatable tbody').on('click', 'tr', function (e) {
+            if(e.target.tagName === 'A'){
+                return;
+            }
             var data = datatable.row($(this)).data();
-            console.log("/json/event/id/" + data['id']);
-            window.open("/event/" + data['event_type'] + "/" + data['id'], '_self', false);
+            window.open("/events/" + data['event_type'] + "/" + data['id'], '_self', false);
         });
     });
 
@@ -227,10 +183,10 @@ function load_events_table(event_type) {
                 ready = true;
             }
         }
-        if(!ready){
-            alert("not enough search parameters");
-            return;
-        }
+        // if(!ready){
+        //     alert("not enough search parameters");
+        //     return;
+        // }
         let url = `/events/${event_type}?`;
         if(prefix!==""){
             url+=`prefix=${prefix}&`;
@@ -287,6 +243,7 @@ function extract_pfx_event_fingerprint(pfx_event, event_type) {
 
 function load_event_details() {
     $(document).ready(function () {
+        $('body').tooltip({selector: '[data-toggle="tooltip"]'});
         const event_id = get_event_id_from_url();
         const event_type = get_event_type_from_url();
         load_event_scripts();
@@ -294,7 +251,8 @@ function load_event_details() {
         $.ajax({
             url: "/json/event/id/" + event_id,
             success: function (event) {
-                render_pfx_event_table(event_type, event["data"]);
+                render_event_details_table(event_type, event);
+                render_pfx_event_table(event_type, event["pfx_events"]);
             }
         });
     })

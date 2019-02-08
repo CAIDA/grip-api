@@ -1,7 +1,5 @@
 function get_moas_columns() {
     return [
-        {"title": "Origins", "data": 'origins'},
-        {"title": "Newcomer Origins", "data": 'newcomer_origins'},
         {"title": "Prefix", "data": 'prefix'},
         {"title": "Tags", "data": 'tags'},
         {"title": "Traceroutes", "data": 'traceroutes'},
@@ -12,23 +10,20 @@ function get_moas_column_defs() {
     return [
         {
             "render": function (data, type, row) {
-                return render_origin_links(data + '');
+                return render_tags(data)
             },
-            "targets": [0, 1]
+            "targets": [1]
         },
         {
             "render": function (data, type, row) {
-                return render_prefix_link(data + '');
+                if(data.length > 0){
+                    return "yes"
+                } else {
+                    return "no"
+                }
             },
             "targets": [2]
-        },
-        {
-            "render": function (data, type, row) {
-                return render_traceroutes_link(row)
-            },
-            "targets": [4]
         }
-
     ];
 }
 

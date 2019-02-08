@@ -1,9 +1,7 @@
 function get_submoas_columns() {
     return [
-        {"title": "Super Origins", "data": 'super_origins'},
-        {"title": "Sub Origins", "data": 'sub_origins'},
-        {"title": "Super Prefix", "data": 'super_pfx'},
         {"title": "Sub Prefix", "data": 'sub_pfx'},
+        {"title": "Super Prefix", "data": 'super_pfx'},
         {"title": "Tags", "data": 'tags'},
         {"title": "Traceroutes", "data": 'traceroutes'},
     ];
@@ -13,23 +11,21 @@ function get_submoas_column_defs() {
     return [
         {
             "render": function (data, type, row) {
-                return render_origin_links(data + '');
+                return render_tags(data)
             },
-            "targets": [0, 1]
+            "targets": [2]
         },
         {
             "render": function (data, type, row) {
-                return render_prefix_link(data + '');
+                if(data.length > 0){
+                    return "yes"
+                } else {
+                    return "no"
+                }
+                // return render_traceroutes_link(row)
             },
-            "targets": [2, 3]
-        },
-        {
-            "render": function (data, type, row) {
-                return render_traceroutes_link(row)
-            },
-            "targets": [5]
+            "targets": [3]
         }
-
     ];
 }
 

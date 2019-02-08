@@ -2,8 +2,18 @@ function load_pfx_event() {
     $(document).ready(function () {
         let path = window.location.pathname.replace(/\/$/, "");
         let path_segments = path.split("/");
+        const event_type = get_event_type_from_url();
         let event_id = path_segments[path_segments.length - 2];
         let pfx_fingerprint = path_segments[path_segments.length - 1];
+
+        // TODO: the following page loads duplicate information from backend, should update later to reduce overhead
+        $.ajax({
+            url: "/json/event/id/" + event_id,
+            success: function (event) {
+                render_event_details_table(event_type, event);
+                render_pfx_event_table(event_type, event["pfx_events"]);
+            }
+        });
 
         $.ajax({
             url: `/json/pfx_event/id/${event_id}/${pfx_fingerprint}`,
@@ -13,7 +23,7 @@ function load_pfx_event() {
                 draw_pfx_event_table(pfx_event);
                 let measurements = draw_traceroute_table(pfx_event);
                 draw_sankeys(pfx_event);
-                draw_traceroute_vis(measurements);
+                // draw_traceroute_vis(measurements);
             }
         });
     });
@@ -153,7 +163,7 @@ function draw_traceroute_table(pfx_event) {
         "columnDefs": [
             {
                 "render": function (data, type, row) {
-                    load_origin_asrank(data);
+                    load_origin_asrank(data, style=2);
                     return `<a class="btn btn-default as-btn as-btn-${data}" data-toggle="tooltip" title="" data-placement="top" href='http://as-rank.caida.org/asns/${data}')> AS${data} </a>`
                     // return `<button class="origin-button" onclick="window.open('http://as-rank.caida.org/asns/${data}')"> ${data} </button>`
                 },

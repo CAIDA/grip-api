@@ -1,7 +1,5 @@
 function get_edges_columns() {
     return [
-        {"title": "AS1", "data": 'as1'},
-        {"title": "AS2", "data": 'as2'},
         {"title": "Prefix", "data": 'prefix'},
         {"title": "Tags", "data": 'tags'},
         {"title": "Traceroutes", "data": 'traceroutes'},
@@ -12,21 +10,20 @@ function get_edges_column_defs() {
     return [
         {
             "render": function (data, type, row) {
-                return render_origin_links(data + '');
+                return render_tags(data)
             },
-            "targets": [0, 1]
+            "targets": [1]
         },
         {
             "render": function (data, type, row) {
-                return render_prefix_link(data + '');
+                if(data.length > 0){
+                    return "yes"
+                } else {
+                    return "no"
+                }
+                // return render_traceroutes_link(row)
             },
             "targets": [2]
-        },
-        {
-            "render": function (data, type, row) {
-                return render_traceroutes_link(row)
-            },
-            "targets": [4]
         }
     ];
 }

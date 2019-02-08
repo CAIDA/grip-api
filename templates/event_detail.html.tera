@@ -5,6 +5,62 @@
     <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="x_panel">
             <div class="x_title">
+                <h2 id="event_title"> Event Details </h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <div class="col-xs-6">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <tbody>
+                            <tr>
+                                <th style="width:50%">Potential Victim:</th>
+                                <td id="event-details-victim"></td>
+                            </tr>
+                            <tr>
+                                <th>Potential Attacker:</th>
+                                <td id="event-details-attacker"></td>
+                            </tr>
+                            <tr>
+                                <th>Largest prefix:</th>
+                                <td id="event-details-prefix"></td>
+                            </tr>
+                            <tr>
+                                <th>Impact:</th>
+                                <td id="event-details-impact"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <tbody>
+                            <tr>
+                                <th style="width:50%">Start time:</th>
+                                <td id="event-details-startts"></td>
+                            </tr>
+                            <tr>
+                                <th>End time:</th>
+                                <td id="event-details-endts"></td>
+                            </tr>
+                            <tr>
+                                <th>Duration:</th>
+                                <td id="event-details-duration"></td>
+                            </tr>
+                            <tr>
+                                <th>Event type:</th>
+                                <td id="event-details-type"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="x_panel">
+            <div class="x_title">
                 <h2 id="table_title"> Prefix Events </h2>
                 <div class="clearfix"></div>
             </div>
