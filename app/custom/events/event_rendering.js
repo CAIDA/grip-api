@@ -111,7 +111,7 @@ function render_event_details_table(event_type, event){
 
     if (event["finished_ts"] === null) {
         $("#event-details-duration").text("ongoing");
-        $("#event-details-endts").text("N/A");
+        $("#event-details-endts").text("Unknown");
     } else {
         start_ts = Date.parse(event["view_ts"]);
         end_ts = Date.parse(event["finished_ts"]);
@@ -144,7 +144,7 @@ function format_prefix_table(prefix) {
 function render_origin_links(origin_lst, style = 1) {
     let links = [];
     if(origin_lst[0] === ""){
-        return "N/A"
+        return "Unknown"
     }
 
     origin_lst.forEach(function (origin) {
