@@ -18,9 +18,20 @@ function load_events_table() {
         $("#stats-frame").html(`<iframe src="https://ioda.caida.org/public/hijacks-trworthy-${frame_type}" width="100%" height="500" frameborder="0"></iframe>`);
         let url = `/json/events/${event_type}?`;
         let search_text = [];
+        let start_ts = "";
+        let end_ts = "";
         if(!params.has("")){
             params.forEach(function(value, key, map){
-                url += `${key}=${value}&`;
+                if(!key.startsWith("ts_")) {
+                    // strip existing searching ranges
+                    url += `${key}=${value}&`;
+                }else{
+                    if(key==="ts_start"){
+                        start_ts = value
+                    } else if(key==="ts_end"){
+                        end_ts = value
+                    }
+                }
                 if(key === "asn"){
                     search_text.push("AS"+value)
                 } else if (key === "prefix") {
@@ -28,7 +39,14 @@ function load_events_table() {
                 }
             });
         }
+        if(start_ts!==""){
+            $('#reportrange span').html(start_ts + ' - ' + end_ts);
+        }
         $("#search-box").val(search_text.join(" "));
+        let times = $('#reportrange span').html().split(" - ");
+        if(Date.parse(times[0]) !==null){
+            url += `ts_start=${times[0]}&ts_end=${times[1]}`;
+        }
         url = url.replace(/[?&]$/i, "");
         console.log(url);
         datatable = $('#datatable').DataTable({

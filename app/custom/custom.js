@@ -220,8 +220,7 @@ function init_daterangepicker() {
         }
     };
 
-    // $('#reportrange span').html(moment().subtract(29, 'days').format('YYYY-MM-DDTHH:mm') + ' - ' + moment().format('YYYY-MM-DDTHH:mm'));
-    $('#reportrange span').html("filter by time range");
+    $('#reportrange span').html(moment().subtract(1, 'days').format('YYYY-MM-DDTHH:mm') + ' - ' + moment().format('YYYY-MM-DDTHH:mm'));
     let daterange = $('#reportrange');
     daterange.daterangepicker(optionSet1, cb);
     daterange.on('show.daterangepicker', function() {
