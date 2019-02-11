@@ -1,11 +1,11 @@
 use serde_json::json;
 use serde_json::Value;
-use rocket_contrib::json::Json;
 
 /// shared state across rocket threads
 pub struct SharedData {
     pub es_url: String,
     pub tag_dict: Value,
+    pub resource_dir: String,
 }
 
 pub fn get_tag_dict() -> Value{

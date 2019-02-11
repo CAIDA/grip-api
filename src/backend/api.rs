@@ -21,11 +21,11 @@ LOAD HTML PAGES
 
 /// load static content
 #[get("/app/<file..>")]
-pub fn files(file: PathBuf) -> Option<NamedFile> {
+pub fn files(file: PathBuf, data: State<SharedData>) -> Option<NamedFile> {
     let path_str = file.to_str().unwrap();
-    let mut file_path = String::from("app/");
+    let mut file_path = data.resource_dir.clone();
+    file_path.push_str("/app/");
     file_path.push_str(path_str);
-
     NamedFile::open(Path::new(&file_path)).ok()
 }
 
@@ -114,7 +114,6 @@ pub fn json_pfx_event_by_id(id: &RawStr, fingerprint: &RawStr, base_url: State<S
         )),
     }
 }
-
 
 
 #[get("/json/events/<event_type>?<ts_start>&<ts_end>&<draw>&<start>&<length>&<asn>&<prefix>")]
