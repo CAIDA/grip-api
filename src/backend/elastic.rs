@@ -1,7 +1,8 @@
+use std::error::Error;
+
 use elastic::prelude::*;
 use serde_json::json;
 use serde_json::Value;
-use std::error::Error;
 
 use crate::backend::errors::MyError;
 
@@ -9,7 +10,7 @@ pub struct ElasticSearchBackend {
     es_client: SyncClient,
 }
 
-pub struct SearchResult{
+pub struct SearchResult {
     pub results: Vec<Value>,
     pub total: u64,
 }
@@ -43,7 +44,7 @@ impl ElasticSearchBackend {
         for hit in res.hits() {
             let doc = hit.document().unwrap().clone();
 
-            return Ok( SearchResult{results: vec!(doc), total: res.total()} );
+            return Ok(SearchResult { results: vec!(doc), total: res.total() });
         }
         Err(Box::new(MyError("Oops".into())))
     }
@@ -83,7 +84,7 @@ impl ElasticSearchBackend {
                 pfx_must.push(json!({ "prefix": { "pfx_events.super_pfx.keyword" : p }}));
                 pfx_must.push(json!({ "prefix": { "pfx_events.prefix.keyword" : p }}));
                 must_terms.push(json!({"bool": {"minimum_should_match": 1, "should": pfx_must}}));
-            },
+            }
             _ => {}
         }
         match asn {
@@ -94,12 +95,12 @@ impl ElasticSearchBackend {
                 asn_must.push(json!({ "match": { "pfx_events.as1.keyword" : value }}));
                 asn_must.push(json!({ "match": { "pfx_events.as2.keyword" : value }}));
                 must_terms.push(json!({"bool": {"minimum_should_match": 1, "should": asn_must}}));
-            },
+            }
             _ => {}
         }
         //must_terms["inference.tr_worthy"] = json!(true);
 
-        let query:serde_json::Value = json!({
+        let query: serde_json::Value = json!({
                 "from":start, "size":max_entries,
                 "query": {
                     "bool": {
@@ -113,15 +114,12 @@ impl ElasticSearchBackend {
                 "sort": { "view_ts": { "order": "desc" }}
             });
 
-        println!("{}", serde_json::to_string_pretty(&query).unwrap());
-
         let res = self
             .es_client
             .search::<Value>()
             .index(format!("hijacks-{}", etype))
             .body(query)
             .send()?;
-
 
         // Iterate through the hits in the response and build a vector.
         let mut res_vec: Vec<Value> = Vec::new();
@@ -131,6 +129,6 @@ impl ElasticSearchBackend {
             res_vec.push(doc);
         }
 
-        Ok(SearchResult{results: res_vec, total: res.total()})
+        Ok(SearchResult { results: res_vec, total: res.total() })
     }
 }
