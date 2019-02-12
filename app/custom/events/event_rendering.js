@@ -149,7 +149,7 @@ function render_origin_links(origin_lst, style = 1) {
 
     origin_lst.forEach(function (origin) {
         // links.push(`<a class="btn btn-default as-btn as-btn-${origin}" data-toggle="tooltip" title="" data-placement="top" href='http://as-rank.caida.org/asns/${origin}' target="_blank")> AS${origin} </a>`)
-        links.push(`<div><span class="as-country-${origin} style='white-space:nowrap'"></span> <a class="link as-btn as-btn-${origin}" data-toggle="tooltip" title="" data-placement="top" href='http://as-rank.caida.org/asns/${origin}' target="_blank")> AS${origin} </a></div>`)
+        links.push(`<div><span class="as-country-${origin} style='white-space:nowrap'"></span> <a class="link as-btn as-btn-${origin}" data-toggle="tooltip" title="" data-placement="top" href='//as-rank.caida.org/asns/${origin}' target="_blank")> AS${origin} </a></div>`)
     });
     load_origins_asrank(origin_lst, style);
 
@@ -161,7 +161,7 @@ function render_prefix_link(prefix) {
     let prefix_class = prefix.replace("/", "-").replace(/\./g, "-");
     // load_ripe_data(prefix, prefix_class);
     load_who_is(prefix);
-    return `<a class="btn btn-default pfx-btn-${prefix_class}" target="_blank" href='https://stat.ripe.net/${prefix}#tabId=at-a-glance')> ${prefix}</a>`
+    return `<a class="btn btn-default pfx-btn-${prefix_class}" target="_blank" href='//stat.ripe.net/${prefix}#tabId=at-a-glance')> ${prefix}</a>`
 }
 
 function render_traceroutes_link(data) {

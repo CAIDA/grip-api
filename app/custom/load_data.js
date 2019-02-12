@@ -1,6 +1,6 @@
 function load_ripe_data(prefix, prefix_class) {
     $.ajax({
-        url: `https://stat.ripe.net/data/prefix-overview/data.json?resource=${prefix}`,
+        url: `//stat.ripe.net/data/prefix-overview/data.json?resource=${prefix}`,
         success: function (pfx_info) {
             let asns = pfx_info["data"]["asns"].map(function (elem) {
                 return "AS" + elem["asn"]
@@ -15,7 +15,7 @@ function load_who_is(prefix) {
     if (!(prefix in whois_dict)) {
         whois_dict[prefix] = "";
         $.ajax({
-            url: `https://stat.ripe.net/data/whois/data.json?resource=${prefix}`,
+            url: `//stat.ripe.net/data/whois/data.json?resource=${prefix}`,
             success: function (pfx_whois) {
                 // let authorities = pfx_whois["data"]["authorities"].map(v => v.toLowerCase());
                 // authorities.push("radb");
@@ -56,7 +56,6 @@ function load_origins_asrank(origin_lst, style) {
 }
 
 function _construct_asrank_table(asorg, simple=false){
-    console.log(asorg)
     if(simple){
         return `
 ASN: ${asorg["data"]["id"]} <br/>
@@ -108,7 +107,7 @@ function render_country(asorg) {
 
 function load_origin_asrank(origin, style=1) {
     $.ajax({
-        url: `http://as-rank.caida.org/api/v1/asns/${origin}`,
+        url: `//as-rank.caida.org/api/v1/asns/${origin}`,
         success: function (asorg) {
             if (asorg["data"] != null) {
                 let as_name = process_as_name(asorg["data"]);

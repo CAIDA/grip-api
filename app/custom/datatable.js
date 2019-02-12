@@ -15,7 +15,7 @@ function load_events_table() {
     });
     $(document).ready(function () {
         $('body').tooltip({selector: '[data-toggle="tooltip"]'});
-        $("#stats-frame").html(`<iframe src="https://ioda.caida.org/public/hijacks-trworthy-${frame_type}" width="100%" height="500" frameborder="0"></iframe>`);
+        $("#stats-frame").html(`<iframe src="//ioda.caida.org/public/hijacks-trworthy-${frame_type}" width="100%" height="500" frameborder="0"></iframe>`);
         let url = `/json/events/${event_type}?`;
         let search_text = [];
         let start_ts = "";
