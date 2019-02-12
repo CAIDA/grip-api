@@ -107,7 +107,7 @@ function render_country(asorg) {
 
 function load_origin_asrank(origin, style=1) {
     $.ajax({
-        url: `//as-rank.caida.org/api/v1/asns/${origin}`,
+        url: `/json/asrank/${origin}`,
         success: function (asorg) {
             if (asorg["data"] != null) {
                 let as_name = process_as_name(asorg["data"]);

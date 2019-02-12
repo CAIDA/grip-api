@@ -115,6 +115,14 @@ pub fn json_pfx_event_by_id(id: &RawStr, fingerprint: &RawStr, base_url: State<S
     }
 }
 
+#[get("/json/asrank/<asn>")]
+pub fn json_get_asrank(asn: usize) -> Json<Value> {
+    Json(
+        reqwest::get(format!("http://as-rank.caida.org/api/v1/asns/{}", asn).as_str())
+            .unwrap().json().unwrap()
+    )
+}
+
 
 #[get("/json/events/<event_type>?<ts_start>&<ts_end>&<draw>&<start>&<length>&<asn>&<prefix>")]
 pub fn json_list_events(event_type: &RawStr, ts_start: Option<String>, ts_end: Option<String>,

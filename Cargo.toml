@@ -7,6 +7,7 @@ edition = "2018"
 [dependencies]
 # webframework
 rocket = "0.4.0"
+reqwest = "0.9.9"
 
 # elasticsearch
 elastic = "0.20.10"

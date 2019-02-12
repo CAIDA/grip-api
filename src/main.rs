@@ -48,6 +48,7 @@ fn main() {
                 json_pfx_event_by_id,
                 json_list_events,
                 json_get_tags,
+                json_get_asrank,
             ],
         )
         .attach(AdHoc::on_attach("get elastic search url", |rocket| {
