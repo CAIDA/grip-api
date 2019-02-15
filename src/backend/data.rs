@@ -63,6 +63,12 @@ pub fn get_tag_dict() -> Value{
                 "moas-multi-some-newcomers-are-directly-connected",
                 "moas-multi-some-newcomers-are-upstreams",
                 "moas-multi-some-newcomers-are-downstreams",
+                "moas-newcomer-small-asn",
+                "moas-origin-small-edit-distance",
+                "moas-prefix-small-edit-distance",
+                "moas-newcomer-is-direct-downstream",
+                "moas-newcomer-is-direct-upstream",
+                "moas-newcomer-is-neighbor"
             ],
         },
         "submoas": {
@@ -117,6 +123,12 @@ pub fn get_tag_dict() -> Value{
                 "submoas-multi-some-newcomers-are-directly-connected",
                 "submoas-multi-some-newcomers-are-upstreams",
                 "submoas-multi-some-newcomers-are-downstreams",
+                "submoas-newcomer-small-asn",
+                "submoas-origin-small-edit-distance",
+                "submoas-prefix-small-edit-distance",
+                "submoas-newcomer-is-direct-downstream",
+                "submoas-newcomer-is-direct-upstream",
+                "submoas-newcomer-is-neighbor"
             ],
         },
         "defcon": {
