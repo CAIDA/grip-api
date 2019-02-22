@@ -143,7 +143,7 @@ function format_prefix_table(prefix) {
 
 function render_origin_links(origin_lst, style = 1) {
     let links = [];
-    if(origin_lst.length === 0 || origin_lst[0] === ""){
+    if(origin_lst === null || origin_lst.length === 0 || origin_lst[0] === ""){
         return "Unknown"
     }
 
