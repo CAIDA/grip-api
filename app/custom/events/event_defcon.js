@@ -3,7 +3,7 @@ function get_defcon_columns() {
         {"title": "Sub Prefix", "data": 'sub_pfx'},
         {"title": "Super Prefix", "data": 'super_pfx'},
         {"title": "Tags", "data": 'tags'},
-        {"title": "Traceroutes", "data": 'traceroutes'},
+        {"title": "Traceroutes Available", "data": 'traceroutes'},
     ];
 }
 

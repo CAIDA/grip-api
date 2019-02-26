@@ -2,7 +2,7 @@ function get_edges_columns() {
     return [
         {"title": "Prefix", "data": 'prefix'},
         {"title": "Tags", "data": 'tags'},
-        {"title": "Traceroutes", "data": 'traceroutes'},
+        {"title": "Traceroutes Available", "data": 'traceroutes'},
     ];
 }
 
