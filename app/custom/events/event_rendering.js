@@ -6,6 +6,14 @@ function isEmpty(obj) {
     return Object.keys(obj).length === 0;
 }
 
+event_modal_info = {
+    "download_path": "",
+    "json_raw_str": "",
+    "content_id": "#json_modal_event",
+    "button_class": ".full-event-modal-download",
+    "anchorId": 'downloadAnchorElemEvent'
+};
+
 
 function load_event_scripts() {
     let script_paths = [
@@ -57,7 +65,7 @@ function load_event_scripts() {
 }
 
 
-function render_pfx_event_table(event_type, event, table_id = "#datatable", paging = true) {
+function render_pfx_event_table(event_type, pfx_events, event_id = "", table_id = "#datatable", paging = true) {
 
     if (isEmpty(table_info_dict)) {
         load_event_scripts()
@@ -65,7 +73,7 @@ function render_pfx_event_table(event_type, event, table_id = "#datatable", pagi
 
     // render table based on event types
     let table = $(table_id).DataTable({
-        data: event,
+        data: pfx_events,
         paging: paging,
         searching: false,
         "columns": table_info_dict[event_type]["columns"],
@@ -74,10 +82,11 @@ function render_pfx_event_table(event_type, event, table_id = "#datatable", pagi
 
     $('#datatable tbody').on('click', 'tr', function () {
         var data = table.row($(this)).data();
-        let path = window.location.pathname.replace(/\/$/, "");
         let fingerprint = extract_pfx_event_fingerprint(data, event_type);
+        let path = window.location.pathname.replace(/\/$/, "");
         window.open(`${path}/${fingerprint}`, "_self", false)
     });
+
 }
 
 function render_impact(num_pfx, num_addrs) {
@@ -94,7 +103,6 @@ function render_impact(num_pfx, num_addrs) {
     }
     return impact_str
 }
-
 
 function render_event_details_table(event_type, event) {
     console.log(event);
@@ -123,6 +131,17 @@ function render_event_details_table(event_type, event) {
         $("#event-details-duration").text(`${(end_ts - start_ts) / 1000 / 60} min`);
         $("#event-details-endts").text(event["finished_ts"]);
     }
+
+    event_modal_info ["download_path"] = event["id"] + ".json";
+    event_modal_info["json_raw_str"] = JSON.stringify(event, undefined, 4);
+    $(event_modal_info["content_id"]).html(syntaxHighlight(event_modal_info["json_raw_str"]));
+    $(".full-event-modal-download").click(function () {
+        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(event_modal_info["json_raw_str"]);
+        var dlAnchorElem = document.getElementById(event_modal_info["anchorId"]);
+        dlAnchorElem.setAttribute("href", dataStr);
+        dlAnchorElem.setAttribute("download", event_modal_info["download_path"]);
+        dlAnchorElem.click();
+    });
 }
 
 /* Formatting function for row details - modify as you need */

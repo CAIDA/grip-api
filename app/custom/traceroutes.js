@@ -1,3 +1,11 @@
+prefix_modal_info = {
+    "download_path": "",
+    "json_raw_str": "",
+    "content_id": "#json_modal_prefix",
+    "button_class": ".prefix-event-modal-download",
+    "anchorId": 'downloadAnchorElemPrefix'
+};
+
 function load_pfx_event() {
     $(document).ready(function () {
         let path = window.location.pathname.replace(/\/$/, "");
@@ -18,9 +26,7 @@ function load_pfx_event() {
         $.ajax({
             url: `/json/pfx_event/id/${event_id}/${pfx_fingerprint}`,
             success: function (pfx_event) {
-                let download_path = event_id + "-" + pfx_fingerprint + ".json";
-                draw_json_raw(JSON.stringify(pfx_event, undefined, 4), download_path);
-                draw_pfx_event_table(pfx_event);
+                draw_pfx_event_table(pfx_event, event_id, pfx_fingerprint);
                 let measurements = draw_traceroute_table(pfx_event);
                 draw_sankeys(pfx_event);
                 // draw_traceroute_vis(measurements);
@@ -131,20 +137,24 @@ function draw_traceroute_vis(measurements) {
     console.log("map loaded")
 }
 
-function draw_pfx_event_table(pfx_event){
-    render_pfx_event_table(get_event_type_from_url(), [pfx_event], "#pfx_event_table", false)
+function draw_pfx_event_table(pfx_event, event_id, fingerprint){
+    render_pfx_event_table(get_event_type_from_url(), [pfx_event], event_id, "#pfx_event_table", false)
+
+    prefix_modal_info["download_path"] = event_id + "-" + fingerprint + ".json";
+    prefix_modal_info["json_raw_str"] = JSON.stringify(pfx_event, undefined, 4);
+    $(prefix_modal_info["content_id"]).html(syntaxHighlight(prefix_modal_info["json_raw_str"]));
+
+    $(prefix_modal_info["button_class"]).click(function () {
+        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(prefix_modal_info["json_raw_str"]);
+        var dlAnchorElem = document.getElementById(prefix_modal_info["anchorId"]);
+        dlAnchorElem.setAttribute("href", dataStr);
+        dlAnchorElem.setAttribute("download", prefix_modal_info["download_path"]);
+        dlAnchorElem.click();
+    });
 
 }
 
-function draw_json_raw(json_raw_str, download_path) {
-    $("#json_modal").html(syntaxHighlight(json_raw_str));
-    $(".pfx-event-modal-download").click(function () {
-        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(json_raw_str);
-        var dlAnchorElem = document.getElementById('downloadAnchorElem');
-        dlAnchorElem.setAttribute("href", dataStr);
-        dlAnchorElem.setAttribute("download", download_path);
-        dlAnchorElem.click();
-    });
+function draw_json_raw(json_raw_str, download_path, content_id, button_class, anchorId) {
 }
 
 function draw_traceroute_table(pfx_event) {

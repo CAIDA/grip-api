@@ -58,6 +58,34 @@
                     </div>
                 </div>
             </div>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#eventModal">
+                Raw JSON
+            </button>
+            <!-- Modal -->
+            <div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">Raw JSON</h4>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary full-event-modal-download">Download</button>
+                        </div>
+                        <div class="modal-body">
+                            <pre id="json_modal_event"> </pre>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary full-event-modal-download">Download</button>
+                        </div>
+                        <a id="downloadAnchorElemEvent" style="display:none"></a>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="x_panel">
             <div class="x_title">
