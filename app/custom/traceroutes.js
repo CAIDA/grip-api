@@ -174,7 +174,7 @@ function draw_traceroute_table(pfx_event) {
             {
                 "render": function (data, type, row) {
                     load_origin_asrank(data, style=2);
-                    return `<a class="btn btn-default as-btn as-btn-${data}" data-toggle="tooltip" title="" data-placement="top" href='http://as-rank.caida.org/asns/${data}')> AS${data} </a>`
+                    return `<div><span class="as-country-${data} style='white-space:nowrap'"></span> <a class="link as-btn as-btn-${data}" data-toggle="tooltip" title="" data-placement="top" href='http://as-rank.caida.org/asns/${data}')> AS${data} </a> </div>`
                     // return `<button class="origin-button" onclick="window.open('http://as-rank.caida.org/asns/${data}')"> ${data} </button>`
                 },
                 "targets": [1]

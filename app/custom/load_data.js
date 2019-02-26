@@ -147,7 +147,7 @@ function load_origin_asrank(origin, style=1) {
                             $(this).html(`AS${origin}`);
                         } else {
                             $(this).tooltip({
-                                title: _construct_asrank_table(asorg),
+                                title: _construct_asrank_table(asorg, simple=true),
                                 html: true,
                                 placement: "auto"
                             });
