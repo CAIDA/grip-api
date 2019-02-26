@@ -206,7 +206,6 @@ function load_events_table() {
     });
 }
 
-
 var traceroute_hash = {};
 
 function load_traceroute_page(uuid) {
@@ -255,5 +254,37 @@ function load_event_details() {
                 render_pfx_event_table(event_type, event["pfx_events"]);
             }
         });
+    })
+}
+
+function load_blacklist(){
+    let blacklist = []
+    $.ajax({
+        dataType: "json",
+        async: false,
+        url: "/json/blacklist",
+        success: function (data) {
+            data = JSON.parse(data);
+            for(asn of data['blacklist']){
+                blacklist.push([asn])
+            }
+        }
+    });
+    datatable = $('#datatable').DataTable({
+        searching: false,
+        ordering: false,
+        paging: false,
+        data:blacklist,
+        columns: [
+            {title: "Blacklist AS"},
+        ],
+        columnDefs: [
+            {
+                "render": function (data, type, row) {
+                    return render_origin_links( [data], style=2);
+                },
+                "targets": [0]
+            }
+        ]
     })
 }

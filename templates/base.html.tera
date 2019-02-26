@@ -53,6 +53,7 @@
                                     <li><a href="/events/edges">NEW EDGE</a></li>
                                 </ul>
                             </li>
+                            <li><a href="/blacklist"><i class="fa fa-book"></i> AS Blacklist </a></li>
                         </ul>
                     </div>
                 </div>

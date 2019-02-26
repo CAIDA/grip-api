@@ -38,6 +38,7 @@ fn main() {
             "/",
             routes![
                 index,
+                blacklist,
                 event_list,
                 event_details_old,      // backward compatible api route change
                 traceroutes_page_old,   // backward compatible api route change
@@ -48,6 +49,7 @@ fn main() {
                 json_pfx_event_by_id,
                 json_list_events,
                 json_get_tags,
+                json_get_blacklist,
                 json_get_asrank,
             ],
         )

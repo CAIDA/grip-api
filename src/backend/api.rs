@@ -54,18 +54,29 @@ pub fn traceroutes_page(_event_type: &RawStr, _id: &RawStr, _pfx_finger_print: &
     Template::render("event_traceroutes", context)
 }
 
+/// load events list page
+#[get("/blacklist")]
+pub fn blacklist() -> Template {
+    let mut context = HashMap::<String, Value>::new();
+    context.insert("context".to_owned(), json!({"onload_function":"load_blacklist()" }));
+    Template::render("blacklist", context)
+}
+
 /*
 JSON QUERY APIS
 */
 
 #[get("/json/tags")]
-pub fn json_get_tags(data: State<SharedData>) -> Json<Value> {
-    // TODO: update to use classifier tags service
-    // Json(data.tag_dict.to_owned())
-
-    println!("{:?}", Json(reqwest::get(format!("http://10.250.203.3:5000/tags/moas").as_str()).unwrap().text().unwrap()));
+pub fn json_get_tags() -> Json<Value> {
     Json(
         json!(reqwest::get(format!("http://10.250.203.3:5000/tags/moas").as_str()).unwrap().text().unwrap())
+    )
+}
+
+#[get("/json/blacklist")]
+pub fn json_get_blacklist() -> Json<Value> {
+    Json(
+        json!(reqwest::get(format!("http://10.250.203.3:5000/blacklist").as_str()).unwrap().text().unwrap())
     )
 }
 
