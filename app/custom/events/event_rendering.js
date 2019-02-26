@@ -80,7 +80,7 @@ function render_pfx_event_table(event_type, pfx_events, event_id = "", table_id 
         "columnDefs": table_info_dict[event_type]["columnDefs"],
     });
 
-    $('#datatable tbody').on('click', 'tr', function () {
+    $('#datatable tbody').on('click', 'tr', function (e) {
         if(e.target.tagName === 'A'){
             return;
         }
