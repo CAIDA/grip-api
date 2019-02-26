@@ -11,6 +11,12 @@ function get_submoas_column_defs() {
     return [
         {
             "render": function (data, type, row) {
+                return render_prefix_link(data)
+            },
+            "targets": [0,1]
+        },
+        {
+            "render": function (data, type, row) {
                 return render_tags(data)
             },
             "targets": [2]

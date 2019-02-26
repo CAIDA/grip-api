@@ -81,6 +81,9 @@ function render_pfx_event_table(event_type, pfx_events, event_id = "", table_id 
     });
 
     $('#datatable tbody').on('click', 'tr', function () {
+        if(e.target.tagName === 'A'){
+            return;
+        }
         var data = table.row($(this)).data();
         let fingerprint = extract_pfx_event_fingerprint(data, event_type);
         let path = window.location.pathname.replace(/\/$/, "");

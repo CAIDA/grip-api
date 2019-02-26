@@ -10,6 +10,12 @@ function get_edges_column_defs() {
     return [
         {
             "render": function (data, type, row) {
+                return render_prefix_link(data)
+            },
+            "targets": [0]
+        },
+        {
+            "render": function (data, type, row) {
                 return render_tags(data)
             },
             "targets": [1]
