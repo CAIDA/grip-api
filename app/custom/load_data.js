@@ -55,13 +55,14 @@ function load_origins_asrank(origin_lst, style) {
     );
 }
 
-function _construct_asrank_table(asorg, simple=false){
+function _construct_asrank_table(asorg, hege_score, simple=false){
     if(simple){
         return `
 ASN: ${asorg["data"]["id"]} <br/>
 Name: ${asorg["data"]["org"]["name"]} <br/>
 Country: ${asorg["data"]["country_name"]} <br/>
 Rank: ${asorg["data"]["rank"]} <br/>
+Hegemony score: ${hege_score} <br/>
 Cone size: ${asorg["data"]["cone"]["asns"]} <br/>
 Prefixes: ${asorg["data"]["cone"]["prefixes"]} <br/>
     `
@@ -105,6 +106,26 @@ function render_country(asorg) {
     return flag(country_code)
 }
 
+function load_hegemony(asn){
+
+    // fixme: use event's corresponding time to load hegemony score
+    let hege_score = 0;
+    let url = `https://ihr.iijlab.net/ihr/api/hegemony/?originasn=0&af=4&timebin=${current_time}&format=json&asn=${asn}`;
+    $.ajax({
+        url: url,
+        async: false,
+        success: function(data) {
+            if(data["count"]===0){
+                return
+            }
+            hege_score = data["results"][0]["hege"];
+            console.log(hege_score);
+        },
+    });
+
+    return hege_score
+}
+
 function load_origin_asrank(origin, style=1) {
     $.ajax({
         url: `/json/asrank/${origin}`,
@@ -121,8 +142,9 @@ function load_origin_asrank(origin, style=1) {
                                 placement: "auto"
                             });
                         } else{
+                            let hege_score = load_hegemony(origin);
                             $(this).tooltip({
-                                title: _construct_asrank_table(asorg, true),
+                                title: _construct_asrank_table(asorg, hege_score, true),
                                 html: true,
                                 placement: "auto"
                             });
@@ -146,8 +168,9 @@ function load_origin_asrank(origin, style=1) {
                             });
                             $(this).html(`AS${origin}`);
                         } else {
+                            let hege_score = load_hegemony(origin);
                             $(this).tooltip({
-                                title: _construct_asrank_table(asorg, simple=true),
+                                title: _construct_asrank_table(asorg, hege_score, simple=true),
                                 html: true,
                                 placement: "auto"
                             });

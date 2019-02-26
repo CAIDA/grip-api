@@ -1,5 +1,6 @@
 let table_info_dict = {};
 let tags_info_dict = {};
+let current_time = moment().subtract(1, 'days').format('YYYY-MM-DDTHH:00');
 
 
 function isEmpty(obj) {
