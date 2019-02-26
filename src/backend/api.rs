@@ -60,7 +60,13 @@ JSON QUERY APIS
 
 #[get("/json/tags")]
 pub fn json_get_tags(data: State<SharedData>) -> Json<Value> {
-    Json(data.tag_dict.to_owned())
+    // TODO: update to use classifier tags service
+    // Json(data.tag_dict.to_owned())
+
+    println!("{:?}", Json(reqwest::get(format!("http://10.250.203.3:5000/tags/moas").as_str()).unwrap().text().unwrap()));
+    Json(
+        json!(reqwest::get(format!("http://10.250.203.3:5000/tags/moas").as_str()).unwrap().text().unwrap())
+    )
 }
 
 #[get("/json/event/id/<id>")]

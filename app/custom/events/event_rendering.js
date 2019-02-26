@@ -1,4 +1,11 @@
 let table_info_dict = {};
+let tags_info_dict = {};
+
+
+function isEmpty(obj) {
+    return Object.keys(obj).length === 0;
+}
+
 
 function load_event_scripts() {
     let script_paths = [
@@ -19,8 +26,9 @@ function load_event_scripts() {
         dataType: "json",
         async: false,
         url: "/json/tags",
-        success: function(data){
-            worthy_tag_dict = data;
+        success: function (data) {
+            tags_info_dict = JSON.parse(data);
+            console.log(tags_info_dict)
         }
     });
 
@@ -55,9 +63,6 @@ function render_pfx_event_table(event_type, event, table_id = "#datatable", pagi
         load_event_scripts()
     }
 
-    console.log("event:!");
-    console.log(event);
-
     // render table based on event types
     let table = $(table_id).DataTable({
         data: event,
@@ -75,23 +80,23 @@ function render_pfx_event_table(event_type, event, table_id = "#datatable", pagi
     });
 }
 
-function render_impact(num_pfx, num_addrs){
+function render_impact(num_pfx, num_addrs) {
     let impact_str = "";
-    if(num_pfx === 1){
-        impact_str+= `${num_pfx} pfx `
+    if (num_pfx === 1) {
+        impact_str += `${num_pfx} pfx `
     } else {
-        impact_str+= `${num_pfx} pfxs `
+        impact_str += `${num_pfx} pfxs `
     }
-    if(num_addrs === 1){
-        impact_str+= `(${num_addrs} addr)`
+    if (num_addrs === 1) {
+        impact_str += `(${num_addrs} addr)`
     } else {
-        impact_str+= `(${num_addrs} addrs)`
+        impact_str += `(${num_addrs} addrs)`
     }
     return impact_str
 }
 
 
-function render_event_details_table(event_type, event){
+function render_event_details_table(event_type, event) {
     console.log(event);
     $("#event-details-victim").html(
         render_origin_links(
@@ -105,7 +110,7 @@ function render_event_details_table(event_type, event){
     );
     $("#event-details-prefix").text(extract_largest_prefix(event["pfx_events"]));
     let [num_pfx, num_addrs] = extract_impact(event["pfx_events"]);
-    $("#event-details-impact").text(render_impact(num_pfx,num_addrs));
+    $("#event-details-impact").text(render_impact(num_pfx, num_addrs));
     $("#event-details-startts").text(event["view_ts"]);
     $("#event-details-type").text(event_type_explain[event_type]);
 
@@ -115,7 +120,7 @@ function render_event_details_table(event_type, event){
     } else {
         start_ts = Date.parse(event["view_ts"]);
         end_ts = Date.parse(event["finished_ts"]);
-        $("#event-details-duration").text(`${(end_ts-start_ts)/1000/60} min`);
+        $("#event-details-duration").text(`${(end_ts - start_ts) / 1000 / 60} min`);
         $("#event-details-endts").text(event["finished_ts"]);
     }
 }
@@ -128,9 +133,9 @@ function format_prefix_table(prefix) {
     let tbody = "";
 
     let records = whois_dict[prefix];
-    if(records.length>0){
-        records.forEach(function(record){
-            record.forEach(function(elem){
+    if (records.length > 0) {
+        records.forEach(function (record) {
+            record.forEach(function (elem) {
                 tbody += `<tr><td>${elem["key"]}</td><td>${elem["value"]}</td></tr>`
             });
             tbody += `<tr><td class="bottom-border"></td><td class="bottom-border"></td></tr>`
@@ -138,12 +143,12 @@ function format_prefix_table(prefix) {
     } else {
         tbody = "loading information ..."
     }
-    return thead+tbody+tfoot;
+    return thead + tbody + tfoot;
 }
 
 function render_origin_links(origin_lst, style = 1) {
     let links = [];
-    if(origin_lst === null || origin_lst.length === 0 || origin_lst[0] === ""){
+    if (origin_lst === null || origin_lst.length === 0 || origin_lst[0] === "") {
         return "Unknown"
     }
 
@@ -178,8 +183,16 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-tag_type = {};
 tag_type_ready = false;
+
+function render_tag_name(tag) {
+    return tag.split("-")
+        .map(
+            function (x) {
+                return capitalizeFirstLetter(x)
+            })
+        .join(" ")
+}
 
 type_label = {
     "yes": "label-danger",
@@ -187,39 +200,40 @@ type_label = {
     "na": "label-default",
 };
 
-function update_tag_type(){
-    if(tag_type_ready){
-        return
-    }
-    for(let type in worthy_tag_dict){
-        for(let nature in worthy_tag_dict[type]){
-            for(let index in worthy_tag_dict[type][nature]){
-                let tag = worthy_tag_dict[type][nature][index]
-                tag_type[tag] = nature
+function render_tags(tags) {
+    entries = [];
+
+    let tag_type = {};
+
+    let tags_set = new Set(tags);
+    for (let i in tags_info_dict["tr_worthy"]) {
+        let entry = tags_info_dict["tr_worthy"][i];
+        let worthiness = entry["worthy"];
+        let comb = entry["tags"];
+        if ([...comb].filter(x => !tags_set.has(x)).length === 0) {
+            // all items in comb is in tags set, the worthiness applies
+            for (tag of comb) {
+                if (!(tag in tag_type) || tag_type[tag] === "na") {
+                    tag_type[tag] = worthiness;
+                }
             }
         }
     }
-}
 
-function render_tag_name(tag){
-    return tag.split("-")
-        .map(
-            function(x){
-                return capitalizeFirstLetter(x)
-            })
-        .slice(1)
-        .join(" ")
-}
-
-function render_tags(tags){
-    update_tag_type();
-    entries = [];
-    for(let i in tags){
+    for (let i in tags) {
         let tag = tags[i];
-        if(!(tag in tag_type)){
+        let label = "na";
+        if (tag in tag_type) {
+            label = tag_type[tag];
+        } else {
+            console.log("unknown tag " + tag);
+            label = "na";
+        }
+        if (!(tag in tag_type)) {
             entries.push(`<span style="color: purple; ">${tag}</span>`)
         }
-        entries.push(`<span class="label ${type_label[tag_type[tag]]}" style="font-size: 12px;" data-toggle='tooltip' title='${tag}'>${render_tag_name(tag)}</span></h4>`)
+        let definition = tags_info_dict["definitions"][tag]["definition"];
+        entries.push(`<span class="label ${type_label[label]}" style="font-size: 12px;" data-toggle='tooltip' title='${definition}'>${render_tag_name(tag)}</span></h4>`)
     }
     return entries.join(" &nbsp; ")
 }
