@@ -116,7 +116,11 @@ function render_event_details_table(event_type, event) {
             extract_attackers(event["pfx_events"][0], event_type), 2
         )
     );
-    $("#event-details-prefix").text(extract_largest_prefix(event["pfx_events"]));
+    $("#event-details-prefix").html(
+        render_prefix_link(
+            extract_largest_prefix(event["pfx_events"])
+        )
+    );
     let [num_pfx, num_addrs] = extract_impact(event["pfx_events"]);
     $("#event-details-impact").text(render_impact(num_pfx, num_addrs));
     $("#event-details-startts").text(event["view_ts"]);
@@ -185,7 +189,8 @@ function render_prefix_link(prefix) {
     let prefix_class = prefix.replace("/", "-").replace(/\./g, "-");
     // load_ripe_data(prefix, prefix_class);
     load_who_is(prefix);
-    return `<a class="btn btn-default pfx-btn-${prefix_class}" target="_blank" href='//stat.ripe.net/${prefix}#tabId=at-a-glance')> ${prefix}</a>`
+    // return `<a class="btn btn-default pfx-btn-${prefix_class}" target="_blank" href='//stat.ripe.net/${prefix}#tabId=at-a-glance')> ${prefix}</a>`
+    return `<a class="link pfx-btn-${prefix_class}" target="_blank" href='//stat.ripe.net/${prefix}#tabId=at-a-glance')> ${prefix}</a>`
 }
 
 function render_traceroutes_link(data) {
