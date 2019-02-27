@@ -655,6 +655,7 @@ dependencies = [
 name = "hijacks_dashboard"
 version = "0.1.0"
 dependencies = [
+ "chrono 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "config 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "elastic 0.20.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "elastic_derive 0.20.10 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1813,6 +1814,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "serde"
 version = "1.0.82"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "serde_derive 1.0.82 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [[package]]
 name = "serde-hjson"

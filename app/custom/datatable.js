@@ -258,13 +258,12 @@ function load_event_details() {
 }
 
 function load_blacklist(){
-    let blacklist = []
+    let blacklist = [];
     $.ajax({
         dataType: "json",
         async: false,
         url: "/json/blacklist",
         success: function (data) {
-            data = JSON.parse(data);
             for(asn of data['blacklist']){
                 blacklist.push([asn])
             }

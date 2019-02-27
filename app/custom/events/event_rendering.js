@@ -36,7 +36,7 @@ function load_event_scripts() {
         async: false,
         url: "/json/tags",
         success: function (data) {
-            tags_info_dict = JSON.parse(data);
+            tags_info_dict = data;
             console.log(tags_info_dict)
         }
     });

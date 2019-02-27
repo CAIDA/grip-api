@@ -55,49 +55,21 @@ function load_origins_asrank(origin_lst, style) {
     );
 }
 
-function _construct_asrank_table(asorg, hege_score, simple=false){
-    if(simple){
+function _construct_asrank_table(asorg, hegemony){
+    let hege_str= "";
+    if(hegemony["count"]>0){
+        let hege_score = hegemony["results"][0]["hege"];
+        hege_str = `Hegemony score: ${hege_score} <br/>`;
+    }
         return `
 ASN: ${asorg["data"]["id"]} <br/>
 Name: ${asorg["data"]["org"]["name"]} <br/>
 Country: ${asorg["data"]["country_name"]} <br/>
 Rank: ${asorg["data"]["rank"]} <br/>
-Hegemony score: ${hege_score} <br/>
+${hege_str}
 Cone size: ${asorg["data"]["cone"]["asns"]} <br/>
 Prefixes: ${asorg["data"]["cone"]["prefixes"]} <br/>
     `
-
-    } else {
-
-    return `
-        <table>
-            <tr>
-                <td>ASN: </td>
-                <td> ${asorg["data"]["id"]} </td>
-            </tr>
-            <tr>
-                <td>name: </td>
-                <td> ${asorg["data"]["org"]["name"]} </td>
-            </tr>
-            <tr>
-                <td>country: </td>
-                <td> ${asorg["data"]["country_name"]} </td>
-            </tr>
-            <tr>
-                <td>rank: </td>
-                <td> ${asorg["data"]["rank"]} </td>
-            </tr>
-            <tr>
-                <td>cone size: </td>
-                <td> ${asorg["data"]["cone"]["asns"]} </td>
-            </tr>
-            <tr>
-                <td>prefixes: </td>
-                <td> ${asorg["data"]["cone"]["prefixes"]} </td>
-            </tr>
-        </table>
-    `
-    }
 }
 
 function render_country(asorg) {
@@ -106,30 +78,12 @@ function render_country(asorg) {
     return flag(country_code)
 }
 
-function load_hegemony(asn){
-
-    // fixme: use event's corresponding time to load hegemony score
-    let hege_score = 0;
-    let url = `https://ihr.iijlab.net/ihr/api/hegemony/?originasn=0&af=4&timebin=${current_time}&format=json&asn=${asn}`;
-    $.ajax({
-        url: url,
-        async: false,
-        success: function(data) {
-            if(data["count"]===0){
-                return
-            }
-            hege_score = data["results"][0]["hege"];
-            console.log(hege_score);
-        },
-    });
-
-    return hege_score
-}
-
 function load_origin_asrank(origin, style=1) {
     $.ajax({
-        url: `/json/asrank/${origin}`,
-        success: function (asorg) {
+        url: `/json/asn/${origin}`,
+        success: function (result) {
+            let asorg=result["asrank"];
+            let hegemony=result["hegemony"];
             if (asorg["data"] != null) {
                 let as_name = process_as_name(asorg["data"]);
                 if(style === 1){
@@ -142,9 +96,8 @@ function load_origin_asrank(origin, style=1) {
                                 placement: "auto"
                             });
                         } else{
-                            let hege_score = load_hegemony(origin);
                             $(this).tooltip({
-                                title: _construct_asrank_table(asorg, hege_score, true),
+                                title: _construct_asrank_table(asorg, hegemony),
                                 html: true,
                                 placement: "auto"
                             });
@@ -157,8 +110,6 @@ function load_origin_asrank(origin, style=1) {
 
                 } else if (style === 2){
                     $(`.as-btn-${origin}`).each(function () {
-                        // $(this).html(`AS${origin} ${asorg["data"]["country"]} ${as_name}`);
-                        // $(this).attr("title", `${asorg["data"]["country_name"]}, ${asorg["data"]["org"]["name"]}`)
                         if(as_name === "Null"){
                             as_name = `AS${origin}`;
                             $(this).tooltip({
@@ -168,9 +119,8 @@ function load_origin_asrank(origin, style=1) {
                             });
                             $(this).html(`AS${origin}`);
                         } else {
-                            let hege_score = load_hegemony(origin);
                             $(this).tooltip({
-                                title: _construct_asrank_table(asorg, hege_score, simple=true),
+                                title: _construct_asrank_table(asorg, hegemony),
                                 html: true,
                                 placement: "auto"
                             });

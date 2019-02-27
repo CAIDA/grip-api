@@ -9,6 +9,7 @@ use rocket_contrib::json::Json;
 use rocket_contrib::templates::Template;
 use serde_json::json;
 use serde_json::Value;
+use chrono::{Datelike, Timelike, Utc};
 
 use crate::backend::elastic::ElasticSearchBackend;
 use crate::backend::utils::*;
@@ -66,17 +67,39 @@ pub fn blacklist() -> Template {
 JSON QUERY APIS
 */
 
+#[get("/json/asn/<asn>")]
+pub fn json_get_asn_info(asn: usize) -> Json<Value> {
+    let now = Utc::now();
+    // YYYY-MM-DDTHH:mm
+    let time_str = format!("{}-{:02}-{:02}T{:02}:00", now.year(), now.month(), now.day()-1, now.hour());
+
+    let hegemony: Value = reqwest::get(format!(
+        "https://ihr.iijlab.net/ihr/api/hegemony/?originasn=0&af=4&timebin={}&format=json&asn={}", time_str, asn
+    ).as_str()).unwrap().json().unwrap();
+    let asrank: Value = reqwest::get(format!("http://as-rank.caida.org/api/v1/asns/{}", asn).as_str())
+        .unwrap().json().unwrap();
+
+    Json(
+        json!({
+            "asrank": asrank,
+            "hegemony": hegemony
+        }
+    ))
+}
+
 #[get("/json/tags")]
 pub fn json_get_tags() -> Json<Value> {
+    let tags: Value = reqwest::get(format!("http://10.250.203.3:5000/tags/moas").as_str()).unwrap().json().unwrap();
     Json(
-        json!(reqwest::get(format!("http://10.250.203.3:5000/tags/moas").as_str()).unwrap().text().unwrap())
+        json!(tags)
     )
 }
 
 #[get("/json/blacklist")]
 pub fn json_get_blacklist() -> Json<Value> {
+    let blacklist: Value = reqwest::get(format!("http://10.250.203.3:5000/blacklist").as_str()).unwrap().json().unwrap();
     Json(
-        json!(reqwest::get(format!("http://10.250.203.3:5000/blacklist").as_str()).unwrap().text().unwrap())
+        json!(blacklist)
     )
 }
 
