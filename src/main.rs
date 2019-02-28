@@ -50,7 +50,7 @@ fn main() {
                 json_list_events,
                 json_get_tags,
                 json_get_blacklist,
-                json_get_asn_info,
+                json_get_hegemony,
                 json_get_asrank,
             ],
         )

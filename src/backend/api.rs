@@ -9,7 +9,7 @@ use rocket_contrib::json::Json;
 use rocket_contrib::templates::Template;
 use serde_json::json;
 use serde_json::Value;
-use chrono::{Datelike, Timelike, Utc};
+use chrono::{Datelike, Timelike, Utc, Duration};
 
 use crate::backend::elastic::ElasticSearchBackend;
 use crate::backend::utils::*;
@@ -66,26 +66,6 @@ pub fn blacklist() -> Template {
 /*
 JSON QUERY APIS
 */
-
-#[get("/json/asn/<asn>")]
-pub fn json_get_asn_info(asn: usize) -> Json<Value> {
-    let now = Utc::now();
-    // YYYY-MM-DDTHH:mm
-    let time_str = format!("{}-{:02}-{:02}T{:02}:00", now.year(), now.month(), now.day()-1, now.hour());
-
-    let hegemony: Value = reqwest::get(format!(
-        "https://ihr.iijlab.net/ihr/api/hegemony/?originasn=0&af=4&timebin={}&format=json&asn={}", time_str, asn
-    ).as_str()).unwrap().json().unwrap();
-    let asrank: Value = reqwest::get(format!("http://as-rank.caida.org/api/v1/asns/{}", asn).as_str())
-        .unwrap().json().unwrap();
-
-    Json(
-        json!({
-            "asrank": asrank,
-            "hegemony": hegemony
-        }
-    ))
-}
 
 #[get("/json/tags")]
 pub fn json_get_tags() -> Json<Value> {
@@ -162,6 +142,21 @@ pub fn json_get_asrank(asn: usize) -> Json<Value> {
             .unwrap().json().unwrap()
     )
 }
+
+#[get("/json/hegemony/<asn>")]
+pub fn json_get_hegemony(asn: usize) -> Json<Value> {
+    let now = Utc::now() - Duration::days(2);
+    let time_str = format!("{}-{:02}-{:02}T{:02}:00", now.year(), now.month(), now.day(), now.hour());
+
+    let url =
+        format!(
+            "https://ihr.iijlab.net/ihr/api/hegemony/?originasn=0&af=4&timebin={}&format=json&asn={}", time_str, asn
+        );
+    println!("{}", url);
+    let hegemony: Value = reqwest::get(url.as_str()).unwrap().json().unwrap();
+    Json(hegemony)
+}
+
 
 
 #[get("/json/events/<event_type>?<ts_start>&<ts_end>&<draw>&<start>&<length>&<asn>&<prefix>")]

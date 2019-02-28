@@ -48,42 +48,90 @@ function load_who_is(prefix) {
     }
 }
 
-function load_origins_asrank(origin_lst, style) {
+function load_origins_info(origin_lst, style) {
     origin_lst.forEach(function (origin) {
-            load_origin_asrank(origin, style)
+            load_origin_info(origin, style)
         }
     );
 }
 
-function _construct_asrank_table(asorg, hegemony){
-    let hege_str= "";
-    if(hegemony["count"]>0){
-        let hege_score = hegemony["results"][0]["hege"];
-        hege_str = `Hegemony score: ${hege_score} <br/>`;
+function _construct_asrank_table(asn){
+    if(!(asn in as_info)){
+        return ""
     }
-        return `
-ASN: ${asorg["data"]["id"]} <br/>
-Name: ${asorg["data"]["org"]["name"]} <br/>
-Country: ${asorg["data"]["country_name"]} <br/>
-Rank: ${asorg["data"]["rank"]} <br/>
-${hege_str}
-Cone size: ${asorg["data"]["cone"]["asns"]} <br/>
-Prefixes: ${asorg["data"]["cone"]["prefixes"]} <br/>
-    `
+
+    let table_str = "";
+
+    if("asorg" in as_info[asn]){
+        // load as org information
+        let asorg = as_info[asn]["asorg"];
+        table_str+= `
+            ASN: ${asorg["data"]["id"]} <br/>
+            Name: ${asorg["data"]["org"]["name"]} <br/>
+            Country: ${asorg["data"]["country_name"]} <br/>
+            Rank: ${asorg["data"]["rank"]} <br/>
+            Cone size: ${asorg["data"]["cone"]["asns"]} <br/>
+            Prefixes: ${asorg["data"]["cone"]["prefixes"]} <br/>
+        `
+    }
+
+    if("hegemony" in as_info[asn]){
+        let hegemony = as_info[asn]["hegemony"];
+        if(hegemony["count"]>0){
+            let hege_score = hegemony["results"][0]["hege"];
+            table_str+= `Hegemony score: ${hege_score} <br/>`;
+        }
+    }
+
+    return table_str
 }
 
 function render_country(asorg) {
     let country_code = asorg["data"]["country"];
-    // return country_code+flag(country_code)
     return flag(country_code)
 }
 
-function load_origin_asrank(origin, style=1) {
+function load_origin_info(origin, style=1){
+    // initialize tooltip then change the title later it later
+    $(`.as-btn-${origin}`).each(function () {
+        $(this).tooltip({
+            title: "",
+            html: true,
+            placement: "auto"
+        });
+    });
+    load_origin_asrank(origin, style);
+    load_origin_hegemony(origin);
+}
+
+let hegemony_query_time = moment().subtract(2, 'days').format('YYYY-MM-DDTHH:00');
+
+function load_origin_hegemony(origin){
     $.ajax({
-        url: `/json/asn/${origin}`,
-        success: function (result) {
-            let asorg=result["asrank"];
-            let hegemony=result["hegemony"];
+        // url: `/json/hegemony/${origin}`,
+        url: `https://ihr.iijlab.net/ihr/api/hegemony/?originasn=0&af=4&timebin=${hegemony_query_time}&format=json&asn=${origin}`,
+        async: true,
+        success: function (hegemony) {
+            if(!(origin in as_info)){
+                as_info[origin] = {}
+            }
+            as_info[origin]["hegemony"]=hegemony;
+            $(`.as-btn-${origin}`).each(function () {
+                $(this) .attr('data-original-title',_construct_asrank_table(origin))
+            })
+        }
+    })
+
+}
+
+as_info = {};
+
+function load_origin_asrank(origin, style) {
+    $.ajax({
+        // url: `/json/asrank/${origin}`,
+        url: `/json/asrank/${origin}`,
+        async: true,
+        success: function (asorg) {
             if (asorg["data"] != null) {
                 let as_name = process_as_name(asorg["data"]);
                 if(style === 1){
@@ -96,11 +144,11 @@ function load_origin_asrank(origin, style=1) {
                                 placement: "auto"
                             });
                         } else{
-                            $(this).tooltip({
-                                title: _construct_asrank_table(asorg, hegemony),
-                                html: true,
-                                placement: "auto"
-                            });
+                            if(!(origin in as_info)){
+                                as_info[origin] = {}
+                            }
+                            as_info[origin]["asorg"]=asorg;
+                            $(this).attr('data-original-title',_construct_asrank_table(origin));
                         }
                         $(this).html(`${as_name}`);
                     });
@@ -119,11 +167,11 @@ function load_origin_asrank(origin, style=1) {
                             });
                             $(this).html(`AS${origin}`);
                         } else {
-                            $(this).tooltip({
-                                title: _construct_asrank_table(asorg, hegemony),
-                                html: true,
-                                placement: "auto"
-                            });
+                            if(!(origin in as_info)){
+                                as_info[origin] = {}
+                            }
+                            as_info[origin]["asorg"]=asorg;
+                            $(this).attr('data-original-title',_construct_asrank_table(origin));
                             $(this).html(`AS${origin} ${as_name}`);
                         }
                     });
