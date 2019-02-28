@@ -17,20 +17,22 @@ use rocket::Config;
 struct Opt {
     #[structopt(short = "d")]
     directory: Option<String>,
+    #[structopt(short = "s")]
+    simple: bool,
 }
 
 fn main() {
-    let opt = Opt::from_args();
+    let opts = Opt::from_args();
     let resource_dir: String;
-    match opt.directory {
+    match opts.directory {
         Some(d) => resource_dir = d,
         None => resource_dir = "./".to_owned()
     };
 
     let mut config = Config::active().unwrap();
-    // set template directory
     let mut extra_config = HashMap::new();
     extra_config.insert("template_dir".to_owned(), format!("{}/templates",&resource_dir).into());
+    extra_config.insert("simple_page".to_owned(), opts.simple.into());
     config.set_extras(extra_config);
 
     rocket::custom(config.clone())
@@ -58,10 +60,10 @@ fn main() {
             // set ElasticSearch URL
             let es_url = rocket.config().get_str("elastic_url")
                 .unwrap_or("http://clayface.caida.org:9200") .to_string();
-
+            let simple_page = rocket.config().get_extra("simple_page").unwrap().as_bool().unwrap_or(false);
             // pass in tags
             let tag_dict = get_tag_dict();
-            Ok(rocket.manage(SharedData { es_url, tag_dict, resource_dir}))
+            Ok(rocket.manage(SharedData { es_url, tag_dict, resource_dir, simple_page}))
         }))
         .attach(Template::fairing())
         .launch();

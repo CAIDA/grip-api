@@ -33,33 +33,43 @@ pub fn files(file: PathBuf, data: State<SharedData>) -> Option<NamedFile> {
 
 /// load events list page
 #[get("/events/<_event_type>")]
-pub fn event_list(_event_type: &RawStr) -> Template {
+pub fn event_list(_event_type: &RawStr, data: State<SharedData>) -> Template {
     let mut context = HashMap::<String, Value>::new();
-    context.insert("context".to_owned(), json!({"onload_function":"load_events_table()" }));
+    context.insert("context".to_owned(), json!({
+        "onload_function":"load_events_table()" ,
+        "simple": data.simple_page
+    }));
     Template::render("event_list", context)
 }
 
 /// load event details page
 #[get("/events/<_event_type>/<_id>")]
-pub fn event_details(_event_type: &RawStr, _id: &RawStr) -> Template {
+pub fn event_details(_event_type: &RawStr, _id: &RawStr, data: State<SharedData>) -> Template {
     let mut context = HashMap::<String, Value>::new();
-    context.insert("context".to_owned(), json!({"onload_function":"load_event_details()" }));
+    context.insert("context".to_owned(), json!({
+        "onload_function":"load_event_details()",
+        "simple": data.simple_page
+    }));
     Template::render("event_detail", context)
 }
 
 /// load pfx_event details page
 #[get("/events/<_event_type>/<_id>/<_pfx_finger_print>")]
-pub fn traceroutes_page(_event_type: &RawStr, _id: &RawStr, _pfx_finger_print: &RawStr) -> Template {
+pub fn traceroutes_page(_event_type: &RawStr, _id: &RawStr, _pfx_finger_print: &RawStr, data: State<SharedData>) -> Template {
     let mut context = HashMap::<String, Value>::new();
-    context.insert("context".to_owned(), json!({"onload_function":"load_pfx_event()" }));
+    context.insert("context".to_owned(), json!({"onload_function":"load_pfx_event()",
+        "simple": data.simple_page
+    }));
     Template::render("event_traceroutes", context)
 }
 
 /// load events list page
 #[get("/blacklist")]
-pub fn blacklist() -> Template {
+pub fn blacklist(data: State<SharedData>) -> Template {
     let mut context = HashMap::<String, Value>::new();
-    context.insert("context".to_owned(), json!({"onload_function":"load_blacklist()" }));
+    context.insert("context".to_owned(), json!({"onload_function":"load_blacklist()",
+        "simple": data.simple_page
+    }));
     Template::render("blacklist", context)
 }
 

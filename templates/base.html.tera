@@ -29,7 +29,17 @@
 
 <body class="nav-md" onload="{{context.onload_function}}">
 
-<div class=" container body">
+
+    {% if context.simple %}
+    <style>
+        body {background-color: white}
+    </style>
+
+        {% block content %}
+        {% endblock content %}
+
+    {% else %}
+    <div class=" container body">
     <div class="main_container">
         <div class="col-md-3 left_col">
             <div class="left_col scroll-view">
@@ -69,9 +79,10 @@
 
         </div>
         <!-- /page content -->
-
     </div>
-</div>
+    </div>
+    {% endif %}
+
 
 <!-- jQuery -->
 <script src="/app/vendors/jquery/dist/jquery.min.js"></script>

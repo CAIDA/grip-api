@@ -6,6 +6,7 @@ pub struct SharedData {
     pub es_url: String,
     pub tag_dict: Value,
     pub resource_dir: String,
+    pub simple_page: bool,
 }
 
 pub fn get_tag_dict() -> Value{
