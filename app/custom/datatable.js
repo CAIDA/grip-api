@@ -56,7 +56,6 @@ function load_events_table() {
                 "ordering": false,
                 "pageLength": 25,
                 "ajax": {
-                    // "url": `/json/events/${event_type}`,
                     "url": url,
                 },
                 "columns": [
@@ -132,7 +131,7 @@ function load_events_table() {
                 return;
             }
             var data = datatable.row($(this)).data();
-            window.open("/events/" + data['event_type'] + "/" + data['id'], '_self', false);
+            window.open(`/${window.location.pathname.split("/")[1]}/` + data['event_type'] + "/" + data['id'], '_self', false);
         });
     });
 
@@ -187,7 +186,7 @@ function load_events_table() {
         //     alert("not enough search parameters");
         //     return;
         // }
-        let url = `/events/${event_type}?`;
+        let url = `/${window.location.pathname.split("/")[1]}/${event_type}?`;
         if(prefix!==""){
             url+=`prefix=${prefix}&`;
         }

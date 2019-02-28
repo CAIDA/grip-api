@@ -39,42 +39,40 @@ pub fn page_index() -> Redirect {
 
 /// load events list page
 #[get("/events/<_event_type>")]
-pub fn page_event_list(_event_type: &RawStr, data: State<SharedData>) -> Template {
+pub fn page_event_list(_event_type: &RawStr, _data: State<SharedData>) -> Template {
     let mut context = HashMap::<String, Value>::new();
     context.insert("context".to_owned(), json!({
         "onload_function":"load_events_table()" ,
-        "simple": data.simple_page
     }));
     Template::render("event_list", context)
 }
 
 /// load event details page
 #[get("/events/<_event_type>/<_id>")]
-pub fn page_event_details(_event_type: &RawStr, _id: &RawStr, data: State<SharedData>) -> Template {
+pub fn page_event_details(_event_type: &RawStr, _id: &RawStr, _data: State<SharedData>) -> Template {
     let mut context = HashMap::<String, Value>::new();
     context.insert("context".to_owned(), json!({
         "onload_function":"load_event_details()",
-        "simple": data.simple_page
     }));
     Template::render("event_detail", context)
 }
 
 /// load pfx_event details page
 #[get("/events/<_event_type>/<_id>/<_pfx_finger_print>")]
-pub fn page_traceroutes_page(_event_type: &RawStr, _id: &RawStr, _pfx_finger_print: &RawStr, data: State<SharedData>) -> Template {
+pub fn page_traceroutes_page(_event_type: &RawStr, _id: &RawStr, _pfx_finger_print: &RawStr, _data: State<SharedData>) -> Template {
     let mut context = HashMap::<String, Value>::new();
-    context.insert("context".to_owned(), json!({"onload_function":"load_pfx_event()",
-        "simple": data.simple_page
+    context.insert("context".to_owned(), json!({
+        "onload_function":"load_pfx_event()",
     }));
     Template::render("event_traceroutes", context)
 }
 
 /// load events list page
 #[get("/blacklist")]
-pub fn page_blacklist(data: State<SharedData>) -> Template {
+pub fn page_blacklist(_data: State<SharedData>) -> Template {
     let mut context = HashMap::<String, Value>::new();
-    context.insert("context".to_owned(), json!({"onload_function":"load_blacklist()",
-        "simple": data.simple_page
+    context.insert("context".to_owned(), json!({
+        "onload_function":"load_blacklist()",
     }));
     Template::render("blacklist", context)
 }

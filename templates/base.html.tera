@@ -30,15 +30,6 @@
 <body class="nav-md" onload="{{context.onload_function}}">
 
 
-    {% if context.simple %}
-    <style>
-        body {background-color: white}
-    </style>
-
-        {% block content %}
-        {% endblock content %}
-
-    {% else %}
     <div class=" container body">
     <div class="main_container">
         <div class="col-md-3 left_col">
@@ -81,7 +72,6 @@
         <!-- /page content -->
     </div>
     </div>
-    {% endif %}
 
 
 <!-- jQuery -->
