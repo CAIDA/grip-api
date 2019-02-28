@@ -1,0 +1,222 @@
+{% extends "hi3/base" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2 id="event_title"> Event Details </h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <div class="col-xs-6">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <tbody>
+                            <tr>
+                                <th style="width:50%">Potential Victim:</th>
+                                <td id="event-details-victim"></td>
+                            </tr>
+                            <tr>
+                                <th>Potential Attacker:</th>
+                                <td id="event-details-attacker"></td>
+                            </tr>
+                            <tr>
+                                <th>Largest prefix:</th>
+                                <td id="event-details-prefix"></td>
+                            </tr>
+                            <tr>
+                                <th>Impact:</th>
+                                <td id="event-details-impact"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <tbody>
+                            <tr>
+                                <th style="width:50%">Start time:</th>
+                                <td id="event-details-startts"></td>
+                            </tr>
+                            <tr>
+                                <th>End time:</th>
+                                <td id="event-details-endts"></td>
+                            </tr>
+                            <tr>
+                                <th>Duration:</th>
+                                <td id="event-details-duration"></td>
+                            </tr>
+                            <tr>
+                                <th>Event type:</th>
+                                <td id="event-details-type"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#eventModal">
+                Raw JSON
+            </button>
+            <!-- Modal -->
+            <div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">Raw JSON</h4>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary full-event-modal-download">Download</button>
+                        </div>
+                        <div class="modal-body">
+                            <pre id="json_modal_event"> </pre>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary full-event-modal-download">Download</button>
+                        </div>
+                        <a id="downloadAnchorElemEvent" style="display:none"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2 id="pfx_event_title"> Prefix Event Information </h2>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="x_content">
+                <table id="pfx_event_table" class="table table-striped table-bordered" style="max-width:95%;">
+                </table>
+            </div>
+
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#prefixModal">
+                Raw JSON
+            </button>
+            <!-- Modal -->
+            <div class="modal fade" id="prefixModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Raw JSON</h4>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary prefix-event-modal-download">Download</button>
+                        </div>
+                        <div class="modal-body">
+                            <pre id="json_modal_prefix"> </pre>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary prefix-event-modal-download">Download</button>
+                        </div>
+                        <a id="downloadAnchorElemPrefix" style="display:none"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br/>
+
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2 id="table_title"> Traceroutes </h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <table id="traceroutes_table" class="table table-striped table-bordered" style="max-width:95%;">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br/>
+
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <ul class="nav navbar-right panel_toolbox">
+                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+                <h2> AS Traceroute Sankey Diagram </h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <div id="tr_sankey_diagram" style="width: 1200px;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br/>
+
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <ul class="nav navbar-right panel_toolbox">
+                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+                <h2> Route Collectors Sankey Diagram</h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <div class="clearfix"></div>
+                <div id="monitor_sankey_diagram" style="width: 1200px;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<div class="row">-->
+    <!--<div class="col-md-12 col-sm-12 col-xs-12">-->
+        <!--<div class="x_panel">-->
+            <!--<div class="x_title">-->
+                <!--<ul class="nav navbar-right panel_toolbox">-->
+                    <!--<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>-->
+                    <!--</li>-->
+                <!--</ul>-->
+                <!--<div class="clearfix"></div>-->
+                <!--<h2> Traceroutes </h2>-->
+                <!--<div class="clearfix"></div>-->
+            <!--</div>-->
+            <!--<div class="x_content">-->
+                <!--<div class="clearfix"></div>-->
+                <!--<div id="traceroute-map">-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+
+{% endblock content %}

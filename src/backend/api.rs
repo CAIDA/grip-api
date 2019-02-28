@@ -14,11 +14,8 @@ use chrono::{Datelike, Timelike, Utc, Duration};
 use crate::backend::elastic::ElasticSearchBackend;
 use crate::backend::utils::*;
 use crate::backend::data::SharedData;
+use rocket::response::Redirect;
 
-
-/*
-LOAD HTML PAGES
-*/
 
 /// load static content
 #[get("/app/<file..>")]
@@ -30,36 +27,53 @@ pub fn files(file: PathBuf, data: State<SharedData>) -> Option<NamedFile> {
     NamedFile::open(Path::new(&file_path)).ok()
 }
 
+/*
+LOAD HTML PAGES
+*/
+
+/// load index page
+#[get("/")]
+pub fn page_index() -> Redirect {
+    Redirect::to("/events/moas")
+}
 
 /// load events list page
 #[get("/events/<_event_type>")]
-pub fn event_list(_event_type: &RawStr) -> Template {
+pub fn page_event_list(_event_type: &RawStr, _data: State<SharedData>) -> Template {
     let mut context = HashMap::<String, Value>::new();
-    context.insert("context".to_owned(), json!({"onload_function":"load_events_table()" }));
+    context.insert("context".to_owned(), json!({
+        "onload_function":"load_events_table()" ,
+    }));
     Template::render("event_list", context)
 }
 
 /// load event details page
 #[get("/events/<_event_type>/<_id>")]
-pub fn event_details(_event_type: &RawStr, _id: &RawStr) -> Template {
+pub fn page_event_details(_event_type: &RawStr, _id: &RawStr, _data: State<SharedData>) -> Template {
     let mut context = HashMap::<String, Value>::new();
-    context.insert("context".to_owned(), json!({"onload_function":"load_event_details()" }));
+    context.insert("context".to_owned(), json!({
+        "onload_function":"load_event_details()",
+    }));
     Template::render("event_detail", context)
 }
 
 /// load pfx_event details page
 #[get("/events/<_event_type>/<_id>/<_pfx_finger_print>")]
-pub fn traceroutes_page(_event_type: &RawStr, _id: &RawStr, _pfx_finger_print: &RawStr) -> Template {
+pub fn page_traceroutes_page(_event_type: &RawStr, _id: &RawStr, _pfx_finger_print: &RawStr, _data: State<SharedData>) -> Template {
     let mut context = HashMap::<String, Value>::new();
-    context.insert("context".to_owned(), json!({"onload_function":"load_pfx_event()" }));
+    context.insert("context".to_owned(), json!({
+        "onload_function":"load_pfx_event()",
+    }));
     Template::render("event_traceroutes", context)
 }
 
 /// load events list page
 #[get("/blacklist")]
-pub fn blacklist() -> Template {
+pub fn page_blacklist(_data: State<SharedData>) -> Template {
     let mut context = HashMap::<String, Value>::new();
-    context.insert("context".to_owned(), json!({"onload_function":"load_blacklist()" }));
+    context.insert("context".to_owned(), json!({
+        "onload_function":"load_blacklist()",
+    }));
     Template::render("blacklist", context)
 }
 
