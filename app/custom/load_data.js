@@ -93,13 +93,7 @@ function render_country(asorg) {
 
 function load_origin_info(origin, style=1){
     // initialize tooltip then change the title later it later
-    $(`.as-btn-${origin}`).each(function () {
-        $(this).tooltip({
-            title: "",
-            html: true,
-            placement: "auto"
-        });
-    });
+    console.log("loading information for "+origin);
     load_origin_asrank(origin, style);
     load_origin_hegemony(origin);
 }
@@ -117,6 +111,11 @@ function load_origin_hegemony(origin){
             }
             as_info[origin]["hegemony"]=hegemony;
             $(`.as-btn-${origin}`).each(function () {
+                $(this).tooltip({
+                    title: "",
+                    html: true,
+                    placement: "bottom"
+                });
                 $(this) .attr('data-original-title',_construct_asrank_table(origin))
             })
         }
@@ -147,6 +146,11 @@ function load_origin_asrank(origin, style) {
                             if(!(origin in as_info)){
                                 as_info[origin] = {}
                             }
+                            $(this).tooltip({
+                                title: "",
+                                html: true,
+                                placement: "bottom"
+                            });
                             as_info[origin]["asorg"]=asorg;
                             $(this).attr('data-original-title',_construct_asrank_table(origin));
                         }
@@ -170,6 +174,11 @@ function load_origin_asrank(origin, style) {
                             if(!(origin in as_info)){
                                 as_info[origin] = {}
                             }
+                            $(this).tooltip({
+                                title: "",
+                                html: true,
+                                placement: "bottom"
+                            });
                             as_info[origin]["asorg"]=asorg;
                             $(this).attr('data-original-title',_construct_asrank_table(origin));
                             $(this).html(`AS${origin} ${as_name}`);
