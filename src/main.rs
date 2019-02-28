@@ -39,13 +39,14 @@ fn main() {
         .mount(
             "/",
             routes![
-                index,
-                blacklist,
-                event_list,
-                event_details_old,      // backward compatible api route change
-                traceroutes_page_old,   // backward compatible api route change
-                event_details,
-                traceroutes_page,
+                page_index,
+                page_event_list,
+                page_event_details,
+                page_traceroutes_page,
+                hi3_page_event_list,
+                hi3_page_event_details,
+                hi3_page_traceroutes_page,
+                page_blacklist,
                 files,
                 json_event_by_id,
                 json_pfx_event_by_id,

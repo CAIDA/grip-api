@@ -14,11 +14,8 @@ use chrono::{Datelike, Timelike, Utc, Duration};
 use crate::backend::elastic::ElasticSearchBackend;
 use crate::backend::utils::*;
 use crate::backend::data::SharedData;
+use rocket::response::Redirect;
 
-
-/*
-LOAD HTML PAGES
-*/
 
 /// load static content
 #[get("/app/<file..>")]
@@ -30,10 +27,19 @@ pub fn files(file: PathBuf, data: State<SharedData>) -> Option<NamedFile> {
     NamedFile::open(Path::new(&file_path)).ok()
 }
 
+/*
+LOAD HTML PAGES
+*/
+
+/// load index page
+#[get("/")]
+pub fn page_index() -> Redirect {
+    Redirect::to("/events/moas")
+}
 
 /// load events list page
 #[get("/events/<_event_type>")]
-pub fn event_list(_event_type: &RawStr, data: State<SharedData>) -> Template {
+pub fn page_event_list(_event_type: &RawStr, data: State<SharedData>) -> Template {
     let mut context = HashMap::<String, Value>::new();
     context.insert("context".to_owned(), json!({
         "onload_function":"load_events_table()" ,
@@ -44,7 +50,7 @@ pub fn event_list(_event_type: &RawStr, data: State<SharedData>) -> Template {
 
 /// load event details page
 #[get("/events/<_event_type>/<_id>")]
-pub fn event_details(_event_type: &RawStr, _id: &RawStr, data: State<SharedData>) -> Template {
+pub fn page_event_details(_event_type: &RawStr, _id: &RawStr, data: State<SharedData>) -> Template {
     let mut context = HashMap::<String, Value>::new();
     context.insert("context".to_owned(), json!({
         "onload_function":"load_event_details()",
@@ -55,7 +61,7 @@ pub fn event_details(_event_type: &RawStr, _id: &RawStr, data: State<SharedData>
 
 /// load pfx_event details page
 #[get("/events/<_event_type>/<_id>/<_pfx_finger_print>")]
-pub fn traceroutes_page(_event_type: &RawStr, _id: &RawStr, _pfx_finger_print: &RawStr, data: State<SharedData>) -> Template {
+pub fn page_traceroutes_page(_event_type: &RawStr, _id: &RawStr, _pfx_finger_print: &RawStr, data: State<SharedData>) -> Template {
     let mut context = HashMap::<String, Value>::new();
     context.insert("context".to_owned(), json!({"onload_function":"load_pfx_event()",
         "simple": data.simple_page
@@ -65,7 +71,7 @@ pub fn traceroutes_page(_event_type: &RawStr, _id: &RawStr, _pfx_finger_print: &
 
 /// load events list page
 #[get("/blacklist")]
-pub fn blacklist(data: State<SharedData>) -> Template {
+pub fn page_blacklist(data: State<SharedData>) -> Template {
     let mut context = HashMap::<String, Value>::new();
     context.insert("context".to_owned(), json!({"onload_function":"load_blacklist()",
         "simple": data.simple_page
