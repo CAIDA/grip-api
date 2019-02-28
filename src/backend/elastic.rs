@@ -26,27 +26,14 @@ impl ElasticSearchBackend {
     }
 
     pub fn get_event_by_id(&self, id: &str) -> Result<SearchResult, Box<Error>> {
-        let res = self
-            .es_client
-            .search::<Value>()
-            .index("hijacks*")
-            .body(json!({
-                "size":1,
-                "query": {
-                    "bool": {
-                        "must": { "match": { "id.keyword" : id }},
-                        "must_not": { "match": { "position.keyword": "FINISHED"  }},    // TODO: why?
-                    }
-                }
-            }))
-            .send()?;
-
-        for hit in res.hits() {
-            let doc = hit.document().unwrap().clone();
-
-            return Ok(SearchResult { results: vec!(doc), total: res.total() });
+        let event_type: &str = id.split("-").collect::<Vec<&str>>()[0];
+        let doc: Value = reqwest::get(format!("http://clayface.caida.org:9200/hijacks-{}/event_result/{}",event_type, id).as_str())
+            .unwrap().json().unwrap();
+        if doc["found"] == true {
+            return Ok(SearchResult { results: vec!(doc["_source"].clone()), total: 1 });
+        } else {
+            Err(Box::new(MyError("Oops".into())))
         }
-        Err(Box::new(MyError("Oops".into())))
     }
 
     pub fn list_events(&self, event_type: &str, start: &Option<usize>, max: &Option<usize>,
@@ -113,6 +100,8 @@ impl ElasticSearchBackend {
                 },
                 "sort": { "view_ts": { "order": "desc" }}
             });
+
+        // println!("{:#?}", query.to_string());
 
         let res = self
             .es_client
