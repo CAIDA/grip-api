@@ -2,7 +2,11 @@
 
 use rocket::fairing::AdHoc;
 use rocket::routes;
+use rocket::{Request, Response};
 use rocket_contrib::templates::Template;
+use rocket::fairing::{Fairing, Info, Kind};
+use rocket::http::{Header, ContentType, Method};
+use std::io::Cursor;
 use structopt::StructOpt;
 
 use hijacks_dashboard::backend::api::*;
@@ -12,6 +16,29 @@ use hijacks_dashboard::backend::data::SharedData;
 use hijacks_dashboard::backend::data::get_tag_dict;
 use std::collections::HashMap;
 use rocket::Config;
+
+
+pub struct CORS();
+
+impl Fairing for CORS {
+
+    fn info(&self) -> Info {
+        Info { name: "Add CORS headers to requests", kind: Kind::Response }
+    }
+
+    fn on_response(&self, request: &Request, response: &mut Response) {
+        if request.method() == Method::Options || response.content_type() == Some(ContentType::JSON) {
+            response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
+            response.set_header(Header::new("Access-Control-Allow-Methods", "POST, GET, OPTIONS"));
+            response.set_header(Header::new("Access-Control-Allow-Headers", "Content-Type"));
+            response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
+        }
+        if request.method() == Method::Options {
+            response.set_header(ContentType::Plain);
+            response.set_sized_body(Cursor::new(""));
+        }
+    }
+}
 
 #[derive(StructOpt, Debug)]
 #[structopt(raw(setting = "structopt::clap::AppSettings::ColoredHelp"))]
@@ -57,6 +84,7 @@ fn main() {
                 json_get_asrank,
             ],
         )
+        .attach(CORS())
         .attach(AdHoc::on_attach("get elastic search url", |rocket| {
             // set ElasticSearch URL
             let es_url = rocket.config().get_str("elastic_url")
