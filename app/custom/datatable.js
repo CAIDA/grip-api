@@ -124,9 +124,14 @@ function load_events_table() {
                             if (data === null) {
                                 return "ongoing"
                             } else {
-                                start_ts = Date.parse(row["view_ts"]);
-                                end_ts = Date.parse(data);
-                                return `${(end_ts-start_ts)/1000/60} min`
+                                let start_ts = Date.parse(row["view_ts"]);
+                                let end_ts = Date.parse(data);
+                                let duration = (end_ts-start_ts)/1000/60;
+                                if(duration < 0 ){
+                                    // FIXME: figure out why duration would be below 0
+                                    duration = 0;
+                                }
+                                return `${duration} min`
                             }
                         },
                         "targets": [5]
