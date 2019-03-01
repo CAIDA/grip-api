@@ -70,13 +70,29 @@ function load_events_table() {
                 "columnDefs": [
                     {
                         "render": function (data, type, row) {
-                            return render_origin_links( extract_victims(data[0], row["event_type"]));
+                            let victims = extract_victims(data[0], row["event_type"]);
+                            let links = "";
+                            if(victims.length>0){
+                                links = render_origin_links([victims[0]]);
+                                if(victims.length>1){
+                                    links+= `<div>(${victims.length-1} more)</div>`
+                                }
+                            }
+                            return links;
                         },
                         "targets": [0]
                     },
                     {
                         "render": function (data, type, row) {
-                            return render_origin_links( extract_attackers(data[0], row["event_type"]))
+                            let attackers = extract_attackers(data[0], row["event_type"]);
+                            let links = "";
+                            if(attackers.length>0){
+                                links = render_origin_links([attackers[0]]);
+                                if(attackers.length>1){
+                                    links+= `<div>(${attackers.length-1} more)</div>`
+                                }
+                            }
+                            return links;
                         },
                         "targets": [1]
                     },

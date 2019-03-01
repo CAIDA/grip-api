@@ -59,6 +59,7 @@ fn main() {
     let mut extra_config = HashMap::new();
     extra_config.insert("template_dir".to_owned(), format!("{}/templates",&resource_dir).into());
     config.set_extras(extra_config);
+    config.set_address("0.0.0.0").unwrap();
 
     rocket::custom(config.clone())
         .mount(
