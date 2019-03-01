@@ -73,7 +73,7 @@ function load_events_table() {
                             let victims = extract_victims(data[0], row["event_type"]);
                             let links = "";
                             if(victims.length>0){
-                                links = render_origin_links([victims[0]]);
+                                links = render_origin_links(victims.slice(0,2));
                                 if(victims.length>1){
                                     links+= `<div>(${victims.length-1} more)</div>`
                                 }
@@ -87,7 +87,7 @@ function load_events_table() {
                             let attackers = extract_attackers(data[0], row["event_type"]);
                             let links = "";
                             if(attackers.length>0){
-                                links = render_origin_links([attackers[0]]);
+                                links = render_origin_links(attackers.slice(0,2));
                                 if(attackers.length>1){
                                     links+= `<div>(${attackers.length-1} more)</div>`
                                 }
