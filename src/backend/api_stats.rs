@@ -38,7 +38,12 @@ fn get_type_count(event_type: &str, only_today: bool) -> Value{
         }
     );
 
-    return client.post(format!("http://clayface.caida.org:9200/hijacks-{}/_count", event_type).as_str())
+    let etype = match event_type{
+        "all" => "*",
+        _ => event_type,
+    };
+
+    return client.post(format!("http://clayface.caida.org:9200/hijacks-{}/_count", etype).as_str())
         .json(&count_query).send().unwrap().json::<Value>().unwrap();
 }
 
