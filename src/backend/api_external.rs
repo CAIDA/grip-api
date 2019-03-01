@@ -1,18 +1,24 @@
 use rocket_contrib::json::Json;
 use serde_json::Value;
 use serde_json::json;
-#[allow(unused_imports)]
-use chrono::{Datelike, Timelike, Utc, Duration};
+#[allow(unused_imports)] use chrono::{Datelike, Timelike, Utc, Duration};
+
+fn request_for_json(url: &String) -> Value {
+    match reqwest::get(url) {
+        Ok(mut result) => match result.json() {
+            Ok(j) => j,
+            Err(e) => json!({"error": format!("{:?}",e)})
+        },
+        Err(e) => json!({"error": format!("{:?}",e)})
+    }
+}
 
 #[get("/json/asrank/<asn>")]
 pub fn json_get_asrank(asn: usize) -> Json<Value> {
-    match reqwest::get(format!("http://as-rank.caida.org/api/v1/asns/{}", asn).as_str()) {
-        Ok(mut result) => match result.json() {
-            Ok(j) => Json(j),
-            Err(e) => Json(json!({"error": format!("{:?}",e)}))
-        },
-        Err(e) => Json(json!({"error": format!("{:?}",e)}))
-    }
+    let request_url = format!("http://as-rank.caida.org/api/v1/asns/{}", asn);
+    Json(
+        request_for_json(&request_url)
+    )
 }
 
 #[allow(dead_code)]
@@ -26,8 +32,7 @@ pub fn json_get_hegemony(asn: usize) -> Json<Value> {
             "https://ihr.iijlab.net/ihr/api/hegemony/?originasn=0&af=4&timebin={}&format=json&asn={}", time_str, asn
         );
     println!("{}", url);
-    let hegemony: Value = reqwest::get(url.as_str()).unwrap().json().unwrap();
-    Json(hegemony)
+    Json(request_for_json(&url))
 }
 
 
