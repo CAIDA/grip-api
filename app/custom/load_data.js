@@ -93,7 +93,6 @@ function render_country(asorg) {
 
 function load_origin_info(origin, style=1){
     // initialize tooltip then change the title later it later
-    console.log("loading information for "+origin);
     load_origin_asrank(origin, style);
     load_origin_hegemony(origin);
 }
