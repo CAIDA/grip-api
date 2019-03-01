@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="hi3 row">
-    <h2 id="event_title hi3"> Event Details </h2>
+    <h2 id="event_title" style="color: #2c3e50;"> Event Details </h2>
     <div class="col-xs-6">
         <div class="table-responsive">
             <table class="table table-striped">
@@ -86,7 +86,7 @@
 </div>
 
 <div class="hi3 row">
-    <h2 id="table_title"> Prefix Events </h2>
+    <h2 id="table_title" style="color: #2c3e50;"> Prefix Events </h2>
     <div class="x_content">
         <table id="datatable" class="table table-striped table-bordered" style="">
         </table>
