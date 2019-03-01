@@ -78,6 +78,7 @@ fn main() {
                 json_pfx_event_by_id,
                 json_list_events,
                 json_stats_today,
+                json_stats_by_type,
                 json_stats_total,
                 json_get_tags,
                 json_get_blacklist,
