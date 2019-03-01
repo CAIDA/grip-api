@@ -7,6 +7,7 @@ use structopt::StructOpt;
 
 use hijacks_dashboard::backend::api::*;
 use hijacks_dashboard::backend::api_hi3::*;
+use hijacks_dashboard::backend::api_stats::*;
 use hijacks_dashboard::backend::data::SharedData;
 use hijacks_dashboard::backend::data::get_tag_dict;
 use std::collections::HashMap;
@@ -48,6 +49,8 @@ fn main() {
                 json_event_by_id,
                 json_pfx_event_by_id,
                 json_list_events,
+                json_stats_today,
+                json_stats_total,
                 json_get_tags,
                 json_get_blacklist,
                 json_get_hegemony,

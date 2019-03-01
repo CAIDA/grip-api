@@ -191,4 +191,3 @@ pub fn json_list_events(event_type: &RawStr, ts_start: Option<String>, ts_end: O
     Json(object.to_owned())
 }
 
-
