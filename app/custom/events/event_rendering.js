@@ -180,7 +180,7 @@ function render_origin_links(origin_lst, style = 1) {
 
     origin_lst.forEach(function (origin) {
         // links.push(`<a class="btn btn-default as-btn as-btn-${origin}" data-toggle="tooltip" title="" data-placement="top" href='http://as-rank.caida.org/asns/${origin}' target="_blank")> AS${origin} </a>`)
-        links.push(`<div><span class="as-country-${origin} style='white-space:nowrap'"></span> <a class="link as-btn as-btn-${origin}" data-toggle="tooltip" title="" data-placement="top" href='//as-rank.caida.org/asns/${origin}' target="_blank")> AS${origin} </a></div>`)
+        links.push(`<div><span class="as-country-${origin} style='white-space:nowrap'"></span> <a class="link as-btn as-btn-${origin}" data-toggle="tooltip" title="" data-placement="top" href='http://as-rank.caida.org/asns/${origin}' target="_blank")> AS${origin} </a></div>`)
     });
     load_origins_info(origin_lst, style);
 
