@@ -54,7 +54,7 @@ function load_events_table() {
                 "serverSide": true,
                 "searching": false,
                 "ordering": false,
-                "pageLength": 25,
+                "pageLength": 10,
                 "ajax": {
                     "url": url,
                 },
