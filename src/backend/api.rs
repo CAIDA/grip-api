@@ -149,30 +149,6 @@ pub fn json_pfx_event_by_id(id: &RawStr, fingerprint: &RawStr, base_url: State<S
     }
 }
 
-#[get("/json/asrank/<asn>")]
-pub fn json_get_asrank(asn: usize) -> Json<Value> {
-    Json(
-        reqwest::get(format!("http://as-rank.caida.org/api/v1/asns/{}", asn).as_str())
-            .unwrap().json().unwrap()
-    )
-}
-
-#[get("/json/hegemony/<asn>")]
-pub fn json_get_hegemony(asn: usize) -> Json<Value> {
-    let now = Utc::now() - Duration::days(2);
-    let time_str = format!("{}-{:02}-{:02}T{:02}:00", now.year(), now.month(), now.day(), now.hour());
-
-    let url =
-        format!(
-            "https://ihr.iijlab.net/ihr/api/hegemony/?originasn=0&af=4&timebin={}&format=json&asn={}", time_str, asn
-        );
-    println!("{}", url);
-    let hegemony: Value = reqwest::get(url.as_str()).unwrap().json().unwrap();
-    Json(hegemony)
-}
-
-
-
 #[get("/json/events/<event_type>?<ts_start>&<ts_end>&<draw>&<start>&<length>&<asn>&<prefix>")]
 pub fn json_list_events(event_type: &RawStr, ts_start: Option<String>, ts_end: Option<String>,
                         draw: Option<usize>, start: Option<usize>, length: Option<usize>,
