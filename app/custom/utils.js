@@ -11,8 +11,10 @@ const OFFSET = 127397;
 // module exposes a single function
 function flag(country_code) {
   // only allow string input
-  if (typeof country_code !== 'string')
-    throw new TypeError('argument must be a string');
+  if (typeof country_code !== 'string'){
+      // throw new TypeError('argument must be a string');
+      return "";
+  }
   // ensure country code is all caps
   const cc = country_code.toUpperCase();
   // return the emoji flag corresponding to country_code or null
