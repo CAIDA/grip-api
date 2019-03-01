@@ -22,7 +22,7 @@
                             </span>
                         </div>
                     </div>
-                    <div class="col-md-3 form-group pull-right top_search">
+                    <div class="form-group pull-right top_search">
                         <button id="range-btn" type="button" class="btn btn-default pull-right"
                                 style="padding: 5px 10px; margin-left: 5px">
                             Filter
