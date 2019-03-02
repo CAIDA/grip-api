@@ -227,7 +227,7 @@ type_label = {
     "na": "label-default",
 };
 
-function render_tags(tags) {
+function render_tags(event_type, tags) {
     entries = [];
 
     let tag_type = {};
@@ -237,6 +237,11 @@ function render_tags(tags) {
         let entry = tags_info_dict["tr_worthy"][i];
         let worthiness = entry["worthy"];
         let comb = entry["tags"];
+        let apply_to = entry["apply_to"];
+        if(!(apply_to.includes(event_type))){
+            tag_type[tag] = "na";
+            continue
+        }
         if ([...comb].filter(x => !tags_set.has(x)).length === 0) {
             // all items in comb is in tags set, the worthiness applies
             for (tag of comb) {
@@ -253,12 +258,11 @@ function render_tags(tags) {
         if (tag in tag_type) {
             label = tag_type[tag];
         } else {
-            console.log("unknown tag " + tag);
             label = "na";
         }
-        if (!(tag in tag_type)) {
-            entries.push(`<span style="color: purple; ">${tag}</span>`)
-        }
+        // if (!(tag in tag_type)) {
+        //     entries.push(`<span style="color: purple; ">${tag}</span>`)
+        // }
         let definition = tags_info_dict["definitions"][tag]["definition"];
         entries.push(`<span class="label ${type_label[label]}" style="font-size: 12px;" data-toggle='tooltip' title='${definition}'>${render_tag_name(tag)}</span></h4>`)
     }

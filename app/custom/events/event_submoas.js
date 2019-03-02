@@ -17,7 +17,7 @@ function get_submoas_column_defs() {
         },
         {
             "render": function (data, type, row) {
-                return render_tags(data)
+                return render_tags("submoas", data)
             },
             "targets": [2]
         },

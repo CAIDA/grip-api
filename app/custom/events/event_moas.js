@@ -16,7 +16,7 @@ function get_moas_column_defs() {
         },
         {
             "render": function (data, type, row) {
-                return render_tags(data)
+                return render_tags("moas", data)
             },
             "targets": [1]
         },
