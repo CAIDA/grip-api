@@ -12,8 +12,8 @@ fn get_type_count(event_type: &str, only_today: bool) -> Value{
 
     let mut range_filter = json!({"view_ts":{}});
     if only_today{
-        range_filter["view_ts"]["gte"] = json!("now-1d/d");
-        range_filter["view_ts"]["lt"] = json!("now/d");
+        range_filter["view_ts"]["gte"] = json!("now-1d");
+        range_filter["view_ts"]["lt"] = json!("now");
     }
 
     let count_query: Value = json!(
