@@ -220,7 +220,7 @@ function init_daterangepicker() {
         }
     };
 
-    $('#reportrange span').html(moment().subtract(1, 'days').format('YYYY-MM-DDTHH:mm') + ' - ' + moment().format('YYYY-MM-DDTHH:mm'));
+    $('#reportrange span').html(moment().subtract(1, 'days').format('YYYY-MM-DDTHH:mmZZ') + ' - ' + moment().format('YYYY-MM-DDTHH:mmZZ'));
     let daterange = $('#reportrange');
     daterange.daterangepicker(optionSet1, cb);
     daterange.on('show.daterangepicker', function() {
@@ -230,7 +230,7 @@ function init_daterangepicker() {
         console.log("hide event fired");
     });
     daterange.on('apply.daterangepicker', function(ev, picker) {
-        $('#reportrange span').html(picker.startDate.format('YYYY-MM-DDTHH:mm') + ' - ' + picker.endDate.format('YYYY-MM-DDTHH:mm'));
+        $('#reportrange span').html(picker.startDate.format('YYYY-MM-DDTHH:mmZZ') + ' - ' + picker.endDate.format('YYYY-MM-DDTHH:mmZZ'));
     });
     daterange.on('cancel.daterangepicker', function(ev, picker) {
         console.log("cancel event fired");

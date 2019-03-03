@@ -97,7 +97,7 @@ function load_origin_info(origin, style=1){
     load_origin_hegemony(origin);
 }
 
-let hegemony_query_time = moment().subtract(2, 'days').format('YYYY-MM-DDTHH:00');
+let hegemony_query_time = moment().utc().subtract(2, 'days').format('YYYY-MM-DDTHH:00');
 
 function load_origin_hegemony(origin){
     $.ajax({
