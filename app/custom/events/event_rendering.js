@@ -238,11 +238,13 @@ function render_tags(event_type, tags) {
         let worthiness = entry["worthy"];
         let comb = entry["tags"];
         let apply_to = entry["apply_to"];
-        if(!(apply_to.includes(event_type))){
-            tag_type[tag] = "na";
-            continue
-        }
         if ([...comb].filter(x => !tags_set.has(x)).length === 0) {
+            if(!(apply_to.includes(event_type))){
+                for(tag of comb){
+                    tag_type[tag] = "na";
+                }
+                continue
+            }
             // all items in comb is in tags set, the worthiness applies
             for (tag of comb) {
                 if (!(tag in tag_type) || tag_type[tag] === "na") {

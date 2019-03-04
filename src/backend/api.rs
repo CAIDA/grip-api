@@ -9,7 +9,6 @@ use rocket_contrib::json::Json;
 use rocket_contrib::templates::Template;
 use serde_json::json;
 use serde_json::Value;
-use chrono::{Datelike, Timelike, Utc, Duration};
 
 use crate::backend::elastic::ElasticSearchBackend;
 use crate::backend::utils::*;
