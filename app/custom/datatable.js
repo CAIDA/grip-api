@@ -314,3 +314,77 @@ function load_blacklist(){
         ]
     })
 }
+
+function load_tags(){
+    let tags = [];
+    let tr = [];
+    $.ajax({
+        dataType: "json",
+        async: false,
+        url: "/json/tags",
+        success: function (data) {
+            for(let tag in data['definitions']){
+                let d =  data['definitions'][tag];
+                tags.push([tag, d["definition"]])
+            }
+
+            for(let entry of data['tr_worthy']){
+                tr.push([entry['tags'], entry['worthy'], entry["explain"], entry["apply_to"]])
+            }
+        }
+    });
+
+    console.log(tr)
+
+    $('#tags').DataTable({
+        searching: false,
+        ordering: false,
+        paging: false,
+        data:tags,
+        columns: [
+            {title: "Tag ID"},
+            {title: "Definition"},
+        ],
+        columnDefs: [
+            // {
+            //     "render": function (data, type, row) {
+            //         // return render_origin_links( [data], style=2);
+            //         let links = "";
+            //         for(c of data){
+            //             links+=`<div>${c}</div>\n`
+            //         }
+            //         console.log(data)
+            //         return links
+            //     },
+            //     "targets": [2]
+            // }
+        ]
+    });
+
+    $('#tr_worthy').DataTable({
+        searching: false,
+        ordering: false,
+        paging: false,
+        data:tr,
+        columns: [
+            {title: "Tags"},
+            {title: "TR Worthy"},
+            {title: "Explain"},
+            {title: "Apply To"},
+        ],
+        columnDefs: [
+            // {
+            //     "render": function (data, type, row) {
+            //         // return render_origin_links( [data], style=2);
+            //         let links = "";
+            //         for(c of data){
+            //             links+=`<div>${c}</div>\n`
+            //         }
+            //         console.log(data)
+            //         return links
+            //     },
+            //     "targets": [2]
+            // }
+        ]
+    })
+}

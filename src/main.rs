@@ -75,6 +75,7 @@ fn main() {
                 hi3_page_event_details,
                 hi3_page_traceroutes_page,
                 page_blacklist,
+                page_tags,
                 files,
                 json_event_by_id,
                 json_pfx_event_by_id,

@@ -63,6 +63,7 @@
                                 </ul>
                             </li>
                             <li><a href="/blacklist"><i class="fa fa-book"></i> AS Blacklist </a></li>
+                            <li><a href="/tags"><i class="fa fa-tag"></i> Tags </a></li>
                         </ul>
                     </div>
                 </div>

@@ -86,6 +86,16 @@ pub fn page_blacklist(_data: State<SharedData>) -> Template {
     Template::render("blacklist", context)
 }
 
+/// load events list page
+#[get("/tags")]
+pub fn page_tags(_data: State<SharedData>) -> Template {
+    let mut context = HashMap::<String, Value>::new();
+    context.insert("context".to_owned(), json!({
+        "onload_function":"load_tags()",
+    }));
+    Template::render("tags", context)
+}
+
 /*
 JSON QUERY APIS
 */
