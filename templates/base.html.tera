@@ -45,13 +45,21 @@
                     <div class="menu_section">
                         <!--<h3>General</h3>-->
                         <ul class="nav side-menu">
-                            <li><a href="/events/all"><i class="fa fa-home"></i> All Events </a></li>
-                            <li><a><i class="fa fa-table"></i> Event Types <span class="fa fa-chevron-down"></span></a>
+                            <li><a href="/events/all"><i class="fa fa-home"></i> All Suspicious Events </a></li>
+                            <li><a><i class="fa fa-table"></i> Suspicious Events <span class="fa fa-chevron-down"></span></a>
                                 <ul class="nav child_menu">
                                     <li><a href="/events/moas">MOAS</a></li>
                                     <li><a href="/events/submoas">SUBMOAS</a></li>
                                     <li><a href="/events/defcon">DEFCON</a></li>
                                     <li><a href="/events/edges">NEW EDGE</a></li>
+                                </ul>
+                            </li>
+                            <li><a><i class="fa fa-table"></i> Benign Events <span class="fa fa-chevron-down"></span></a>
+                                <ul class="nav child_menu">
+                                    <li><a href="/events_benign/moas">MOAS</a></li>
+                                    <li><a href="/events_benign/submoas">SUBMOAS</a></li>
+                                    <li><a href="/events_benign/defcon">DEFCON</a></li>
+                                    <li><a href="/events_benign/edges">NEW EDGE</a></li>
                                 </ul>
                             </li>
                             <li><a href="/blacklist"><i class="fa fa-book"></i> AS Blacklist </a></li>

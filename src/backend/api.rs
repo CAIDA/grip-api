@@ -46,6 +46,16 @@ pub fn page_event_list(_event_type: &RawStr, _data: State<SharedData>) -> Templa
     Template::render("event_list", context)
 }
 
+/// load events list page
+#[get("/events_benign/<_event_type>")]
+pub fn page_benign_event_list(_event_type: &RawStr, _data: State<SharedData>) -> Template {
+    let mut context = HashMap::<String, Value>::new();
+    context.insert("context".to_owned(), json!({
+        "onload_function":"load_events_table(true)" ,
+    }));
+    Template::render("event_list", context)
+}
+
 /// load event details page
 #[get("/events/<_event_type>/<_id>")]
 pub fn page_event_details(_event_type: &RawStr, _id: &RawStr, _data: State<SharedData>) -> Template {
@@ -148,13 +158,13 @@ pub fn json_pfx_event_by_id(id: &RawStr, fingerprint: &RawStr, base_url: State<S
     }
 }
 
-#[get("/json/events/<event_type>?<ts_start>&<ts_end>&<draw>&<start>&<length>&<asn>&<prefix>")]
+#[get("/json/events/<event_type>?<ts_start>&<ts_end>&<draw>&<start>&<length>&<asn>&<prefix>&<benign>")]
 pub fn json_list_events(event_type: &RawStr, ts_start: Option<String>, ts_end: Option<String>,
                         draw: Option<usize>, start: Option<usize>, length: Option<usize>,
-                        asn: Option<usize>, prefix: Option<String>,
+                        asn: Option<usize>, prefix: Option<String>, benign: Option<bool>,
                         base_url: State<SharedData>) -> Json<Value> {
     let backend = ElasticSearchBackend::new(&base_url.es_url).unwrap();
-    let query_result = backend.list_events(event_type, &start, &length, &asn, &prefix, &ts_start, &ts_end).unwrap();
+    let query_result = backend.list_events(event_type, &start, &length, &asn, &prefix, &ts_start, &ts_end, &benign).unwrap();
     let object = json!(
         {
             "data": query_result.results,

@@ -3,7 +3,7 @@ let whois_dict = {};
 let cidr_loose_re = /^[0-9]+[.:][0-9.:/]*$/;
 const params = new Map(location.search.slice(1).split('&').map(kv => kv.split('=')))
 
-function load_events_table() {
+function load_events_table(only_benign=false) {
     const event_type = get_event_type_from_url();
     let frame_type = event_type;
     if(frame_type==="all"){
@@ -46,6 +46,9 @@ function load_events_table() {
         let times = $('#reportrange span').html().split(" - ");
         if(Date.parse(times[0]) !==null){
             url += `ts_start=${times[0]}&ts_end=${times[1]}`;
+        }
+        if(only_benign){
+            url += "&benign=true";
         }
         url = url.replace(/[?&]$/i, "");
         console.log(url);
@@ -152,7 +155,11 @@ function load_events_table() {
                 return;
             }
             var data = datatable.row($(this)).data();
-            window.open(`/${window.location.pathname.split("/")[1]}/` + data['event_type'] + "/" + data['id'], '_self', false);
+            let base = window.location.pathname.split("/")[1];
+            if(base === "events_benign"){
+                base = "events"
+            }
+            window.open(`/${base}/` + data['event_type'] + "/" + data['id'], '_self', false);
         });
     });
 

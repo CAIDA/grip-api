@@ -38,7 +38,7 @@ impl ElasticSearchBackend {
 
     pub fn list_events(&self, event_type: &str, start: &Option<usize>, max: &Option<usize>,
                        asn: &Option<usize>, prefix: &Option<String>,
-                       ts_start: &Option<String>, ts_end: &Option<String>)
+                       ts_start: &Option<String>, ts_end: &Option<String>, benign: &Option<bool>)
                        -> Result<SearchResult, Box<Error>> {
         let mut etype = event_type.to_owned();
         if etype == "all" {
@@ -62,7 +62,14 @@ impl ElasticSearchBackend {
 
         // match must terms
         let mut must_terms = vec!();
-        must_terms.push(json!({ "term": { "inference.tr_worthy" : true }}));
+        match benign {
+            Some(b) => if *b {
+                must_terms.push(json!({ "term": { "inference.tr_worthy" : false }}));
+            } else {
+                must_terms.push(json!({ "term": { "inference.tr_worthy" : true }}));
+            },
+            None => must_terms.push(json!({ "term": { "inference.tr_worthy" : true }})),
+        }
         match prefix {
             Some(p) => {
                 // https://stackoverflow.com/questions/40573981/multiple-should-queries-with-must-query
