@@ -36,6 +36,8 @@ function load_events_table(only_benign=false) {
                     search_text.push("AS"+value)
                 } else if (key === "prefix") {
                     search_text.push(value)
+                } else if (key === "tags") {
+                    search_text.push(value)
                 }
             });
         }
@@ -195,14 +197,24 @@ function load_events_table(only_benign=false) {
         }
         let asn = "";
         let prefix = "";
+        let tags = [];
         let ready = false;
+        console.log(fields);
         for(let i in fields){
-            let v = fields[i].trim();
+            let v = fields[i].trim().toLowerCase();
+            // check if it's a prefix
             if(cidr_loose_re.test(v)){
-                // it's a prefix
                 prefix = v;
                 ready = true;
             }
+
+            // check if it's a tag
+            if((/^[a-zA-Z\-]+$/).test(v)){
+                tags.push(v);
+                ready = true;
+            }
+
+            // check if it's an as number
             v = v.replace(/as/i,"");
             if((/^[0-9]+$/).test(v)){
                 // it's a asn
@@ -210,16 +222,20 @@ function load_events_table(only_benign=false) {
                 ready = true;
             }
         }
-        // if(!ready){
-        //     alert("not enough search parameters");
-        //     return;
-        // }
+        if(!ready){
+            // alert("not enough search parameters");
+            console.log("not enough search parameters");
+            return;
+        }
         let url = `/${window.location.pathname.split("/")[1]}/${event_type}?`;
         if(prefix!==""){
             url+=`prefix=${prefix}&`;
         }
         if(asn!==""){
             url+=`asn=${asn}&`;
+        }
+        if(tags.length>0){
+            url+=`tags=${tags.join(",")}`
         }
         url = url.replace(/[?&]$/i, "");
         window.open(url, '_self', false);
