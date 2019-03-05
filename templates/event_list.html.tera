@@ -16,7 +16,7 @@
                     <div class="col-lg-4 form-group pull-right top_search">
                         <div class="input-group">
                             <input id="search-box" type="text" class="form-control"
-                                   placeholder="Search by prefix and ASN, separate by space...">
+                                   placeholder="Search by prefix, ASN, and tags, separate by space...">
                             <span class="input-group-btn">
                               <button id="search-btn" class="btn btn-default" type="button">Go!</button>
                             </span>
