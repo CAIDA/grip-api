@@ -117,7 +117,7 @@ impl ElasticSearchBackend {
                 "sort": { "view_ts": { "order": "desc" }}
             });
 
-        println!("{:#?}", query);
+        // println!("{:#?}", query);
 
         let res = self
             .es_client
