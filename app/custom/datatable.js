@@ -90,6 +90,9 @@ function load_events_table(only_benign=false) {
                     {
                         "render": function (data, type, row) {
                             let attackers = extract_attackers(data[0], row["event_type"]);
+                            if(attackers ===null){
+                                return ""
+                            }
                             let links = "";
                             if(attackers.length>0){
                                 links = render_origin_links(attackers.slice(0,2));
@@ -151,6 +154,23 @@ function load_events_table(only_benign=false) {
                 ]
             }
         );
+        $('#datatable').on( 'processing.dt', function () {
+            console.log("processing");
+            let page_number = datatable.page.info()['page'];
+            if(window.location.hash){
+                let hash_number = parseInt(window.location.hash.split("#")[1]);
+                if(page_number!==hash_number){
+                    console.log(`change page now from ${page_number} to ${hash_number}`);
+                    datatable.page(hash_number).draw(false);
+                }
+            }
+        });
+        $('#datatable').on( 'page.dt', function () {
+            let info = datatable.page.info();
+            window.location.hash = info['page'];
+            console.log(info)
+            datatable.draw(false);
+        } );
 
         $('#datatable tbody').on('click', 'tr', function (e) {
             if(e.target.tagName === 'A'){
