@@ -38,7 +38,8 @@ impl ElasticSearchBackend {
 
     pub fn list_events(&self, event_type: &str, start: &Option<usize>, max: &Option<usize>,
                        asn: &Option<usize>, prefix: &Option<String>,
-                       ts_start: &Option<String>, ts_end: &Option<String>, benign: &Option<bool>)
+                       ts_start: &Option<String>, ts_end: &Option<String>, benign: &Option<bool>,
+                       tags: &Option<String>)
                        -> Result<SearchResult, Box<Error>> {
         let mut etype = event_type.to_owned();
         if etype == "all" {
@@ -92,7 +93,15 @@ impl ElasticSearchBackend {
             }
             _ => {}
         }
-        //must_terms["inference.tr_worthy"] = json!(true);
+        match tags {
+            Some(tags_string) => {
+                let tags_lst = tags_string.split(",").collect::<Vec<&str>>();
+                for t in tags_lst{
+                    must_terms.push(json!({"exists":{"field":format!("tags.{}", t)}}))
+                }
+            }
+            _ => {}
+        }
 
         let query: serde_json::Value = json!({
                 "from":start, "size":max_entries,
@@ -108,7 +117,7 @@ impl ElasticSearchBackend {
                 "sort": { "view_ts": { "order": "desc" }}
             });
 
-        // println!("{:#?}", query.to_string());
+        println!("{:#?}", query);
 
         let res = self
             .es_client
