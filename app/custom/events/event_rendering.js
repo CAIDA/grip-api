@@ -108,15 +108,15 @@ function render_impact(num_pfx, num_addrs) {
 }
 
 function render_event_details_table(event_type, event) {
-    console.log(event);
+    console.log(event['external']);
     $("#event-details-victim").html(
         render_origin_links(
-            extract_victims(event["pfx_events"][0], event_type,), 2
+            extract_victims(event["pfx_events"][0], event_type,), true, event['external']
         )
     );
     $("#event-details-attacker").html(
         render_origin_links(
-            extract_attackers(event["pfx_events"][0], event_type), 2
+            extract_attackers(event["pfx_events"][0], event_type), true, event['external']
         )
     );
     $("#event-details-prefix").html(
@@ -172,7 +172,7 @@ function format_prefix_table(prefix) {
     return thead + tbody + tfoot;
 }
 
-function render_origin_links(origin_lst, style = 1) {
+function render_origin_links(origin_lst, show_asn = false, external = null) {
     let links = [];
     if (origin_lst === null || origin_lst.length === 0 || origin_lst[0] === "") {
         return "Unknown"
@@ -180,9 +180,13 @@ function render_origin_links(origin_lst, style = 1) {
 
     origin_lst.forEach(function (origin) {
         // links.push(`<a class="btn btn-default as-btn as-btn-${origin}" data-toggle="tooltip" title="" data-placement="top" href='http://as-rank.caida.org/asns/${origin}' target="_blank")> AS${origin} </a>`)
-        links.push(`<div><span class="as-country-${origin} style='white-space:nowrap'"></span> <a class="link as-btn as-btn-${origin}" data-toggle="tooltip" title="" data-placement="top" href='http://as-rank.caida.org/asns/${origin}' target="_blank")> AS${origin} </a></div>`)
+        let country_flag = render_country(origin, external);
+        let as_html, as_tooltip;
+        [as_html, as_tooltip] = render_origin(origin, external, show_asn);
+        links.push(`<div>
+<span class="as-country-${origin}" style="white-space:nowrap"> ${country_flag}</span>
+<a class="link as-btn as-btn-${origin}" data-toggle="tooltip" data-original-title="${as_tooltip}" data-html="true" data-placement="auto" href='http://as-rank.caida.org/asns/${origin}' target="_blank")> ${as_html} </a></div>`)
     });
-    load_origins_info(origin_lst, style);
 
     return links.join(" ")
 }

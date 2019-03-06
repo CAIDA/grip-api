@@ -78,7 +78,7 @@ function load_events_table(only_benign=false) {
                             let victims = extract_victims(data[0], row["event_type"]);
                             let links = "";
                             if(victims.length>0){
-                                links = render_origin_links(victims.slice(0,2));
+                                links = render_origin_links(victims.slice(0,2), false, row['external']);
                                 if(victims.length>1){
                                     links+= `<div>(${victims.length-1} more)</div>`
                                 }
@@ -95,7 +95,7 @@ function load_events_table(only_benign=false) {
                             }
                             let links = "";
                             if(attackers.length>0){
-                                links = render_origin_links(attackers.slice(0,2));
+                                links = render_origin_links(attackers.slice(0,2), false, row['external']);
                                 if(attackers.length>1){
                                     links+= `<div>(${attackers.length-1} more)</div>`
                                 }
@@ -343,7 +343,7 @@ function load_blacklist(){
         columnDefs: [
             {
                 "render": function (data, type, row) {
-                    return render_origin_links( [data], style=2);
+                    return render_origin_links( [data], true);
                 },
                 "targets": [0]
             }
