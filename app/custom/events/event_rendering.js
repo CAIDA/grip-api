@@ -141,7 +141,8 @@ function render_event_details_table(event_type, event) {
 
     event_modal_info ["download_path"] = event["id"] + ".json";
     event_modal_info["json_raw_str"] = JSON.stringify(event, undefined, 4);
-    $(event_modal_info["content_id"]).html(syntaxHighlight(event_modal_info["json_raw_str"]));
+    // $(event_modal_info["content_id"]).html(syntaxHighlight(event_modal_info["json_raw_str"]));
+    $(event_modal_info["content_id"]).html(renderjson.set_show_to_level(2)(event, 1));
     $(".full-event-modal-download").click(function () {
         let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(event_modal_info["json_raw_str"]);
         var dlAnchorElem = document.getElementById(event_modal_info["anchorId"]);
