@@ -2,6 +2,7 @@ function get_moas_columns() {
     return [
         {"title": "Prefix", "data": 'prefix'},
         {"title": "Tags", "data": 'tags'},
+        {"title": "Traceroutes Worthy", "data": 'tr_worthy'},
         {"title": "Traceroutes Available", "data": 'traceroutes'},
     ];
 }
@@ -22,9 +23,21 @@ function get_moas_column_defs() {
         },
         {
             "render": function (data, type, row) {
+                if(data){
+                    return "yes"
+                } else {
+                    return "no"
+                }
+            },
+            "width": "140px",
+            "targets": [2]
+        },
+        {
+            "render": function (data, type, row) {
                 return render_tr_availability(data, row)
             },
-            "targets": [2]
+            "width": "140px",
+            "targets": [3]
         }
     ];
 }
