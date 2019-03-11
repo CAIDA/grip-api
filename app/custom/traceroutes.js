@@ -19,7 +19,7 @@ function load_pfx_event() {
             url: "/json/event/id/" + event_id,
             success: function (event) {
                 render_event_details_table(event_type, event);
-                render_pfx_event_table(event_type, event["pfx_events"]);
+                render_pfx_event_table(event_type, event["pfx_events"], table_id="#pfx_event_table");
             }
         });
 
@@ -138,7 +138,7 @@ function draw_traceroute_vis(measurements) {
 }
 
 function draw_pfx_event_table(pfx_event, event_id, fingerprint){
-    render_pfx_event_table(get_event_type_from_url(), [pfx_event], event_id, "#pfx_event_table", false)
+    render_pfx_event_table(get_event_type_from_url(), [pfx_event], false, "", event_id, "#pfx_event_table", false)
 
     prefix_modal_info["download_path"] = event_id + "-" + fingerprint + ".json";
     prefix_modal_info["json_raw_str"] = JSON.stringify(pfx_event, undefined, 4);

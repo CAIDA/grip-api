@@ -66,6 +66,7 @@ function load_event_scripts() {
 
 
 function render_pfx_event_table(event_type, pfx_events, tr_skipped = false, tr_skip_reason = "", event_id = "", table_id = "#datatable", paging = true) {
+
     if (isEmpty(table_info_dict)) {
         load_event_scripts()
     }
