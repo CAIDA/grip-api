@@ -313,8 +313,9 @@ function load_event_details() {
         $.ajax({
             url: "/json/event/id/" + event_id,
             success: function (event) {
+                console.log(event);
                 render_event_details_table(event_type, event);
-                render_pfx_event_table(event_type, event["pfx_events"]);
+                render_pfx_event_table(event_type, event['pfx_events'], event['tr_metrics']['tr_skipped'], event['tr_metrics']['tr_skip_reason']);
             }
         });
     })
