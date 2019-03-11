@@ -94,9 +94,30 @@ function render_pfx_event_table(event_type, pfx_events, event_id = "", table_id 
 
 function render_tr_availability(tr_results, pfx_event){
     if(tr_results.length > 0){
-        // TODO: add tooltip to show details for the traceroute time
-        // TODO: add indicator for it the traceroute is conducted within the event window
-        return "<div class='tr_available' data-tr-time=''>ye</div>"
+        let earliest_time = 0;
+        for(let tr of tr_results[0]['results']){
+            if(earliest_time ===0){
+                earliest_time = tr['starttime'];
+                continue
+            }
+            if(tr['starttime']<earliest_time){
+                earliest_time = tr['starttime'];
+            }
+        }
+        let res = "yes";
+        let tr_time = (new Date(earliest_time*1000));
+        if('finished_ts' in pfx_event){
+            let finish_time = Date.parse(pfx_event['finished_ts']);
+            if(finish_time < tr_time){
+                let diff_minutes = Math.floor((tr_time - finish_time)/1000/60);
+                let explain = `traceroute requested after ${diff_minutes} minutes after the event finished`;
+                res += ` <span class="glyphicon glyphicon-exclamation-sign" data-toggle="tooltip" data-original-title="${explain}" data-html="true" data-placement="auto" aria-hidden="true"></span>`
+            } else {
+                let explain = `traceroute requested during the event`;
+                res += ` <span class="glyphicon glyphicon-thumbs-up" data-toggle="tooltip" data-original-title="${explain}" data-html="true" data-placement="auto" aria-hidden="true"></span>`
+            }
+        }
+        return res
     } else {
         return "no"
     }
