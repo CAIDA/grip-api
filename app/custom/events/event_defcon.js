@@ -23,12 +23,7 @@ function get_defcon_column_defs() {
         },
         {
             "render": function (data, type, row) {
-                if(data.length > 0){
-                    return "yes"
-                } else {
-                    return "no"
-                }
-                // return render_traceroutes_link(row)
+                return render_tr_availability(data, row)
             },
             "targets": [3]
         }

@@ -92,6 +92,16 @@ function render_pfx_event_table(event_type, pfx_events, event_id = "", table_id 
 
 }
 
+function render_tr_availability(tr_results, pfx_event){
+    if(tr_results.length > 0){
+        // TODO: add tooltip to show details for the traceroute time
+        // TODO: add indicator for it the traceroute is conducted within the event window
+        return "<div class='tr_available' data-tr-time=''>ye</div>"
+    } else {
+        return "no"
+    }
+}
+
 function render_impact(num_pfx, num_addrs) {
     let impact_str = "";
     if (num_pfx === 1) {
