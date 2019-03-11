@@ -97,11 +97,11 @@ function render_tr_availability(tr_results, pfx_event){
         let earliest_time = 0;
         for(let tr of tr_results[0]['results']){
             if(earliest_time ===0){
-                earliest_time = tr['starttime'];
+                earliest_time = tr['endtime'];
                 continue
             }
             if(tr['starttime']<earliest_time){
-                earliest_time = tr['starttime'];
+                earliest_time = tr['endtime'];
             }
         }
         let res = "yes";
@@ -110,16 +110,16 @@ function render_tr_availability(tr_results, pfx_event){
             let finish_time = Date.parse(pfx_event['finished_ts']);
             if(finish_time < tr_time){
                 let diff_minutes = Math.floor((tr_time - finish_time)/1000/60);
-                let explain = `traceroute requested after ${diff_minutes} minutes after the event finished`;
+                let explain = `traceroute performed ${diff_minutes} minutes after the event finished`;
                 res += ` <span class="glyphicon glyphicon-exclamation-sign" data-toggle="tooltip" data-original-title="${explain}" data-html="true" data-placement="auto" aria-hidden="true"></span>`
             } else {
-                let explain = `traceroute requested during the event`;
+                let explain = `traceroute performed during the event`;
                 res += ` <span class="glyphicon glyphicon-thumbs-up" data-toggle="tooltip" data-original-title="${explain}" data-html="true" data-placement="auto" aria-hidden="true"></span>`
             }
         }
         return res
     } else {
-        return "no"
+        return "<div class='no_tr'>no</div>"
     }
 }
 
