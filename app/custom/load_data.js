@@ -62,6 +62,7 @@ function _construct_tooltip(asn, external){
     if("asrank" in external && asn in external['asrank']){
         // load as org information
         let asorg = external["asrank"][asn];
+        asorg["org"]["name"] = asorg["org"]["name"].replace(/"/g, "");
         table_str+= `
             ASN: ${asorg["id"]} <br/>
             Name: ${asorg["org"]["name"]} <br/>
