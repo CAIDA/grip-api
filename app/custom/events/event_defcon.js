@@ -3,6 +3,7 @@ function get_defcon_columns() {
         {"title": "Sub Prefix", "data": 'sub_pfx'},
         {"title": "Super Prefix", "data": 'super_pfx'},
         {"title": "Tags", "data": 'tags'},
+        {"title": "Traceroutes Worthy", "data": 'tr_worthy'},
         {"title": "Traceroutes Available", "data": 'traceroutes'},
     ];
 }
@@ -23,14 +24,21 @@ function get_defcon_column_defs() {
         },
         {
             "render": function (data, type, row) {
-                if(data.length > 0){
+                if(data){
                     return "yes"
                 } else {
                     return "no"
                 }
-                // return render_traceroutes_link(row)
             },
+            "width": "140px",
             "targets": [3]
+        },
+        {
+            "render": function (data, type, row) {
+                return render_tr_availability(data, row)
+            },
+            "width": "140px",
+            "targets": [4]
         }
     ];
 }

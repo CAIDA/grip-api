@@ -65,7 +65,7 @@ function load_event_scripts() {
 }
 
 
-function render_pfx_event_table(event_type, pfx_events, event_id = "", table_id = "#datatable", paging = true) {
+function render_pfx_event_table(event_type, pfx_events, tr_skipped = false, tr_skip_reason = "", event_id = "", table_id = "#datatable", paging = true) {
 
     if (isEmpty(table_info_dict)) {
         load_event_scripts()
@@ -80,6 +80,10 @@ function render_pfx_event_table(event_type, pfx_events, event_id = "", table_id 
         "columnDefs": table_info_dict[event_type]["columnDefs"],
     });
 
+    if(tr_skipped){
+        $(".no_tr").html("no; "+tr_skip_reason);
+    }
+
     $('#datatable tbody').on('click', 'tr', function (e) {
         if(e.target.tagName === 'A'){
             return;
@@ -90,6 +94,37 @@ function render_pfx_event_table(event_type, pfx_events, event_id = "", table_id 
         window.open(`${path}/${fingerprint}`, "_self", false)
     });
 
+}
+
+function render_tr_availability(tr_results, pfx_event){
+    if(tr_results.length > 0){
+        let earliest_time = 0;
+        for(let tr of tr_results[0]['results']){
+            if(earliest_time ===0){
+                earliest_time = tr['endtime'];
+                continue
+            }
+            if(tr['starttime']<earliest_time){
+                earliest_time = tr['endtime'];
+            }
+        }
+        let res = "yes";
+        let tr_time = (new Date(earliest_time*1000));
+        if('finished_ts' in pfx_event && pfx_event['finished_ts'] !== null){
+            let finish_time = Date.parse(pfx_event['finished_ts']);
+            if(finish_time < tr_time){
+                let diff_minutes = Math.floor((tr_time - finish_time)/1000/60);
+                let explain = `traceroute performed ${diff_minutes} minutes after the event finished`;
+                res += ` <span class="glyphicon glyphicon-exclamation-sign" data-toggle="tooltip" data-original-title="${explain}" data-html="true" data-placement="auto" aria-hidden="true"></span>`
+            } else {
+                let explain = `traceroute performed during the event`;
+                res += ` <span class="glyphicon glyphicon-thumbs-up" data-toggle="tooltip" data-original-title="${explain}" data-html="true" data-placement="auto" aria-hidden="true"></span>`
+            }
+        }
+        return res
+    } else {
+        return "<div class='no_tr'>no</div>"
+    }
 }
 
 function render_impact(num_pfx, num_addrs) {
