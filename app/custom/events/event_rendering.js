@@ -208,7 +208,23 @@ function format_prefix_table(prefix) {
     return thead + tbody + tfoot;
 }
 
+
+blacklist_ases = new Set();
+
 function render_origin_links(origin_lst, show_asn = false, external = null) {
+    if(blacklist_ases.size === 0){
+        $.ajax({
+            dataType: "json",
+            async: false,
+            url: "/json/blacklist",
+            success: function (data) {
+                for(asn of data['blacklist']){
+                    blacklist_ases.add(asn)
+                };
+                console.log(blacklist_ases);
+            }
+        });
+    }
     let links = [];
     if (origin_lst === null || origin_lst.length === 0 || origin_lst[0] === "") {
         return "Unknown"
@@ -219,9 +235,16 @@ function render_origin_links(origin_lst, show_asn = false, external = null) {
         let country_flag = render_country(origin, external);
         let as_html, as_tooltip;
         [as_html, as_tooltip] = render_origin(origin, external, show_asn);
+        let blacklist_symbol = "";
+        console.log(origin);
+        if(blacklist_ases.has(parseInt(origin))){
+            blacklist_symbol = ` <span class="glyphicon glyphicon-warning-sign" data-toggle="tooltip" data-original-title="This AS is on blacklist" data-html="true" data-placement="auto" aria-hidden="true"></span>`
+        }
         links.push(`<div>
 <span class="as-country-${origin}" style="white-space:nowrap"> ${country_flag}</span>
-<a class="link as-btn as-btn-${origin}" data-toggle="tooltip" data-original-title="${as_tooltip}" data-html="true" data-placement="auto" href='http://as-rank.caida.org/asns/${origin}' target="_blank")> ${as_html} </a></div>`)
+<a class="link as-btn as-btn-${origin}" data-toggle="tooltip" data-original-title="${as_tooltip}" data-html="true" data-placement="auto" href='http://as-rank.caida.org/asns/${origin}' target="_blank")> ${as_html} </a>
+${blacklist_symbol}
+</div>`)
     });
 
     return links.join(" ")
