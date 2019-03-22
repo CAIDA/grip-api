@@ -1,178 +1,93 @@
-use serde_json::json;
-use serde_json::Value;
+use serde_json::{json,Value};
+use crate::backend::elastic::SearchResult;
+use std::collections::HashSet;
 
 /// shared state across rocket threads
 pub struct SharedData {
     pub es_url: String,
-    pub tag_dict: Value,
     pub resource_dir: String,
 }
 
-pub fn get_tag_dict() -> Value{
-    json!({
-        "moas": {
-            "yes": [
-                "moas-short-prefix",
-                "moas-not-previously-announced-by-any-newcomer",
-            ],
-            "no": [
-                "moas-recurring-pfx-event",
-                "moas-not-previously-announced",
-                "moas-reserved-space",
-                "moas-no-newcomer",
-                "moas-all-newcomers",
-                "moas-no-prev-origin",
-                "moas-due-to-private-asn",
-                "moas-all-newcomers-private-asn",
-                "moas-due-to-dps-asn",
-                "moas-all-newcomers-dps-asn",
-                "moas-previously-announced-by-all-newcomers",
-                "moas-ixp-prefix",
-                "moas-siblings",
-                "moas-pc-single-upstream",
-                "moas-newcomer-is-direct-provider",
-                "moas-newcomer-is-direct-customer",
-                "moas-newcomer-is-direct-peer",
-                "moas-oldasn-in-newcomer-customer-cone",
-                "moas-newcomer-in-oldasn-customer-cone",
-                "moas-multi-all-siblings",
-                "moas-multi-pc-single-upstream-chain",
-                "moas-multi-newcomers-are-all-direct-providers",
-                "moas-multi-newcomers-are-all-direct-customers",
-                "moas-multi-newcomers-are-all-direct-peers",
-                "moas-multi-newcomers-are-all-upstreams",
-                "moas-multi-newcomers-are-all-downstreams",
-            ],
-            "na": [
-                "moas-notags",
-                "moas-outdated-info",
-                "moas-outdated-maybe-not-no-newcomer",
-                "moas-outdated-maybe-not-all-newcomers",
-                "moas-outdated-maybe-not-no-prev-origin",
-                "moas-has-private-asn",
-                "moas-has-private-newcomer-asn",
-                "moas-has-dps-asn",
-                "moas-has-dps-newcomer-asn",
-                "moas-previously-announced-by-newcomer",
-                "moas-newcomer-is-directly-connected",
-                "moas-multi-some-siblings",
-                "moas-multi-newcomers-are-all-directly-connected",
-                "moas-multi-some-newcomers-are-direct-providers",
-                "moas-multi-some-newcomers-are-direct-customers",
-                "moas-multi-some-newcomers-are-direct-peers",
-                "moas-multi-some-newcomers-are-directly-connected",
-                "moas-multi-some-newcomers-are-upstreams",
-                "moas-multi-some-newcomers-are-downstreams",
-                "moas-newcomer-small-asn",
-                "moas-origin-small-edit-distance",
-                "moas-prefix-small-edit-distance",
-                "moas-newcomer-is-direct-downstream",
-                "moas-newcomer-is-direct-upstream",
-                "moas-newcomer-is-neighbor"
-            ],
-        },
-        "submoas": {
-            "yes": [
-                "submoas-short-prefix-super_prefix",
-                "submoas-short-prefix",
-                "submoas-not-previously-announced-by-any-newcomer"
-            ],
-            "no": [
-                "submoas-recurring-pfx-event",
-                "submoas-not-previously-announced",
-                "submoas-no-newcomer",
-                "submoas-no-newcomer-pfxs",
-                "submoas-all-newcomers",
-                "submoas-all-newcomers-pfxs",
-                "submoas-due-to-private-asn",
-                "submoas-all-newcomers-private-asn",
-                "submoas-due-to-dps-asn",
-                "submoas-all-newcomers-dps-asn",
-                "submoas-previously-announced-by-all-newcomers",
-                "submoas-ixp-prefix",
-                "submoas-siblings",
-                "submoas-pc-single-upstream",
-                "submoas-newcomer-is-direct-provider",
-                "submoas-newcomer-is-direct-customer",
-                "submoas-newcomer-is-direct-peer",
-                "submoas-newcomer-is-directly-connected",
-                "submoas-oldasn-in-newcomer-customer-cone",
-                "submoas-newcomer-in-oldasn-customer-cone",
-                "submoas-multi-all-siblings",
-                "submoas-multi-pc-single-upstream-chain",
-                "submoas-multi-newcomers-are-all-direct-providers",
-                "submoas-multi-newcomers-are-all-direct-customers",
-                "submoas-multi-newcomers-are-all-direct-peers",
-                "submoas-multi-newcomers-are-all-directly-connected",
-                "submoas-multi-newcomers-are-all-upstreams",
-                "submoas-multi-newcomers-are-all-downstreams",
-            ],
-            "na":[
-                "submoas-notags",
-                "submoas-trans-asn",
-                "submoas-has-private-asn",
-                "submoas-has-private-newcomer-asn",
-                "submoas-has-dps-asn",
-                "submoas-has-dps-newcomer-asn",
-                "submoas-newcomer-more-specific",
-                "submoas-previously-announced-by-some-newcomers",
-                "submoas-multi-some-siblings",
-                "submoas-multi-some-newcomers-are-direct-providers",
-                "submoas-multi-some-newcomers-are-direct-customers",
-                "submoas-multi-some-newcomers-are-direct-peers",
-                "submoas-multi-some-newcomers-are-directly-connected",
-                "submoas-multi-some-newcomers-are-upstreams",
-                "submoas-multi-some-newcomers-are-downstreams",
-                "submoas-newcomer-small-asn",
-                "submoas-origin-small-edit-distance",
-                "submoas-prefix-small-edit-distance",
-                "submoas-newcomer-is-direct-downstream",
-                "submoas-newcomer-is-direct-upstream",
-                "submoas-newcomer-is-neighbor"
-            ],
-        },
-        "defcon": {
-            "yes": [
-                "defcon-prefixes-reserved-space",
-                "defcon-sub-path-longer",
-            ],
-            "no": [
-                "defcon-recurring-pfx-event",
-                "defcon-prefixes-newcomer-super-prefix",
-                "defcon-sub-path-shorter",
-                "defcon-superpaths-include-subpaths",
-                "defcon-no-common-monitors",
-            ],
-            "na": [
-                "defcon-sub-super-equal",
-                "defcon-prefixes-sub-pfx-no-common-hops",
-                "defcon-prefixes-super-pfx-no-common-hops",
-                "defcon-prefixes-all-pfx-no-common-hops",
-            ],
-        },
-        "edges": {
-            "yes": [
-                "edge-reserved-asn",
-                "edge-short-prefix",
-                "edge-reserved-space",
-                "edge-unallocated-asn"
-            ],
-            "no": [
-                "edge-recurring-pfx-event",
-                "edge-new-bidirectional",
-                "edge-ixp-colocated",
-                "edge-siblings",
-                "edge-dps-asn",
-                "edge-adj-previously-observed-exact",
-                "edge-adj-previously-observed",
-                "edge-private-asn",
-            ],
-            "na": [
-                "edge-not-in-customer-cone",
-                "edge-notags",
-                "edge-assigned-asn",
-                "edge-trans-asn"
-            ],
+/// process raw event data from elastic-search and produce a filtered verison
+/// with only data needed for front-end
+pub fn filter_event_list(query_result: &SearchResult) -> Vec<Value> {
+    let mut res_vec: Vec<Value> = Vec::new();
+    for value in &query_result.results {
+        let mut event = json!({});
+        // filter easy fields
+        for field in vec!["event_type", "view_ts", "finished_ts", "duration"] {
+            event[field] = value[field].to_owned();
         }
-    })
+
+        let (pfx_event_cnt, prefixes, victims, attackers)
+            = process_pfx_events(value["pfx_events"].as_array().unwrap(), &event["event_type"].as_str().unwrap());
+
+        event["pfx_events_cnt"] = json!(pfx_event_cnt);
+        event["prefixes"] = json!(prefixes);
+        event["victims"] = json!(victims);
+        event["attackers"] = json!(attackers);
+        res_vec.push(event);
+    }
+    res_vec
+}
+
+/// extract pfx events information:
+/// - number of prefix events
+/// - all prefixes
+/// - victim ases
+/// - attacker ases
+fn process_pfx_events(pfx_events: &Vec<Value>, event_type: &str) -> (i32, Vec<String>, Vec<String>, Vec<String>){
+    let mut pfx_event_cnt = 0;
+    let mut prefixes:Vec<String> = vec!();
+    let mut victims: Vec<String> = vec!();
+    let mut attackers: Vec<String> = vec!();
+    let mut checked = false;
+    for pfx_event in pfx_events {
+        prefixes.push(pfx_event["prefix"].as_str().unwrap().to_owned());
+        if !checked {
+            checked = true;
+            let (v, a) = extract_victims_attackers(pfx_event, event_type);
+            victims.extend(v);
+            attackers.extend(a);
+        }
+        pfx_event_cnt += 1;
+    };
+
+    (pfx_event_cnt, prefixes, victims, attackers)
+}
+
+/// extract victims and attackers from prefix event object
+fn extract_victims_attackers(pfx_event: &Value, event_type: &str) -> (Vec<String>, Vec<String>) {
+    let mut victims_set: HashSet<String> = HashSet::new();
+    let mut attackers_set: HashSet<String> = HashSet::new();
+    match event_type {
+        "moas" => {
+            attackers_set = pfx_event["newcomer_origins"].as_array().unwrap().iter()
+                .map(|v| v.as_str().unwrap().to_owned()).collect();
+            victims_set = pfx_event["origins"].as_array().unwrap().iter()
+                .map(|v| v.as_str().unwrap().to_owned()).collect();
+            victims_set.retain(|k| !attackers_set.contains(k));
+        },
+        "submoas" => {
+            victims_set = pfx_event["sub_origins"].as_array().unwrap().iter()
+                .map(|v| v.as_str().unwrap().to_owned()).collect();
+            attackers_set = pfx_event["super_origins"].as_array().unwrap().iter()
+                .map(|v| v.as_str().unwrap().to_owned()).collect();
+        }
+        "defcon" => {
+            victims_set = pfx_event["origins"].as_array().unwrap().iter()
+                .map(|v| v.as_str().unwrap().to_owned()).collect();
+        }
+        "edges" => {
+            victims_set.insert(pfx_event["as1"].as_str().unwrap().to_owned());
+            victims_set.insert(pfx_event["as2"].as_str().unwrap().to_owned());
+        }
+        _ => {}
+    }
+
+    let mut victims: Vec<String> = vec!();
+    let mut attackers: Vec<String> = vec!();
+    victims.extend(victims_set.into_iter());
+    attackers.extend(attackers_set.into_iter());
+    (victims, attackers)
 }

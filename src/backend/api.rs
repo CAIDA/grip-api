@@ -10,9 +10,9 @@ use rocket_contrib::templates::Template;
 use serde_json::json;
 use serde_json::Value;
 
-use crate::backend::elastic::ElasticSearchBackend;
+use crate::backend::elastic::{ElasticSearchBackend, SearchResult};
 use crate::backend::utils::*;
-use crate::backend::data::SharedData;
+use crate::backend::data::*;
 use rocket::response::Redirect;
 
 
@@ -187,3 +187,16 @@ pub fn json_list_events(event_type: &RawStr, ts_start: Option<String>, ts_end: O
     Json(object.to_owned())
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_data_filtering(){
+        let backend = ElasticSearchBackend::new(&"http://clayface.caida.org:9200").unwrap();
+        let query_result = backend.list_events(&"moas", &Some(0), &Some(1), &None, &None, &None, &None, &None, &None).unwrap();
+        let res_vec = filter_event_list(&query_result);
+        println!("{}", serde_json::to_string_pretty(&res_vec).unwrap());
+    }
+
+}

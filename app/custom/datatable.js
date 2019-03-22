@@ -186,10 +186,6 @@ function load_events_table(only_benign=false) {
     });
 
     $("#range-btn").click(function () {
-        // let event_type = window.location.pathname.replace(/\/$/, "").split("/").pop();
-        // let times = $('#reportrange span').html().split(" - ");
-        // let url = `/json/events/${event_type}?ts_start=${times[0]}&ts_end=${times[1]}`;
-
         let url = window.location.pathname.replace(/\?.*\/$/, "");
         url+="?";
         if(!params.has("")){
