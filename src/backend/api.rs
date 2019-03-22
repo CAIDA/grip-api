@@ -127,7 +127,10 @@ pub fn json_event_by_id(id: &RawStr, base_url: State<SharedData>) -> Json<Value>
 
     match backend.get_event_by_id(id) {
         // Ok(event) => Json(json!({"data":event.results[0]["pfx_events"].to_owned()}).to_owned()),
-        Ok(event) => Json(json!(event.results[0]).to_owned()),
+        Ok(event) => {
+            let e = process_raw_event(&event.results[0], true);
+            Json(json!(e))
+        },
         Err(_e) => Json(json!(
         {
             "error": format!("Cannot find event {}",id)
@@ -176,9 +179,10 @@ pub fn json_list_events(event_type: &RawStr, ts_start: Option<String>, ts_end: O
                         base_url: State<SharedData>) -> Json<Value> {
     let backend = ElasticSearchBackend::new(&base_url.es_url).unwrap();
     let query_result = backend.list_events(event_type, &start, &length, &asn, &prefix, &ts_start, &ts_end, &benign, &tags).unwrap();
+    let res_data: Vec<Value> = query_result.results.iter().map(|v| process_raw_event(v, false)).collect();
     let object = json!(
         {
-            "data": filter_event_list(&query_result),
+            "data": res_data,
             // "data": query_result.results,
             "draw": draw,
             "recordsTotal": query_result.total,
@@ -197,10 +201,10 @@ mod tests {
     fn test_data_filtering(){
         let backend = ElasticSearchBackend::new(&"http://clayface.caida.org:9200").unwrap();
         let query_result = backend.list_events(&"moas", &Some(0), &Some(1), &None, &None, &None, &None, &None, &None).unwrap();
-        let res_vec = filter_event_list(&query_result);
-        println!("{}", serde_json::to_string_pretty(&res_vec).unwrap());
+        let res_data: Vec<Value> = query_result.results.iter().map(|v| process_raw_event(v, false)).collect();
+        println!("{}", serde_json::to_string_pretty(&res_data).unwrap());
         println!("{}/{}",
-                 serde_json::to_string_pretty(&res_vec).unwrap().len(),
+                 serde_json::to_string_pretty(&res_data).unwrap().len(),
                  serde_json::to_string_pretty(&query_result.results).unwrap().len(),
         );
     }

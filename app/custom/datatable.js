@@ -154,7 +154,11 @@ function load_events_table(only_benign=false) {
                         },
                         "targets": [6]
                     },
-                ]
+                ],
+            "initComplete":function( settings, json){
+                console.log(json);
+                // call your function here
+            }
             }
         );
         $('#datatable').on( 'processing.dt', function () {
@@ -378,18 +382,6 @@ function load_tags(){
             {title: "Definition"},
         ],
         columnDefs: [
-            // {
-            //     "render": function (data, type, row) {
-            //         // return render_origin_links( [data], style=2);
-            //         let links = "";
-            //         for(c of data){
-            //             links+=`<div>${c}</div>\n`
-            //         }
-            //         console.log(data)
-            //         return links
-            //     },
-            //     "targets": [2]
-            // }
         ]
     });
 
@@ -405,18 +397,6 @@ function load_tags(){
             {title: "Apply To"},
         ],
         columnDefs: [
-            // {
-            //     "render": function (data, type, row) {
-            //         // return render_origin_links( [data], style=2);
-            //         let links = "";
-            //         for(c of data){
-            //             links+=`<div>${c}</div>\n`
-            //         }
-            //         console.log(data)
-            //         return links
-            //     },
-            //     "targets": [2]
-            // }
         ]
     })
 }

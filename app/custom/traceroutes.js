@@ -228,7 +228,6 @@ function extract_sankey_data(path_lst, space_separated = true) {
         data.push([nodes[0], nodes[1], path_count_dict[key]])
     }
 
-    console.log(data);
     return data
 }
 

@@ -1,5 +1,4 @@
 use serde_json::{json,Value};
-use crate::backend::elastic::SearchResult;
 use std::collections::HashSet;
 
 /// shared state across rocket threads
@@ -8,27 +7,24 @@ pub struct SharedData {
     pub resource_dir: String,
 }
 
-/// process raw event data from elastic-search and produce a filtered verison
-/// with only data needed for front-end
-pub fn filter_event_list(query_result: &SearchResult) -> Vec<Value> {
-    let mut res_vec: Vec<Value> = Vec::new();
-    for value in &query_result.results {
-        let mut event = json!({});
-        // filter easy fields
-        for field in vec!["event_type", "view_ts", "finished_ts", "duration", "external", "id"] {
-            event[field] = value[field].to_owned();
-        }
-
-        let (pfx_event_cnt, prefixes, victims, attackers)
-            = process_pfx_events(value["pfx_events"].as_array().unwrap(), &event["event_type"].as_str().unwrap());
-
-        event["pfx_events_cnt"] = json!(pfx_event_cnt);
-        event["prefixes"] = json!(prefixes);
-        event["victims"] = json!(victims);
-        event["attackers"] = json!(attackers);
-        res_vec.push(event);
+/// process raw event from elasticsearch and convert the event into filtered data.
+/// not all information is necessary for frontend processing
+pub fn process_raw_event(value: &Value, include_tr: bool) -> Value {
+    let mut event = json!({});
+    // filter easy fields
+    for field in vec!["event_type", "view_ts", "finished_ts", "duration", "external", "id", "tr_metrics"] {
+        event[field] = value[field].to_owned();
     }
-    res_vec
+
+    let (pfx_events, prefixes, victims, attackers)
+        = process_pfx_events(value["pfx_events"].as_array().unwrap(), &event["event_type"].as_str().unwrap(), include_tr);
+
+    event["pfx_events"] = json!(pfx_events);
+    event["prefixes"] = json!(prefixes);
+    event["victims"] = json!(victims);
+    event["attackers"] = json!(attackers);
+    event["debug"] = extract_debug_info(value, &event);
+    event
 }
 
 /// extract pfx events information:
@@ -36,31 +32,59 @@ pub fn filter_event_list(query_result: &SearchResult) -> Vec<Value> {
 /// - all prefixes
 /// - victim ases
 /// - attacker ases
-fn process_pfx_events(pfx_events: &Vec<Value>, event_type: &str) -> (i32, Vec<String>, Vec<String>, Vec<String>){
-    let mut pfx_event_cnt = 0;
+fn process_pfx_events(value: &Vec<Value>, event_type: &str, include_tr: bool) -> (Vec<Value>, Vec<String>, Vec<String>, Vec<String>){
     let mut prefixes:Vec<String> = vec!();
     let mut victims: Vec<String> = vec!();
     let mut attackers: Vec<String> = vec!();
     let mut checked = false;
-    for pfx_event in pfx_events {
-        match pfx_event["prefix"].as_str() {
-            Some(p) => prefixes.push(p.to_owned()),
-            _ => {}
-        }
-        match pfx_event["sub_pfx"].as_str() {
-            Some(p) => prefixes.push(p.to_owned()),
-            _ => {}
-        }
+    let mut pfx_events: Vec<Value> = vec!();
+    for raw_pfx_event in value {
+        // extract attackers and victims
         if !checked {
             checked = true;
-            let (v, a) = extract_victims_attackers(pfx_event, event_type);
+            let (v, a) = extract_victims_attackers(raw_pfx_event, event_type);
             victims.extend(v);
             attackers.extend(a);
         }
-        pfx_event_cnt += 1;
+
+        let mut pfx_event = json!({});
+
+        // build some basic fields
+        for field in vec!["tags", "tr_worthy", "finished_ts"] {
+            pfx_event[field] = raw_pfx_event[field].to_owned();
+        }
+        if include_tr {
+            pfx_event["traceroutes"] = raw_pfx_event["traceroutes"].to_owned();
+        }
+
+        // set traceroute available
+        if raw_pfx_event["traceroutes"].as_array().unwrap().len() > 0 {
+            pfx_event["tr_available"] = json!(true);
+        } else {
+            pfx_event["tr_available"] = json!(false);
+        }
+
+        // set prefix and sub/super-prefix
+        match raw_pfx_event["prefix"].as_str() {
+            Some(p) => {
+                prefixes.push(p.to_owned());
+                pfx_event["prefix"] = raw_pfx_event["prefix"].to_owned();
+            },
+            _ => {}
+        }
+        match raw_pfx_event["sub_pfx"].as_str() {
+            Some(p) => {
+                prefixes.push(p.to_owned());
+                pfx_event["sub_pfx"] = raw_pfx_event["sub_pfx"].to_owned();
+                pfx_event["super_pfx"] = raw_pfx_event["super_pfx"].to_owned();
+            },
+            _ => {}
+        }
+
+        pfx_events.push(pfx_event);
     };
 
-    (pfx_event_cnt, prefixes, victims, attackers)
+    (pfx_events, prefixes, victims, attackers)
 }
 
 /// extract victims and attackers from prefix event object
@@ -97,4 +121,14 @@ fn extract_victims_attackers(pfx_event: &Value, event_type: &str) -> (Vec<String
     victims.extend(victims_set.into_iter());
     attackers.extend(attackers_set.into_iter());
     (victims, attackers)
+}
+
+
+pub fn extract_debug_info(raw_obj: &Value, processed_obj: &Value) -> Value {
+    let raw_str = serde_json::to_string(raw_obj).unwrap();
+    let processed_str = serde_json::to_string(processed_obj).unwrap();
+    let mut debug = json!({});
+    debug["raw_len"] = json!(raw_str.len());
+    debug["processed_len"] = json!(processed_str.len());
+    debug
 }
