@@ -64,18 +64,19 @@ function load_events_table(only_benign=false) {
                     "url": url,
                 },
                 "columns": [
-                    {title: "Potential Victim", "data": 'pfx_events'},
-                    {title: "Potential Attacker", "data": 'pfx_events'},
-                    {title: "Largest Prefix", "data": 'pfx_events'},
-                    {title: "# Prefix Events", "data": 'pfx_events'},
+                    {title: "Potential Victim", "data": 'victims'},
+                    {title: "Potential Attacker", "data": 'attackers'},
+                    {title: "Largest Prefix", "data": 'prefixes'},
+                    {title: "# Prefix Events", "data": 'prefixes'},
                     {title: "Start Time", "data": 'view_ts'},
-                    {title: "Duration", "data": 'finished_ts'},
-                    {title: "Type", "data": 'view_ts'},
+                    {title: "Duration", "data": 'duration'},
+                    {title: "Type", "data": 'event_type'},
                 ],
                 "columnDefs": [
                     {
                         "render": function (data, type, row) {
-                            let victims = extract_victims(data[0], row["event_type"]);
+                            // let victims = extract_victims(data[0], row["event_type"]);
+                            let victims = data;
                             let links = "";
                             if(victims.length>0){
                                 links = render_origin_links(victims.slice(0,2), false, row['external']);
@@ -89,7 +90,8 @@ function load_events_table(only_benign=false) {
                     },
                     {
                         "render": function (data, type, row) {
-                            let attackers = extract_attackers(data[0], row["event_type"]);
+                            // let attackers = extract_attackers(data[0], row["event_type"]);
+                            let attackers = data;
                             if(attackers ===null){
                                 return ""
                             }
@@ -132,9 +134,10 @@ function load_events_table(only_benign=false) {
                             if (data === null) {
                                 return "ongoing"
                             } else {
-                                let start_ts = Date.parse(row["view_ts"]);
-                                let end_ts = Date.parse(data);
-                                let duration = (end_ts-start_ts)/1000/60;
+                                // let start_ts = Date.parse(row["view_ts"]);
+                                // let end_ts = Date.parse(data);
+                                // let duration = (end_ts-start_ts)/1000/60;
+                                let duration = data/60;
                                 if(duration < 0 ){
                                     // FIXME: figure out why duration would be below 0
                                     duration = 0;
@@ -155,7 +158,6 @@ function load_events_table(only_benign=false) {
             }
         );
         $('#datatable').on( 'processing.dt', function () {
-            console.log("processing");
             let page_number = datatable.page.info()['page'];
             if(window.location.hash){
                 let hash_number = parseInt(window.location.hash.split("#")[1]);
@@ -168,7 +170,6 @@ function load_events_table(only_benign=false) {
         $('#datatable').on( 'page.dt', function () {
             let info = datatable.page.info();
             window.location.hash = info['page'];
-            console.log(info)
             datatable.draw(false);
         } );
 
@@ -366,8 +367,6 @@ function load_tags(){
             }
         }
     });
-
-    console.log(tr)
 
     $('#tags').DataTable({
         searching: false,

@@ -130,17 +130,10 @@ function extract_attackers(pfxevent, event_type){
     }
 }
 
-function extract_largest_prefix(pfx_events){
+function extract_largest_prefix(prefixes){
     let largest_pfx_len = 1000;
     let largest_pfx = "";
-    for(let i in pfx_events){
-        let pfxevent = pfx_events[i];
-        let p = "";
-        if("prefix" in pfxevent){
-            p = pfxevent["prefix"];
-        } else {
-            p = pfxevent["sub_pfx"];
-        }
+    for(let p of prefixes){
         let len = parseInt(p.split("/")[1]);
         if(len <= largest_pfx_len){
             largest_pfx = p;
@@ -150,18 +143,16 @@ function extract_largest_prefix(pfx_events){
     return largest_pfx;
 }
 
-function extract_impact(pfx_events){
+function extract_impact(prefixes){
     let num_pfx = 0;
     let num_addrs = 0;
-    for(let i in pfx_events){
+    for(let p of prefixes){
         num_pfx++;
-        let pfxevent = pfx_events[i];
-        let p = "";
-        if("prefix" in pfxevent){
-            p = pfxevent["prefix"];
-        } else {
-            p = pfxevent["sub_pfx"];
-        }
+        // if("prefix" in pfxevent){
+        //     p = pfxevent["prefix"];
+        // } else {
+        //     p = pfxevent["sub_pfx"];
+        // }
         let len = parseInt(p.split("/")[1]);
         if(len<=32){
             num_addrs += Math.pow(2, 32-len);

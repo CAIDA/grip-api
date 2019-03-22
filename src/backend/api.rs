@@ -10,7 +10,7 @@ use rocket_contrib::templates::Template;
 use serde_json::json;
 use serde_json::Value;
 
-use crate::backend::elastic::{ElasticSearchBackend, SearchResult};
+use crate::backend::elastic::ElasticSearchBackend;
 use crate::backend::utils::*;
 use crate::backend::data::*;
 use rocket::response::Redirect;
@@ -178,12 +178,14 @@ pub fn json_list_events(event_type: &RawStr, ts_start: Option<String>, ts_end: O
     let query_result = backend.list_events(event_type, &start, &length, &asn, &prefix, &ts_start, &ts_end, &benign, &tags).unwrap();
     let object = json!(
         {
-            "data": query_result.results,
+            "data": filter_event_list(&query_result),
+            // "data": query_result.results,
             "draw": draw,
             "recordsTotal": query_result.total,
             "recordsFiltered": query_result.total,
         }
     );
+    println!("{}", serde_json::to_string_pretty(&object).unwrap());
     Json(object.to_owned())
 }
 
@@ -197,6 +199,10 @@ mod tests {
         let query_result = backend.list_events(&"moas", &Some(0), &Some(1), &None, &None, &None, &None, &None, &None).unwrap();
         let res_vec = filter_event_list(&query_result);
         println!("{}", serde_json::to_string_pretty(&res_vec).unwrap());
+        println!("{}/{}",
+                 serde_json::to_string_pretty(&res_vec).unwrap().len(),
+                 serde_json::to_string_pretty(&query_result.results).unwrap().len(),
+        );
     }
 
 }

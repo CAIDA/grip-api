@@ -15,7 +15,7 @@ pub fn filter_event_list(query_result: &SearchResult) -> Vec<Value> {
     for value in &query_result.results {
         let mut event = json!({});
         // filter easy fields
-        for field in vec!["event_type", "view_ts", "finished_ts", "duration"] {
+        for field in vec!["event_type", "view_ts", "finished_ts", "duration", "external", "id"] {
             event[field] = value[field].to_owned();
         }
 
@@ -43,7 +43,14 @@ fn process_pfx_events(pfx_events: &Vec<Value>, event_type: &str) -> (i32, Vec<St
     let mut attackers: Vec<String> = vec!();
     let mut checked = false;
     for pfx_event in pfx_events {
-        prefixes.push(pfx_event["prefix"].as_str().unwrap().to_owned());
+        match pfx_event["prefix"].as_str() {
+            Some(p) => prefixes.push(p.to_owned()),
+            _ => {}
+        }
+        match pfx_event["sub_pfx"].as_str() {
+            Some(p) => prefixes.push(p.to_owned()),
+            _ => {}
+        }
         if !checked {
             checked = true;
             let (v, a) = extract_victims_attackers(pfx_event, event_type);
