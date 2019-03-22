@@ -82,6 +82,11 @@ fn process_pfx_events(value: &Vec<Value>, event_type: &str, include_tr: bool) ->
         }
 
         pfx_events.push(pfx_event);
+
+        if pfx_events.len() > 20 {
+            // do not display more than 20 pfx events
+            break;
+        }
     };
 
     (pfx_events, prefixes, victims, attackers)
