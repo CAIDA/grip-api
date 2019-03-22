@@ -36,7 +36,6 @@ function load_event_scripts() {
         url: "/json/tags",
         success: function (data) {
             tags_info_dict = data;
-            console.log(tags_info_dict)
         }
     });
 
@@ -143,34 +142,31 @@ function render_impact(num_pfx, num_addrs) {
 }
 
 function render_event_details_table(event_type, event) {
-    console.log(event['external']);
     $("#event-details-victim").html(
         render_origin_links(
-            extract_victims(event["pfx_events"][0], event_type,), true, event['external']
+            event["victims"], true, event['external']
         )
     );
     $("#event-details-attacker").html(
         render_origin_links(
-            extract_attackers(event["pfx_events"][0], event_type), true, event['external']
+            event["attackers"], true, event['external']
         )
     );
     $("#event-details-prefix").html(
         render_prefix_link(
-            extract_largest_prefix(event["pfx_events"])
+            extract_largest_prefix(event["prefixes"])
         )
     );
-    let [num_pfx, num_addrs] = extract_impact(event["pfx_events"]);
+    let [num_pfx, num_addrs] = extract_impact(event["prefixes"]);
     $("#event-details-impact").text(render_impact(num_pfx, num_addrs));
     $("#event-details-startts").text(event["view_ts"]);
     $("#event-details-type").text(event_type_explain[event_type]);
 
-    if (event["finished_ts"] === null) {
+    if (event["duration"] === null) {
         $("#event-details-duration").text("ongoing");
         $("#event-details-endts").text("Unknown");
     } else {
-        start_ts = Date.parse(event["view_ts"]);
-        end_ts = Date.parse(event["finished_ts"]);
-        $("#event-details-duration").text(`${(end_ts - start_ts) / 1000 / 60} min`);
+        $("#event-details-duration").text(`${(event["duration"]) / 60} min`);
         $("#event-details-endts").text(event["finished_ts"]);
     }
 
@@ -221,7 +217,6 @@ function render_origin_links(origin_lst, show_asn = false, external = null) {
                 for(asn of data['blacklist']){
                     blacklist_ases.add(asn)
                 };
-                console.log(blacklist_ases);
             }
         });
     }
@@ -236,7 +231,6 @@ function render_origin_links(origin_lst, show_asn = false, external = null) {
         let as_html, as_tooltip;
         [as_html, as_tooltip] = render_origin(origin, external, show_asn);
         let blacklist_symbol = "";
-        console.log(origin);
         if(blacklist_ases.has(parseInt(origin))){
             blacklist_symbol = ` <span class="glyphicon glyphicon-warning-sign" data-toggle="tooltip" data-original-title="This AS is on blacklist" data-html="true" data-placement="auto" aria-hidden="true"></span>`
         }

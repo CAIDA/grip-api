@@ -14,7 +14,6 @@ use hijacks_dashboard::backend::api_hi3::*;
 use hijacks_dashboard::backend::api_stats::*;
 use hijacks_dashboard::backend::api_external::*;
 use hijacks_dashboard::backend::data::SharedData;
-use hijacks_dashboard::backend::data::get_tag_dict;
 use std::collections::HashMap;
 use rocket::Config;
 
@@ -61,6 +60,7 @@ fn main() {
     extra_config.insert("template_dir".to_owned(), format!("{}/templates",&resource_dir).into());
     config.set_extras(extra_config);
     config.set_address("0.0.0.0").unwrap();
+    config.set_port(8001);
 
     rocket::custom(config.clone())
         .mount(
@@ -95,8 +95,7 @@ fn main() {
             let es_url = rocket.config().get_str("elastic_url")
                 .unwrap_or("http://clayface.caida.org:9200") .to_string();
             // pass in tags
-            let tag_dict = get_tag_dict();
-            Ok(rocket.manage(SharedData { es_url, tag_dict, resource_dir}))
+            Ok(rocket.manage(SharedData { es_url, resource_dir}))
         }))
         .attach(Template::fairing())
         .launch();
