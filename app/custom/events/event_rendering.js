@@ -234,10 +234,29 @@ function render_origin_links(origin_lst, show_asn = false, external = null) {
         if(blacklist_ases.has(parseInt(origin))){
             blacklist_symbol = ` <span class="glyphicon glyphicon-warning-sign" data-toggle="tooltip" data-original-title="This AS is on blacklist" data-html="true" data-placement="auto" aria-hidden="true"></span>`
         }
+        let external_links = "";
+        if(show_asn){
+            external_links = `
+(
+<a href='http://as-rank.caida.org/asns/${origin}' target="_blank" data-toggle="tooltip" data-original-title="AS Rank" data-html="true" data-placement="auto" >
+<img src="/app/images/as-rank-logo.png" alt="" height="15">
+</a>
+,
+<a href='https://stat.ripe.net/AS${origin}#tabId=at-a-glance' target="_blank" data-toggle="tooltip" data-original-title="RIPEstat" data-html="true" data-placement="auto" >
+<img src="/app/images/ripencc-logo.png" alt="" height="15">
+</a>
+)
+            `
+        }
         links.push(`<div>
 <span class="as-country-${origin}" style="white-space:nowrap"> ${country_flag}</span>
-<a class="link as-btn as-btn-${origin}" data-toggle="tooltip" data-original-title="${as_tooltip}" data-html="true" data-placement="auto" href='http://as-rank.caida.org/asns/${origin}' target="_blank")> ${as_html} </a>
+
+<span data-toggle="tooltip" data-original-title="${as_tooltip}" data-html="true" data-placement="auto" >
+${as_html}
+</span>
 ${blacklist_symbol}
+
+${external_links}
 </div>`)
     });
 
