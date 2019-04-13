@@ -236,17 +236,9 @@ function render_origin_links(origin_lst, show_asn = false, external = null) {
         }
         let external_links = "";
         if(show_asn){
-            external_links = `
-(
-<a href='http://as-rank.caida.org/asns/${origin}' target="_blank" data-toggle="tooltip" data-original-title="AS Rank" data-html="true" data-placement="auto" >
-<img src="/app/images/as-rank-logo.png" alt="" height="15">
-</a>
+            external_links = `<a class="link" href='http://as-rank.caida.org/asns/${origin}' target="_blank" data-toggle="tooltip" data-original-title="AS Rank" data-html="true" data-placement="auto" >ASRank</a>
 ,
-<a href='https://stat.ripe.net/AS${origin}#tabId=at-a-glance' target="_blank" data-toggle="tooltip" data-original-title="RIPEstat" data-html="true" data-placement="auto" >
-<img src="/app/images/ripencc-logo.png" alt="" height="15">
-</a>
-)
-            `
+<a class="link" href='https://stat.ripe.net/AS${origin}#tabId=at-a-glance' target="_blank" data-toggle="tooltip" data-original-title="RIPEstat" data-html="true" data-placement="auto" >RIPEstat</a>`
         }
         links.push(`<div>
 <span class="as-country-${origin}" style="white-space:nowrap"> ${country_flag}</span>
@@ -256,7 +248,9 @@ ${as_html}
 </span>
 ${blacklist_symbol}
 
-${external_links}
+<span>
+(${external_links})
+</span>
 </div>`)
     });
 
