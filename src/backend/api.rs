@@ -189,7 +189,7 @@ pub fn json_list_events(event_type: &RawStr, ts_start: Option<String>, ts_end: O
             "recordsFiltered": query_result.total,
         }
     );
-    println!("{}", serde_json::to_string_pretty(&object).unwrap());
+    // println!("{}", serde_json::to_string_pretty(&object).unwrap());
     Json(object.to_owned())
 }
 
