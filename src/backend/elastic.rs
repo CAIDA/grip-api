@@ -117,7 +117,8 @@ impl ElasticSearchBackend {
                 "sort": { "view_ts": { "order": "desc" }}
             });
 
-        println!("{}", serde_json::to_string_pretty(&query).unwrap());
+        // DEBUG line below
+        // println!("{}", serde_json::to_string_pretty(&query).unwrap());
 
         let res = self
             .es_client
