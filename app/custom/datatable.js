@@ -81,7 +81,7 @@ function load_events_table(only_benign=false) {
                             if(victims.length>0){
                                 links = render_origin_links(victims.slice(0,2), false, row['external']);
                                 if(victims.length>1){
-                                    links+= `<div>(${victims.length-1} more)</div>`
+                                    // links+= `<div>(${victims.length-1} more)</div>`
                                 }
                             }
                             return links;

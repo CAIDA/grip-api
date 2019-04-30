@@ -248,9 +248,6 @@ ${as_html}
 </span>
 ${blacklist_symbol}
 
-<span>
-(${external_links})
-</span>
 </div>`)
     });
 
@@ -336,7 +333,7 @@ function render_tags(event_type, tags) {
         //     entries.push(`<span style="color: purple; ">${tag}</span>`)
         // }
         let definition = tags_info_dict["definitions"][tag]["definition"];
-        entries.push(`<span class="label ${type_label[label]}" style="font-size: 12px;" data-toggle='tooltip' title='${definition}'>${render_tag_name(tag)}</span></h4>`)
+        entries.push(`<span class="label ${type_label[label]}" style="font-size: 12px;" data-toggle='tooltip' title='${tag}: ${definition}'>${render_tag_name(tag)}</span></h4>`)
     }
     return entries.join(" &nbsp; ")
 }
