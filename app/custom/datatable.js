@@ -15,7 +15,6 @@ function load_events_table(only_benign=false) {
     });
     $(document).ready(function () {
         $('body').tooltip({selector: '[data-toggle="tooltip"]'});
-        $("#stats-frame").html(`<iframe src="//ioda.caida.org/public/hijacks-trworthy-${frame_type}" width="100%" height="500" frameborder="0"></iframe>`);
         let url = `/json/events/${event_type}?`;
         let search_text = [];
         let start_ts = "";
@@ -49,9 +48,18 @@ function load_events_table(only_benign=false) {
         if(Date.parse(times[0]) !==null){
             url += `ts_start=${times[0]}&ts_end=${times[1]}`;
         }
+
         if(only_benign){
             url += "&benign=true";
+            document.getElementById("num_plot").style.display = "none";
+        } else if(flag_set("benign", params)===true) {
+            document.getElementById("num_plot").style.display = "none";
+        } else {
+            $("#stats-frame").html(`<iframe src="//ioda.caida.org/public/hijacks-trworthy-${frame_type}" width="100%" height="500" frameborder="0"></iframe>`);
+            document.getElementById("num_plot").style.display = "block";
         }
+
+
         url = url.replace(/[?&]$/i, "");
         console.log(url);
         datatable = $('#datatable').DataTable({

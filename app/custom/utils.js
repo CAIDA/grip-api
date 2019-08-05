@@ -23,6 +23,18 @@ function flag(country_code) {
     : null;
 }
 
+function flag_set(flag_name, params){
+    found = false;
+    params.forEach(function(value, key, map){
+        console.log(key, value);
+        if(key === flag_name && value === "true"){
+            console.log(flag_name, "found");
+            found = true
+        }
+    });
+    return found;
+}
+
 function abbrFit(string, nChars, divPos, sep) {
         // The relative position where to place the '...'
         divPos = divPos || 0.7;

@@ -41,7 +41,7 @@
                 </div>
             </div>
 
-            <div class="x_panel">
+            <div class="x_panel" id="num_plot">
                 <div class="row x_title">
                     <div class="col-md-6">
                         <h2> Number of Potential Hijacking Events in the Past 24 Hours </h2>
