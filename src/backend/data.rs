@@ -96,36 +96,69 @@ fn process_pfx_events(value: &Vec<Value>, event_type: &str, include_tr: bool) ->
 fn extract_victims_attackers(pfx_event: &Value, event_type: &str) -> (Vec<String>, Vec<String>) {
     let mut victims_set: HashSet<String> = HashSet::new();
     let mut attackers_set: HashSet<String> = HashSet::new();
+
+    let mut victims: Vec<String> = vec!();
+    let mut attackers: Vec<String> = vec!();
+
     match event_type {
         "moas" => {
-            attackers_set = pfx_event["newcomer_origins"].as_array().unwrap().iter()
-                .map(|v| v.as_str().unwrap().to_owned()).collect();
-            victims_set = pfx_event["origins"].as_array().unwrap().iter()
-                .map(|v| v.as_str().unwrap().to_owned()).collect();
+            attackers_set = match json_list_to_set(pfx_event, "newcomer_origins"){
+                Some(origins) => origins,
+                None => return (victims, attackers)
+            };
+            victims_set = match json_list_to_set(pfx_event, "origins"){
+                Some(origins) => origins,
+                None => return (victims, attackers)
+            };
             victims_set.retain(|k| !attackers_set.contains(k));
         },
         "submoas" => {
-            victims_set = pfx_event["sub_origins"].as_array().unwrap().iter()
-                .map(|v| v.as_str().unwrap().to_owned()).collect();
-            attackers_set = pfx_event["super_origins"].as_array().unwrap().iter()
-                .map(|v| v.as_str().unwrap().to_owned()).collect();
+            attackers_set = match json_list_to_set(pfx_event, "sub_origins"){
+                Some(origins) => origins,
+                None => return (victims, attackers)
+            };
+            victims_set = match json_list_to_set(pfx_event, "super_origins"){
+                Some(origins) => origins,
+                None => return (victims, attackers)
+            };
         }
         "defcon" => {
-            victims_set = pfx_event["origins"].as_array().unwrap().iter()
-                .map(|v| v.as_str().unwrap().to_owned()).collect();
+            victims_set = match json_list_to_set(pfx_event, "origins"){
+                Some(origins) => origins,
+                None => return (victims, attackers)
+            };
         }
         "edges" => {
-            victims_set.insert(pfx_event["as1"].as_str().unwrap().to_owned());
-            victims_set.insert(pfx_event["as2"].as_str().unwrap().to_owned());
+            victims_set.insert(
+                match pfx_event["as1"].as_str(){
+                    Some(origin) => origin.to_owned(),
+                    None => return (victims, attackers)
+                });
+            victims_set.insert(
+                match pfx_event["as2"].as_str(){
+                    Some(origin) => origin.to_owned(),
+                    None => return (victims, attackers)
+                });
         }
         _ => {}
     }
 
-    let mut victims: Vec<String> = vec!();
-    let mut attackers: Vec<String> = vec!();
     victims.extend(victims_set.into_iter());
     attackers.extend(attackers_set.into_iter());
     (victims, attackers)
+}
+
+fn json_list_to_set(json_obj: &Value, key: &str) -> Option<HashSet<String>>{
+    match json_obj[key].as_array() {
+        Some(origins) =>
+            {
+                Some(origins
+                    .iter()
+                    .map(|v| v.as_str().unwrap().to_owned())
+                    .collect())
+            },
+        None => None
+    }
 }
 
 
