@@ -113,14 +113,20 @@ fn extract_victims_attackers(pfx_event: &Value, event_type: &str) -> (Vec<String
             victims_set.retain(|k| !attackers_set.contains(k));
         },
         "submoas" => {
-            attackers_set = match json_list_to_set(pfx_event, "sub_origins"){
+            attackers_set = match json_list_to_set(pfx_event, "newcomer_origins"){
                 Some(origins) => origins,
                 None => return (victims, attackers)
             };
-            victims_set = match json_list_to_set(pfx_event, "super_origins"){
+            let super_set = match json_list_to_set(pfx_event, "super_origins"){
                 Some(origins) => origins,
                 None => return (victims, attackers)
             };
+            let sub_set = match json_list_to_set(pfx_event, "sub_origins"){
+                Some(origins) => origins,
+                None => return (victims, attackers)
+            };
+            victims_set = sub_set.union(&super_set).map(|v| v.to_owned()).collect();
+            victims_set.retain(|k| !attackers_set.contains(k));
         }
         "defcon" => {
             victims_set = match json_list_to_set(pfx_event, "origins"){
