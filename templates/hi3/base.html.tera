@@ -15,7 +15,7 @@
     <link href="/app/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="/app/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-    <link href="/app/vendors/datatables/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="/app/vendors/datatables/src/jquery.dataTables.min.css" rel="stylesheet">
     <!-- bootstrap-progressbar -->
     <link href="/app/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
     <!-- bootstrap-daterangepicker -->
@@ -63,7 +63,7 @@
 <script src="/app/vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
 
 <!-- datatables -->
-<script src="/app/vendors/datatables/jquery.dataTables.min.js"></script>
+<script src="/app/vendors/datatables/src/jquery.dataTables.min.js"></script>
 
 <!--leaflet-->
 <script src="/app/vendors/leaflet/leaflet.js"></script>
