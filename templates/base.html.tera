@@ -29,7 +29,6 @@
 
 <body class="nav-md" onload="{{context.onload_function}}">
 
-
     <div class=" container body">
     <div class="main_container">
         <div class="col-md-3 left_col">
@@ -63,7 +62,11 @@
                                 </ul>
                             </li>
                             <li><a href="/blacklist"><i class="fa fa-book"></i> AS Blacklist </a></li>
-                            <li><a href="/tags"><i class="fa fa-tag"></i> Tags </a></li>
+
+                            {% if context.debug and context.debug == true %}
+                                <!-- only show up when you have `?debug=true` in url -->
+                                <li><a href="/tags"><i class="fa fa-tag"></i> Tags </a></li>
+                            {% endif %}
                         </ul>
                     </div>
                 </div>
