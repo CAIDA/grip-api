@@ -17,7 +17,7 @@ pub struct SearchResult {
 
 impl ElasticSearchBackend {
     // constructor static method
-    pub fn new(base_url: &str) -> Result<ElasticSearchBackend, Box<Error>> {
+    pub fn new(base_url: &str) -> Result<ElasticSearchBackend, Box<dyn Error>> {
         let client = SyncClientBuilder::new()
             // .base_url("http://hammer.caida.org:9200")
             .base_url(base_url)
@@ -25,7 +25,7 @@ impl ElasticSearchBackend {
         Ok(ElasticSearchBackend { es_client: client })
     }
 
-    pub fn get_event_by_id(&self, id: &str) -> Result<SearchResult, Box<Error>> {
+    pub fn get_event_by_id(&self, id: &str) -> Result<SearchResult, Box<dyn Error>> {
         let event_type: &str = id.split("-").collect::<Vec<&str>>()[0];
         let doc: Value = reqwest::get(format!("http://clayface.caida.org:9200/hijacks-{}/event_result/{}",event_type, id).as_str())
             .unwrap().json().unwrap();
@@ -40,7 +40,7 @@ impl ElasticSearchBackend {
                        asn: &Option<usize>, prefix: &Option<String>,
                        ts_start: &Option<String>, ts_end: &Option<String>, benign: &Option<bool>,
                        tags: &Option<String>)
-                       -> Result<SearchResult, Box<Error>> {
+                       -> Result<SearchResult, Box<dyn Error>> {
         let mut etype = event_type.to_owned();
         if etype == "all" {
             etype = "*".to_owned();
