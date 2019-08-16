@@ -45,6 +45,14 @@ a:active  {
   color: #007BE6;
 }
 
+a.tag:link,
+a.tag:visited {}
+a.tag:hover   {}
+a.tag:active  {
+    transition: color .3s;
+    color: #007BE6;
+}
+
 .link {
     text-decoration: underline;
 }
