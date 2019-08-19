@@ -70,8 +70,6 @@ function _construct_tooltip(asn, external){
                 Name: ${asorg["org"]["name"]} <br/>
                 Country: ${asorg["country_name"]} <br/>
                 Rank: ${asorg["rank"]} <br/>
-                Cone size: ${asorg["cone"]["asns"]} <br/>
-                Prefixes: ${asorg["cone"]["prefixes"]} <br/>
             `
         }
     }
