@@ -12,7 +12,8 @@ pub struct SharedData {
 pub fn process_raw_event(value: &Value, include_tr: bool) -> Value {
     let mut event = json!({});
     // filter easy fields
-    for field in vec!["event_type", "view_ts", "finished_ts", "duration", "external", "id", "tr_metrics"] {
+    for field in vec!["event_type", "view_ts", "finished_ts", "duration", "external", "id",
+                      "tr_metrics", "tags", "inference"] {
         event[field] = value[field].to_owned();
     }
 
