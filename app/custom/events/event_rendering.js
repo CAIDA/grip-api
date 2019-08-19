@@ -286,7 +286,7 @@ function render_tag_name(tag) {
                 return capitalizeFirstLetter(x)
             })
         .join(" ")
-    let link = `<a target="_blank" href='//bgp.caida.org/events/all?tags=${tag}')> ${tag_name}</a>`
+    let link = `<a class="event_tag" target="_blank" href='//bgp.caida.org/events/all?tags=${tag}')> ${tag_name}</a>`
     return link
 }
 

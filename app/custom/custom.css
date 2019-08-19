@@ -45,10 +45,10 @@ a:active  {
   color: #007BE6;
 }
 
-a.tag:link,
-a.tag:visited {}
-a.tag:hover   {}
-a.tag:active  {
+a.event_tag:link,
+a.event_tag:visited { color: white }
+a.event_tag:hover   {}
+a.event_tag:active  {
     transition: color .3s;
     color: #007BE6;
 }
