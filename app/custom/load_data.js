@@ -103,10 +103,11 @@ function render_origin(origin, external=null, show_asn=false){
             if(as_name === "Null") {
                 as_name = `AS${origin}`;
             } else {
-                if(show_asn){
-                    // prepend asn
-                    as_name = `AS${origin} ${as_name}`;
-                }
+                // if(show_asn){
+                //     // prepend asn
+                //     as_name = `AS${origin} ${as_name}`;
+                // }
+                as_name = `AS${origin} ${as_name}`;
             }
         }
 
