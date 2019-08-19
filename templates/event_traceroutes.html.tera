@@ -61,7 +61,7 @@
 
             <!-- Button trigger modal -->
             <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#eventModal">
-                Raw JSON
+                Event Details JSON
             </button>
             <!-- Modal -->
             <div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -74,14 +74,14 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary full-event-modal-download">Download</button>
+                            <button type="button" class="btn btn-primary full-event-modal-download">Download Event Details</button>
                         </div>
                         <div class="modal-body">
                             <pre id="json_modal_event"> </pre>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary full-event-modal-download">Download</button>
+                            <button type="button" class="btn btn-primary full-event-modal-download">Download Event Details</button>
                         </div>
                         <a id="downloadAnchorElemEvent" style="display:none"></a>
                     </div>
@@ -106,7 +106,7 @@
 
             <!-- Button trigger modal -->
             <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#prefixModal">
-                Raw JSON
+                Prefix Event Details JSON
             </button>
             <!-- Modal -->
             <div class="modal fade" id="prefixModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -119,14 +119,14 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary prefix-event-modal-download">Download</button>
+                            <button type="button" class="btn btn-primary prefix-event-modal-download">Download Prefix Event Details</button>
                         </div>
                         <div class="modal-body">
                             <pre id="json_modal_prefix"> </pre>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary prefix-event-modal-download">Download</button>
+                            <button type="button" class="btn btn-primary prefix-event-modal-download">Download Prefix Event Details</button>
                         </div>
                         <a id="downloadAnchorElemPrefix" style="display:none"></a>
                     </div>
