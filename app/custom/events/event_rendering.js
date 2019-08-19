@@ -280,12 +280,14 @@ function capitalizeFirstLetter(string) {
 tag_type_ready = false;
 
 function render_tag_name(tag) {
-    return tag.split("-")
+    let tag_name = tag.split("-")
         .map(
             function (x) {
                 return capitalizeFirstLetter(x)
             })
         .join(" ")
+    let link = `<a class="event_tag" target="_blank" href='//bgp.caida.org/events/all?tags=${tag}')> ${tag_name}</a>`
+    return link
 }
 
 type_label = {
