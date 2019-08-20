@@ -52,7 +52,7 @@ function load_events_table(only_benign=false) {
         if(only_benign){
             url += "&benign=true";
             document.getElementById("num_plot").style.display = "none";
-        } else if(flag_set("benign", params)===true) {
+        } else if(flag_set("benign", params)===true || event_type === "misconf") {
             document.getElementById("num_plot").style.display = "none";
         } else {
             $("#stats-frame").html(`<iframe src="//ioda.caida.org/public/hijacks-trworthy-${frame_type}" width="100%" height="500" frameborder="0"></iframe>`);

@@ -42,8 +42,18 @@ impl ElasticSearchBackend {
                        tags: &Option<String>)
                        -> Result<SearchResult, Box<dyn Error>> {
         let mut etype = event_type.to_owned();
+
+        let mut want_benign = false;
+        let mut want_misconf = false;
+
         if etype == "all" {
+            // if event type is all or misconf (misconfiguration), show all events that matches
             etype = "*".to_owned();
+        }
+        if etype == "misconf" {
+            // if event type is all or misconf (misconfiguration), show all events that matches
+            etype = "*".to_owned();
+            want_misconf = true;
         }
 
         let mut range_filter = json!({"view_ts":{}});
@@ -63,14 +73,20 @@ impl ElasticSearchBackend {
 
         // match must terms
         let mut must_terms = vec!();
-        match benign {
-            Some(b) => if *b {
-                must_terms.push(json!({ "term": { "inference.tr_worthy" : false }}));
-            } else {
-                must_terms.push(json!({ "term": { "inference.tr_worthy" : true }}));
-            },
-            None => must_terms.push(json!({ "term": { "inference.tr_worthy" : true }})),
+
+        want_benign = match benign {
+            Some(b) => *b,
+            None => false,
+        };
+
+        if want_benign {
+            must_terms.push(json!({ "term": { "inference.tr_worthy" : false }}));
+        } else if want_misconf {
+            must_terms.push(json!({ "term": { "inference.malicious" : false }}));
+        } else {
+            must_terms.push(json!({ "term": { "inference.malicious" : true }}));
         }
+
         match prefix {
             Some(p) => {
                 // https://stackoverflow.com/questions/40573981/multiple-should-queries-with-must-query

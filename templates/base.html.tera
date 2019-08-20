@@ -55,9 +55,10 @@
                             </li>
                             <li><a><i class="fa fa-user"></i> Misconfiguration <span class="fa fa-chevron-down"></span></a>
                                 <ul class="nav child_menu">
-                                    <li><a href="/events/all?tags=newcomer-small-asn"> ASN Prepending </a></li>
-                                    <li><a href="/events/all?tags=prefix-small-edit-distance"> Fat-finger prefix </a></li>
-                                    <li><a href="/events/all?tags=origin-small-edit-distance"> Fat-finger ASN </a></li>
+                                    <li><a href="/events/misconf?tags=newcomer-small-asn"> ASN Prepending </a></li>
+                                    <li><a href="/events/misconf?tags=prefix-small-edit-distance"> Fat-finger prefix </a></li>
+                                    <li><a href="/events/misconf?tags=origin-small-edit-distance"> Fat-finger ASN </a></li>
+                                    <li><a href="/events/misconf?tags=reserved-space"> Reserved Space </a></li>
                                 </ul>
                             </li>
                             <li><a><i class="fa fa-check"></i> Benign Events <span class="fa fa-chevron-down"></span></a>
