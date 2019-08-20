@@ -57,6 +57,12 @@ function load_events_table(only_benign=false) {
 
         url = url.replace(/[?&]$/i, "");
         console.log(url);
+        let event_type_count = {
+            "moas": 0,
+            "submoas": 0,
+            "defcon": 0,
+            "edges": 0,
+        };
         let datatable = $('#datatable').DataTable({
                 "processing": true,
                 "serverSide": true,
@@ -153,18 +159,22 @@ function load_events_table(only_benign=false) {
                     {
                         "width": "13em",
                         "render": function (data, type, row) {
+                            event_type_count[row["event_type"]]++;
                             return event_type_explain[row["event_type"]];
                         },
                         "targets": [6]
                     },
                 ],
-            "initComplete":function( settings, json){
-                console.log(json);
-                // call your function here
-            }
             }
         );
-        $('#datatable').on( 'processing.dt', function () {
+
+        datatable.on( 'draw.dt', function () {
+            if(event_type_count["moas"] + event_type_count["submoas"] ===0){
+                datatable.column( 1 ).visible(false);
+            }
+        } );
+
+        datatable.on( 'processing.dt', function () {
             let page_number = datatable.page.info()['page'];
             if(window.location.hash){
                 let hash_number = parseInt(window.location.hash.split("#")[1]);
@@ -174,7 +184,8 @@ function load_events_table(only_benign=false) {
                 }
             }
         });
-        $('#datatable').on( 'page.dt', function () {
+
+        datatable.on( 'page.dt', function () {
             let info = datatable.page.info();
             window.location.hash = info['page'];
             datatable.draw(false);
@@ -191,7 +202,7 @@ function load_events_table(only_benign=false) {
             }
             window.open(`/${base}/` + data['event_type'] + "/" + data['id'], '_self', false);
         });
-    });
+    }); // end of document.ready
 
     $("#range-btn").click(function () {
         let url = window.location.pathname.replace(/\?.*\/$/, "");
