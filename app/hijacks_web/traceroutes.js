@@ -1,4 +1,4 @@
-prefix_modal_info = {
+let prefix_modal_info = {
     "download_path": "",
     "json_raw_str": "",
     "content_id": "#json_modal_prefix",
@@ -154,9 +154,6 @@ function draw_pfx_event_table(pfx_event, event_id, fingerprint){
 
 }
 
-function draw_json_raw(json_raw_str, download_path, content_id, button_class, anchorId) {
-}
-
 function draw_traceroute_table(pfx_event) {
     let measurements = [];
     $('#traceroutes_table').DataTable({
@@ -283,10 +280,6 @@ function draw_tr_sankey(pfx_event) {
         $("#tr_sankey_diagram").html("No data available");
     } else {
 
-
-        google.charts.load('current', {'packages': ['sankey']});
-        google.charts.setOnLoadCallback(drawChart);
-
         function drawChart() {
             var data = new google.visualization.DataTable();
             data.addColumn('string', 'From');
@@ -304,6 +297,10 @@ function draw_tr_sankey(pfx_event) {
             var chart = new google.visualization.Sankey(document.getElementById('tr_sankey_diagram'));
             chart.draw(data, options);
         }
+
+        google.charts.load('current', {'packages': ['sankey']});
+        google.charts.setOnLoadCallback(drawChart);
+
 
     }
 }

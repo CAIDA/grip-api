@@ -1,13 +1,13 @@
 let datatable = null;
 let whois_dict = {};
 let cidr_loose_re = /^[0-9]+[.:][0-9.:/]*$/;
-const params = new Map(location.search.slice(1).split('&').map(kv => kv.split('=')))
+const params = new Map(location.search.slice(1).split("&").map(kv => kv.split("=")));
 
 function load_events_table(only_benign=false) {
     const event_type = get_event_type_from_url();
     let frame_type = event_type;
     if(frame_type==="all"){
-        frame_type = "overall"
+        frame_type = "overall";
     }
     $.extend(true, $.fn.dataTable.defaults, {
         "searching": false,
@@ -337,7 +337,7 @@ function load_blacklist(){
         async: false,
         url: "/json/blacklist",
         success: function (data) {
-            for(asn of data['blacklist']){
+            for(let asn of data['blacklist']){
                 blacklist.push([asn])
             }
         }

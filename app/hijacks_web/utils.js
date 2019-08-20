@@ -1,4 +1,4 @@
-event_type_explain = {
+let event_type_explain = {
     'moas': "origin hijack (moas)",
     'submoas': "origin hijack (submoas)",
     'edges': "path manipulation (new edge)",
@@ -24,7 +24,7 @@ function flag(country_code) {
 }
 
 function flag_set(flag_name, params){
-    found = false;
+    let found = false;
     params.forEach(function(value, key, map){
         console.log(key, value);
         if(key === flag_name && value === "true"){
@@ -39,7 +39,10 @@ function abbrFit(string, nChars, divPos, sep) {
         // The relative position where to place the '...'
         divPos = divPos || 0.7;
         sep = sep || '...';
-        if (nChars<=sep.length) sep=''; // If string is smaller than separator
+        if (nChars<=sep.length) {
+            // If string is smaller than separator
+            sep='';
+        }
 
         nChars-=sep.length;
 

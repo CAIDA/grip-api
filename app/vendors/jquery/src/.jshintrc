@@ -6,7 +6,6 @@
 	"expr": true,
 	"immed": true,
 	"noarg": true,
-	"quotmark": "double",
 	"undef": true,
 	"unused": true,
 
