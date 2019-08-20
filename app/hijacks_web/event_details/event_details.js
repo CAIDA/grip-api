@@ -1,5 +1,6 @@
 let table_info_dict = {};
 let tags_info_dict = {};
+let traceroute_hash = {};
 
 
 function isEmpty(obj) {
@@ -13,6 +14,24 @@ event_modal_info = {
     "button_class": ".full-event-modal-download",
     "anchorId": 'downloadAnchorElemEvent'
 };
+
+function load_event_details() {
+    $(document).ready(function () {
+        $('body').tooltip({selector: '[data-toggle="tooltip"]'});
+        const event_id = get_event_id_from_url();
+        const event_type = get_event_type_from_url();
+        load_event_scripts();
+
+        $.ajax({
+            url: "/json/event/id/" + event_id,
+            success: function (event) {
+                // console.log(event);
+                render_event_details_table(event_type, event);
+                render_pfx_event_table(event_type, event['pfx_events'], event['tr_metrics']['tr_skipped'], event['tr_metrics']['tr_skip_reason']);
+            }
+        });
+    })
+}
 
 
 function load_event_scripts() {
@@ -273,6 +292,18 @@ function render_traceroutes_link(data) {
     }
 }
 
+function load_traceroute_page(uuid) {
+    let pfx_event = traceroute_hash[uuid];
+    let path = window.location.pathname.replace(/\/$/, "");
+    let path_segments = path.split("/");
+    let event_type = path_segments[path_segments.length - 2];
+
+    let fingerprint = extract_pfx_event_fingerprint(pfx_event, event_type);
+    window.open(`${path}/${fingerprint}`, "_self", false)
+}
+
+
+
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -338,4 +369,36 @@ function render_tags(event_type, tags) {
         entries.push(`<span class="label ${type_label[label]}" style="font-size: 12px;" data-toggle='tooltip' title='${tag}: ${definition}'>${render_tag_name(tag)}</span></h4>`)
     }
     return entries.join(" &nbsp; ")
+}
+
+function render_country(origin, external){
+    if(external == null || !('asrank' in external) || !(origin in external['asrank'])){
+        return ""
+    }
+    return flag(external['asrank'][origin]['country']);
+}
+
+function render_origin(origin, external=null, show_asn=false){
+    // load external information if exists
+    if(external==null){
+        return [`AS${origin}`, ""]
+    }
+    if('asrank' in external || 'hegemony' in external){
+        let as_name = `AS${origin}`;
+        if(origin in external['asrank']){
+            as_name = process_as_name(external['asrank'][origin]);
+            if(as_name === "Null") {
+                as_name = `AS${origin}`;
+            } else {
+                // if(show_asn){
+                //     // prepend asn
+                //     as_name = `AS${origin} ${as_name}`;
+                // }
+                as_name = `AS${origin} ${as_name}`;
+            }
+        }
+
+        return [as_name, _construct_tooltip(origin, external)]
+    }
+    return [`AS${origin}`, ""]
 }

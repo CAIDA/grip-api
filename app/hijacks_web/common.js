@@ -1,26 +1,17 @@
-let event_type_explain = {
-    'moas': "origin hijack (moas)",
-    'submoas': "origin hijack (submoas)",
-    'edges': "path manipulation (new edge)",
-    'defcon': "path manipulation (defcon)",
-};
-
-// decimal offset between ASCII capitals and regional indicator symbols
-const OFFSET = 127397;
 
 // module exposes a single function
 function flag(country_code) {
-  // only allow string input
-  if (typeof country_code !== 'string'){
-      // throw new TypeError('argument must be a string');
-      return "";
-  }
-  // ensure country code is all caps
-  const cc = country_code.toUpperCase();
-  // return the emoji flag corresponding to country_code or null
-  return (/^[A-Z]{2}$/.test(cc))
-    ? String.fromCodePoint(...[...cc].map(c => c.charCodeAt() + OFFSET))
-    : null;
+    // only allow string input
+    if (typeof country_code !== 'string'){
+        // throw new TypeError('argument must be a string');
+        return "";
+    }
+    // ensure country code is all caps
+    const cc = country_code.toUpperCase();
+    // return the emoji flag corresponding to country_code or null
+    return (/^[A-Z]{2}$/.test(cc))
+        ? String.fromCodePoint(...[...cc].map(c => c.charCodeAt() + OFFSET))
+        : null;
 }
 
 function flag_set(flag_name, params){
@@ -36,21 +27,21 @@ function flag_set(flag_name, params){
 }
 
 function abbrFit(string, nChars, divPos, sep) {
-        // The relative position where to place the '...'
-        divPos = divPos || 0.7;
-        sep = sep || '...';
-        if (nChars<=sep.length) {
-            // If string is smaller than separator
-            sep='';
-        }
+    // The relative position where to place the '...'
+    divPos = divPos || 0.7;
+    sep = sep || '...';
+    if (nChars<=sep.length) {
+        // If string is smaller than separator
+        sep='';
+    }
 
-        nChars-=sep.length;
+    nChars-=sep.length;
 
-        if (string.length<=nChars) return ""+string;
+    if (string.length<=nChars) return ""+string;
 
-        return string.substring(0,nChars*divPos)
-            + sep
-            + string.substring(string.length - nChars*(1-divPos), string.length);
+    return string.substring(0,nChars*divPos)
+        + sep
+        + string.substring(string.length - nChars*(1-divPos), string.length);
 }
 
 // reference: https://stackoverflow.com/a/7220510/768793
@@ -104,7 +95,7 @@ function process_as_name(as_org, max_length = 25) {
 }
 
 function isEmpty(obj) {
-  return Object.keys(obj).length === 0;
+    return Object.keys(obj).length === 0;
 }
 
 function extract_largest_prefix(prefixes){
@@ -142,5 +133,27 @@ function extract_impact(prefixes){
     }
 
     return [num_pfx, num_addrs]
+}
+
+function extract_pfx_event_fingerprint(pfx_event, event_type) {
+    let fingerprint = "";
+    switch (event_type) {
+        case "moas":
+            fingerprint = `${pfx_event["prefix"]}`;
+            break;
+        case "submoas":
+            fingerprint = `${pfx_event["sub_pfx"]}_${pfx_event["super_pfx"]}`;
+            break;
+        case "edges":
+            fingerprint = `${pfx_event["prefix"]}`;
+            break;
+        case "defcon":
+            fingerprint = `${pfx_event["sub_pfx"]}_${pfx_event["super_pfx"]}`;
+            break;
+        default:
+            alert(`wrong event type ${event_type}`)
+    }
+
+    return fingerprint.replace(/\//g, "-")
 }
 

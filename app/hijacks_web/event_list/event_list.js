@@ -1,8 +1,3 @@
-let datatable = null;
-let whois_dict = {};
-let cidr_loose_re = /^[0-9]+[.:][0-9.:/]*$/;
-const params = new Map(location.search.slice(1).split("&").map(kv => kv.split("=")));
-
 function load_events_table(only_benign=false) {
     const event_type = get_event_type_from_url();
     let frame_type = event_type;
@@ -62,7 +57,7 @@ function load_events_table(only_benign=false) {
 
         url = url.replace(/[?&]$/i, "");
         console.log(url);
-        datatable = $('#datatable').DataTable({
+        let datatable = $('#datatable').DataTable({
                 "processing": true,
                 "serverSide": true,
                 "searching": false,
@@ -276,135 +271,4 @@ function load_events_table(only_benign=false) {
             $("#search-btn").click();
         }
     });
-}
-
-var traceroute_hash = {};
-
-function load_traceroute_page(uuid) {
-    let pfx_event = traceroute_hash[uuid];
-    let path = window.location.pathname.replace(/\/$/, "");
-    let path_segments = path.split("/");
-    let event_type = path_segments[path_segments.length - 2];
-
-    let fingerprint = extract_pfx_event_fingerprint(pfx_event, event_type);
-    window.open(`${path}/${fingerprint}`, "_self", false)
-}
-
-function extract_pfx_event_fingerprint(pfx_event, event_type) {
-    let fingerprint = "";
-    switch (event_type) {
-        case "moas":
-            fingerprint = `${pfx_event["prefix"]}`;
-            break;
-        case "submoas":
-            fingerprint = `${pfx_event["sub_pfx"]}_${pfx_event["super_pfx"]}`;
-            break;
-        case "edges":
-            fingerprint = `${pfx_event["prefix"]}`;
-            break;
-        case "defcon":
-            fingerprint = `${pfx_event["sub_pfx"]}_${pfx_event["super_pfx"]}`;
-            break;
-        default:
-            alert(`wrong event type ${event_type}`)
-    }
-
-    return fingerprint.replace(/\//g, "-")
-}
-
-function load_event_details() {
-    $(document).ready(function () {
-        $('body').tooltip({selector: '[data-toggle="tooltip"]'});
-        const event_id = get_event_id_from_url();
-        const event_type = get_event_type_from_url();
-        load_event_scripts();
-
-        $.ajax({
-            url: "/json/event/id/" + event_id,
-            success: function (event) {
-                // console.log(event);
-                render_event_details_table(event_type, event);
-                render_pfx_event_table(event_type, event['pfx_events'], event['tr_metrics']['tr_skipped'], event['tr_metrics']['tr_skip_reason']);
-            }
-        });
-    })
-}
-
-function load_blacklist(){
-    let blacklist = [];
-    $.ajax({
-        dataType: "json",
-        async: false,
-        url: "/json/blacklist",
-        success: function (data) {
-            for(let asn of data['blacklist']){
-                blacklist.push([asn])
-            }
-        }
-    });
-    datatable = $('#datatable').DataTable({
-        searching: false,
-        ordering: false,
-        paging: false,
-        data:blacklist,
-        columns: [
-            {title: "Blacklist AS"},
-        ],
-        columnDefs: [
-            {
-                "render": function (data, type, row) {
-                    return render_origin_links( [data], true);
-                },
-                "targets": [0]
-            }
-        ]
-    })
-}
-
-function load_tags(){
-    let tags = [];
-    let tr = [];
-    $.ajax({
-        dataType: "json",
-        async: false,
-        url: "/json/tags",
-        success: function (data) {
-            for(let tag in data['definitions']){
-                let d =  data['definitions'][tag];
-                tags.push([tag, d["definition"]])
-            }
-
-            for(let entry of data['tr_worthy']){
-                tr.push([entry['tags'], entry['worthy'], entry["explain"], entry["apply_to"]])
-            }
-        }
-    });
-
-    $('#tags').DataTable({
-        searching: false,
-        ordering: false,
-        paging: false,
-        data:tags,
-        columns: [
-            {title: "Tag ID"},
-            {title: "Definition"},
-        ],
-        columnDefs: [
-        ]
-    });
-
-    $('#tr_worthy').DataTable({
-        searching: false,
-        ordering: false,
-        paging: false,
-        data:tr,
-        columns: [
-            {title: "Tags"},
-            {title: "TR Worthy"},
-            {title: "Explain"},
-            {title: "Apply To"},
-        ],
-        columnDefs: [
-        ]
-    })
 }

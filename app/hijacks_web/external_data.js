@@ -1,3 +1,4 @@
+let whois_dict = {};
 function load_ripe_data(prefix, prefix_class) {
     $.ajax({
         url: `//stat.ripe.net/data/prefix-overview/data.json?resource=${prefix}`,
@@ -75,34 +76,3 @@ function _construct_tooltip(asn, external){
     return table_str
 }
 
-function render_country(origin, external){
-    if(external == null || !('asrank' in external) || !(origin in external['asrank'])){
-        return ""
-    }
-    return flag(external['asrank'][origin]['country']);
-}
-
-function render_origin(origin, external=null, show_asn=false){
-    // load external information if exists
-    if(external==null){
-        return [`AS${origin}`, ""]
-    }
-    if('asrank' in external || 'hegemony' in external){
-        let as_name = `AS${origin}`;
-        if(origin in external['asrank']){
-            as_name = process_as_name(external['asrank'][origin]);
-            if(as_name === "Null") {
-                as_name = `AS${origin}`;
-            } else {
-                // if(show_asn){
-                //     // prepend asn
-                //     as_name = `AS${origin} ${as_name}`;
-                // }
-                as_name = `AS${origin} ${as_name}`;
-            }
-        }
-
-        return [as_name, _construct_tooltip(origin, external)]
-    }
-    return [`AS${origin}`, ""]
-}
