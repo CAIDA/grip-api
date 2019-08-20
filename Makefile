@@ -3,7 +3,10 @@ APP_DIR	= /var/lib/bgphijacks-dashboard
 build:
 	$(HOME)/.cargo/bin/cargo build --release
 
-install: build
+clear:
+    sudo rm -rf $(APP_DIR)/*
+
+install: clear build
 	sudo service bgphijacks-dashboard stop
 
 	sudo install -p --backup=none -v -m 0755 target/release/hijacks_dashboard /usr/local/bin/bgphijacks-dashboard
