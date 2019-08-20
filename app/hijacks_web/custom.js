@@ -33,7 +33,7 @@ function init_panel(){
     });
 }
 
-var CURRENT_URL = window.location.href.split('#')[0].split('?')[0],
+const CURRENT_URL = window.location.href.split('#')[0].split('?')[0],
     $BODY = $('body'),
     $MENU_TOGGLE = $('#menu_toggle'),
     $SIDEBAR_MENU = $('#sidebar-menu'),
@@ -44,14 +44,13 @@ var CURRENT_URL = window.location.href.split('#')[0].split('?')[0],
     $FOOTER = $('footer');
 
 
-
 // Sidebar
 function init_sidebar() {
     var setContentHeight = function () {
         // reset height
         $RIGHT_COL.css('min-height', $(window).height());
 
-        var bodyHeight = $BODY.outerHeight(),
+        let bodyHeight = $BODY.outerHeight(),
             footerHeight = $BODY.hasClass('footer_fixed') ? -10 : $FOOTER.height(),
             leftColHeight = $LEFT_COL.eq(1).height() + $SIDEBAR_FOOTER.height(),
             contentHeight = bodyHeight < leftColHeight ? leftColHeight : bodyHeight;
@@ -64,7 +63,7 @@ function init_sidebar() {
 
     $SIDEBAR_MENU.find('a').on('click', function(ev) {
         console.log('clicked - sidebar_menu');
-        var $li = $(this).parent();
+        const $li = $(this).parent();
 
         if ($li.is('.active')) {
             $li.removeClass('active active-sm');
@@ -135,7 +134,7 @@ function init_sidebar() {
             mouseWheel:{ preventDefault: true }
         });
     }
-};
+}
 // /Sidebar
 
 /**
@@ -149,12 +148,13 @@ function init_sidebar() {
 (function($,sr){
     // debouncing function from John Hann
     // http://unscriptable.com/index.php/2009/03/20/debouncing-javascript-methods/
-    var debounce = function (func, threshold, execAsap) {
-        var timeout;
+    const debounce = function (func, threshold, execAsap) {
+        let timeout;
 
-        return function debounced () {
+        return function debounced() {
             var obj = this, args = arguments;
-            function delayed () {
+
+            function delayed() {
                 if (!execAsap)
                     func.apply(obj, args);
                 timeout = null;

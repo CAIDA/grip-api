@@ -107,44 +107,6 @@ function isEmpty(obj) {
   return Object.keys(obj).length === 0;
 }
 
-function extract_victims(pfxevent, event_type){
-    switch(event_type){
-        case "moas":
-            let oldcomers = new Set();
-            for(let i in pfxevent["origins"]){
-                oldcomers.add(pfxevent['origins'][i]);
-            }
-            for(let i in pfxevent["newcomer_origins"]){
-                oldcomers.delete(pfxevent['newcomer_origins'][i])
-            }
-            return [...oldcomers];
-        case "submoas":
-            return pfxevent["sub_origins"];
-        case "defcon":
-            return pfxevent["origins"];
-        case "edges":
-            return [pfxevent["as1"], pfxevent["as2"]];
-        default:
-            return ["wrong"]
-    }
-}
-
-function extract_attackers(pfxevent, event_type){
-    switch(event_type){
-        case "moas":
-            return pfxevent["newcomer_origins"];
-        case "submoas":
-            return pfxevent["super_origins"];
-        case "defcon":
-            return [""];
-        case "edges":
-            // return [pfxevent["as1"], pfxevent["as2"]];
-            return [""];
-        default:
-            return ["wrong"]
-    }
-}
-
 function extract_largest_prefix(prefixes){
     let largest_pfx_len = 1000;
     let largest_pfx = "";

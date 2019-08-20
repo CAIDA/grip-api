@@ -48,13 +48,6 @@ function load_who_is(prefix) {
     }
 }
 
-function get_country_flag(asorg) {
-    let country_code = asorg["country"];
-    return flag(country_code)
-}
-
-let hegemony_query_time = moment().utc().subtract(2, 'days').format('YYYY-MM-DDTHH:00');
-
 as_info = {'hegemony':{}, 'asrank':{}};
 
 function _construct_tooltip(asn, external){
