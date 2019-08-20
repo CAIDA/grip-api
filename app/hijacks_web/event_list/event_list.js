@@ -44,14 +44,21 @@ function load_events_table(only_benign=false) {
             url += `ts_start=${times[0]}&ts_end=${times[1]}`;
         }
 
+        let num_plot_elem = document.getElementById("num_plot");
         if(only_benign){
             url += "&benign=true";
-            document.getElementById("num_plot").style.display = "none";
+            if(num_plot_elem != null){
+                num_plot_elem.style.display = "none";
+            }
         } else if(flag_set("benign", params)===true || event_type === "misconf") {
-            document.getElementById("num_plot").style.display = "none";
+            if(num_plot_elem != null){
+                num_plot_elem.style.display = "none";
+            }
         } else {
             $("#stats-frame").html(`<iframe src="//ioda.caida.org/public/hijacks-trworthy-${frame_type}" width="100%" height="500" frameborder="0"></iframe>`);
-            document.getElementById("num_plot").style.display = "block";
+            if(num_plot_elem != null){
+                num_plot_elem.style.display = "none";
+            }
         }
 
 
