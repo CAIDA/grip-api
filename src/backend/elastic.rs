@@ -73,6 +73,8 @@ impl ElasticSearchBackend {
 
         // match must terms
         let mut must_terms = vec!();
+        let mut must_not_terms = vec!();
+        must_not_terms.push(json!({ "match": { "position.keyword": "FINISHED" } }));
 
         want_benign = match benign {
             Some(b) => *b,
@@ -111,9 +113,15 @@ impl ElasticSearchBackend {
         }
         match tags {
             Some(tags_string) => {
-                let tags_lst = tags_string.split(",").collect::<Vec<&str>>();
+                let tags_lst: Vec<&str> = tags_string.split(",").collect::<Vec<&str>>();
                 for t in tags_lst{
-                    must_terms.push(json!({"exists":{"field":format!("tags.{}", t)}}))
+                    if t.starts_with("!") {
+                        // negative match
+                        let new_t = t.trim_left_matches('!');
+                        must_not_terms.push(json!({"exists":{"field":format!("tags.{}", new_t)}}))
+                    } else {
+                        must_terms.push(json!({"exists":{"field":format!("tags.{}", t)}}))
+                    }
                 }
             }
             _ => {}
@@ -124,7 +132,7 @@ impl ElasticSearchBackend {
                 "query": {
                     "bool": {
                         "must": must_terms,
-                        "must_not": { "match": { "position.keyword": "FINISHED" } },
+                        "must_not": must_not_terms,
                         "filter": {
                             "range": range_filter
                         }
