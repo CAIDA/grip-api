@@ -9,7 +9,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="/app/images/favicon.ico" type="image/ico"/>
+    <link rel="icon" href="/app/vendors/gentelella/images/favicon.ico" type="image/ico"/>
 
     <!-- Bootstrap -->
     <link href="/app/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -22,8 +22,8 @@
     <link href="/app/vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
     <link href="/app/vendors/leaflet/leaflet.css" rel="stylesheet">
     <!-- Custom Theme Style -->
-    <link href="/app/custom/custom.css" rel="stylesheet">
-    <link href="/app/build/css/custom.min.css" rel="stylesheet">
+    <link href="/app/hijacks_web/custom.css" rel="stylesheet">
+    <link href="/app/vendors/gentelella/build/css/custom.min.css" rel="stylesheet">
 
 </head>
 
@@ -73,12 +73,12 @@
 <script src="/app/vendors/renderjson/renderjson.js"></script>
 
 <!-- Custom Scripts -->
-<script src="/app/custom/load_data.js"></script>
-<script src="/app/custom/datatable.js"></script>
-<script src="/app/custom/events/event_rendering.js"></script>
-<script src="/app/custom/traceroutes.js"></script>
-<script src="/app/custom/utils.js"></script>
-<script src="/app/custom/custom.js"></script>
+<script src="/app/hijacks_web/load_data.js"></script>
+<script src="/app/hijacks_web/datatable.js"></script>
+<script src="/app/hijacks_web/event_details/event_rendering.js"></script>
+<script src="/app/hijacks_web/traceroutes.js"></script>
+<script src="/app/hijacks_web/utils.js"></script>
+<script src="/app/hijacks_web/custom.js"></script>
 
 </body>
 

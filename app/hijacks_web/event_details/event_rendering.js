@@ -17,10 +17,10 @@ event_modal_info = {
 
 function load_event_scripts() {
     let script_paths = [
-        "/app/custom/events/event_submoas.js",
-        "/app/custom/events/event_moas.js",
-        "/app/custom/events/event_defcon.js",
-        "/app/custom/events/event_edges.js",
+        "/app/custom/event_details/event_submoas.js",
+        "/app/custom/event_details/event_moas.js",
+        "/app/custom/event_details/event_defcon.js",
+        "/app/custom/event_details/event_edges.js",
     ];
 
     for (let i in script_paths) {
