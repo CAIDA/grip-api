@@ -4,7 +4,7 @@ build:
 	$(HOME)/.cargo/bin/cargo build --release
 
 clear:
-    sudo rm -rf $(APP_DIR)/*
+	sudo rm -rf $(APP_DIR)/*
 
 install: clear build
 	sudo service bgphijacks-dashboard stop
