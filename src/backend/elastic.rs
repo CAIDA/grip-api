@@ -58,12 +58,11 @@ impl ElasticSearchBackend {
             want_suspicious = true;
         }
 
-        match benign {
-            Some(want_benign) => if want_benign {
+        if let Some(want_benign) = benign {
+            if *want_benign {
                 want_suspicious = false;
                 want_misconf = false
-            },
-            None => false,
+            }
         };
 
         let mut range_filter = json!({"view_ts":{}});
