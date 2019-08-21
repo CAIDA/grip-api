@@ -123,7 +123,7 @@ impl ElasticSearchBackend {
                 for t in tags_lst{
                     if t.starts_with("!") {
                         // negative match
-                        let new_t = t.trim_left_matches('!');
+                        let new_t = t.trim_start_matches('!');
                         must_not_terms.push(json!({"exists":{"field":format!("tags.{}", new_t)}}))
                     } else {
                         must_terms.push(json!({"exists":{"field":format!("tags.{}", t)}}))
