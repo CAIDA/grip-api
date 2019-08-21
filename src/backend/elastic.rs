@@ -43,7 +43,8 @@ impl ElasticSearchBackend {
                        -> Result<SearchResult, Box<dyn Error>> {
         let mut etype = event_type.to_owned();
 
-        let mut want_benign = false;
+        // default we want suspicious events, unless specified otherwise
+        let mut want_suspicious = true;
         let mut want_misconf = false;
 
         if etype == "all" {
@@ -54,7 +55,16 @@ impl ElasticSearchBackend {
             // if event type is all or misconf (misconfiguration), show all events that matches
             etype = "*".to_owned();
             want_misconf = true;
+            want_suspicious = true;
         }
+
+        match benign {
+            Some(want_benign) => if want_benign {
+                want_suspicious = false;
+                want_misconf = false
+            },
+            None => false,
+        };
 
         let mut range_filter = json!({"view_ts":{}});
         match ts_start {
@@ -76,14 +86,9 @@ impl ElasticSearchBackend {
         let mut must_not_terms = vec!();
         must_not_terms.push(json!({ "match": { "position.keyword": "FINISHED" } }));
 
-        want_benign = match benign {
-            Some(b) => *b,
-            None => false,
-        };
-
         if want_misconf {
             must_terms.push(json!({ "term": { "inference.misconfiguration" : true }}));
-        } else if !want_benign {
+        } else if want_suspicious {
             must_terms.push(json!({ "term": { "inference.suspicious" : true }}));
         } else {
             must_terms.push(json!({ "term": { "inference.misconfiguration" : false }}));
