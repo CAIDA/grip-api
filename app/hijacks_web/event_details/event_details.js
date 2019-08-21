@@ -189,6 +189,13 @@ function render_event_details_table(event_type, event) {
         $("#event-details-endts").text(event["finished_ts"]);
     }
 
+    let comment_html = "";
+    event["inference"]["comments"].forEach(function(comment){
+        comment_html += "<p>" + comment + "</p>"
+    });
+    $("#event-comments").html(comment_html);
+
+
     event_modal_info ["download_path"] = event["id"] + ".json";
     event_modal_info["json_raw_str"] = JSON.stringify(event, undefined, 4);
     // $(event_modal_info["content_id"]).html(syntaxHighlight(event_modal_info["json_raw_str"]));

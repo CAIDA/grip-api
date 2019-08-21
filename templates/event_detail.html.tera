@@ -57,6 +57,18 @@
                         </table>
                     </div>
                 </div>
+                <div class="col-xs-12">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <tbody>
+                            <tr>
+                                <th>Comments:</th>
+                                <td id="event-comments"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
             <!-- Button trigger modal -->
             <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#eventModal">
