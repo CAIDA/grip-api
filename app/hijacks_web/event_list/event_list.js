@@ -80,8 +80,8 @@ function load_events_table(only_benign=false) {
                     "url": url,
                 },
                 "columns": [
-                    {title: "Potential Victim", "data": 'victims'},
-                    {title: "Potential Attacker", "data": 'attackers'},
+                    {title: "Potential Victim", "data": 'inference.victims'},
+                    {title: "Potential Attacker", "data": 'inference.attackers'},
                     {title: "Largest Prefix", "data": 'prefixes'},
                     {title: "# Prefix Events", "data": 'prefixes'},
                     {title: "Start Time", "data": 'view_ts'},
@@ -93,6 +93,9 @@ function load_events_table(only_benign=false) {
                         "render": function (data, type, row) {
                             // let victims = extract_victims(data[0], row["event_type"]);
                             let victims = data;
+                            if(victims===undefined){
+                                victims = row["victims"];
+                            }
                             let links = "";
                             if(victims.length>0){
                                 links = render_origin_links(victims.slice(0,2), false, row['external']);
@@ -108,8 +111,8 @@ function load_events_table(only_benign=false) {
                         "render": function (data, type, row) {
                             // let attackers = extract_attackers(data[0], row["event_type"]);
                             let attackers = data;
-                            if(attackers ===null){
-                                return ""
+                            if(attackers===undefined){
+                                attackers = row["attackers"];
                             }
                             let links = "";
                             if(attackers.length>0){

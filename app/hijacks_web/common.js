@@ -16,8 +16,7 @@ function flag(country_code) {
 
 function flag_set(flag_name, params){
     let found = false;
-    params.forEach(function(value, key, map){
-        console.log(key, value);
+    params.forEach(function(value, key){
         if(key === flag_name && value === "true"){
             console.log(flag_name, "found");
             found = true
