@@ -81,12 +81,13 @@ impl ElasticSearchBackend {
             None => false,
         };
 
-        if want_benign {
-            must_terms.push(json!({ "term": { "inference.tr_worthy" : false }}));
-        } else if want_misconf {
-            must_terms.push(json!({ "term": { "inference.malicious" : false }}));
+        if want_misconf {
+            must_terms.push(json!({ "term": { "inference.misconfiguration" : true }}));
+        } else if !want_benign {
+            must_terms.push(json!({ "term": { "inference.suspicious" : true }}));
         } else {
-            must_terms.push(json!({ "term": { "inference.malicious" : true }}));
+            must_terms.push(json!({ "term": { "inference.misconfiguration" : false }}));
+            must_terms.push(json!({ "term": { "inference.suspicious" : false }}));
         }
 
         match prefix {
