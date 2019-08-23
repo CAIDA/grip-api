@@ -83,11 +83,16 @@ pub fn page_event_details(_event_type: &RawStr, debug: Option<bool>, _id: &RawSt
 }
 
 /// load pfx_event details page
-#[get("/events/<_event_type>/<_id>/<_pfx_finger_print>")]
-pub fn page_traceroutes_page(_event_type: &RawStr, _id: &RawStr, _pfx_finger_print: &RawStr, _data: State<SharedData>) -> Template {
+#[get("/events/<_event_type>/<_id>/<pfx_finger_print>")]
+pub fn page_traceroutes_page(_event_type: &RawStr, _id: &RawStr, pfx_finger_print: &RawStr, _data: State<SharedData>) -> Template {
+    dbg!(pfx_finger_print.to_string().replace("-","\\/"));
+    let address_str = pfx_finger_print.to_string();
+    let v: Vec<&str> = address_str.split('-').collect();
     let mut context = HashMap::<String, Value>::new();
     context.insert("context".to_owned(), json!({
         "onload_function":"load_pfx_event()",
+        "address": v[0],
+        "mask": v[1],
     }));
     Template::render("event_traceroutes", context)
 }

@@ -156,6 +156,25 @@
 <br/>
 
 <div class="row">
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2 > RIPEstat Routing History </h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <div id="ripestat_routing" align="center">
+                <script src="https://stat.ripe.net/widgets/widget_api.js"></script>
+                <div class="statwdgtauto"><script>ripestat.init("routing-history",{"min_peers":0,"resource":"{{context.address}}/{{context.mask}}"},null,{"size":"medium","disable":["controls"]})</script></div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<br/>
+
+<div class="row">
     <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="x_panel">
             <div class="x_title">

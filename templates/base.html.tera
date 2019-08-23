@@ -25,10 +25,10 @@
     <link href="/app/vendors/gentelella/build/css/custom.min.css" rel="stylesheet">
     <!-- Custom Theme Style -->
     <link href="/app/hijacks_web/ui_components/custom.css" rel="stylesheet">
-
 </head>
 
 <body class="nav-md" onload="{{context.onload_function}}">
+
 
     <div class=" container body">
     <div class="main_container">

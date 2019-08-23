@@ -27,6 +27,7 @@ function load_pfx_event() {
             url: `/json/pfx_event/id/${event_id}/${pfx_fingerprint}`,
             success: function (pfx_event) {
                 draw_pfx_event_table(pfx_event, event_id, pfx_fingerprint);
+                console.log(pfx_event["prefix"]);
                 let measurements = draw_traceroute_table(pfx_event);
                 draw_sankeys(pfx_event);
                 // draw_traceroute_vis(measurements);

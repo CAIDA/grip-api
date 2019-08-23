@@ -19,6 +19,7 @@ function load_scripts() {
         "/app/hijacks_web/tags/tags.js",
         "/app/hijacks_web/external_data.js",
     ];
+// <script src="https://stat.ripe.net/widgets/widget_api.js"></script>
 
     for (let i in script_paths) {
         $.ajax({
