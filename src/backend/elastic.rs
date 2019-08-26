@@ -1,4 +1,7 @@
 use std::error::Error;
+use chrono::prelude::DateTime;
+use chrono::{Utc};
+use std::time::{UNIX_EPOCH, Duration};
 
 use elastic::prelude::*;
 use serde_json::json;
@@ -26,8 +29,21 @@ impl ElasticSearchBackend {
     }
 
     pub fn get_event_by_id(&self, id: &str) -> Result<SearchResult, Box<dyn Error>> {
-        let event_type: &str = id.split("-").collect::<Vec<&str>>()[0];
-        let doc: Value = reqwest::get(format!("http://clayface.caida.org:9200/hijacks-{}-*/event_result/{}",event_type, id).as_str())
+        let fields = id.split("-").collect::<Vec<&str>>();
+        let event_type: &str = fields[0];
+        let view_ts: u64 = fields[1].parse::<u64>().unwrap();
+
+        let d = UNIX_EPOCH + Duration::from_secs(view_ts);
+        let datetime = DateTime::<Utc>::from(d);
+
+        let query = format!("http://clayface.caida.org:9200/hijacks-{}-{}-{:02}-{:02}/event_result/{}",
+                    event_type,
+                    datetime.year(),
+                    datetime.month(),
+                    datetime.day(),
+                    id);
+
+        let doc: Value = reqwest::get(query.as_str())
             .unwrap().json().unwrap();
         if doc["found"] == true {
             return Ok(SearchResult { results: vec!(doc["_source"].clone()), total: 1 });
