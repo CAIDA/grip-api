@@ -3,8 +3,8 @@ const params = new Map(location.search.slice(1).split("&").map(kv => kv.split("=
 let event_type_explain = {
     'moas': "origin hijack (moas)",
     'submoas': "origin hijack (submoas)",
-    'edges': "path manipulation (new edge)",
-    'defcon': "path manipulation (defcon)",
+    'edges': "path manipulation",
+    'defcon': "defcon-16"
 };
 
 // decimal offset between ASCII capitals and regional indicator symbols
