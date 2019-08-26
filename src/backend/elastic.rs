@@ -27,7 +27,7 @@ impl ElasticSearchBackend {
 
     pub fn get_event_by_id(&self, id: &str) -> Result<SearchResult, Box<dyn Error>> {
         let event_type: &str = id.split("-").collect::<Vec<&str>>()[0];
-        let doc: Value = reqwest::get(format!("http://clayface.caida.org:9200/hijacks-{}/event_result/{}",event_type, id).as_str())
+        let doc: Value = reqwest::get(format!("http://clayface.caida.org:9200/hijacks-{}-*/event_result/{}",event_type, id).as_str())
             .unwrap().json().unwrap();
         if doc["found"] == true {
             return Ok(SearchResult { results: vec!(doc["_source"].clone()), total: 1 });
@@ -152,7 +152,7 @@ impl ElasticSearchBackend {
         let res = self
             .es_client
             .search::<Value>()
-            .index(format!("hijacks-{}", etype))
+            .index(format!("hijacks-{}-*", etype))
             .body(query)
             .send()?;
 
