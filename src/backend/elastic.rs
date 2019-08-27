@@ -37,7 +37,7 @@ impl ElasticSearchBackend {
         let datetime = DateTime::<Utc>::from(d);
 
         let query = format!(
-            "http://clayface.caida.org:9200/hijacks-{}-{}-{:02}-{:02}/event_result/{}",
+            "http://clayface.caida.org:9200/bgphijacks-{}-{}-{:02}-{:02}/event_result/{}",
             event_type,
             datetime.year(),
             datetime.month(),
@@ -121,17 +121,17 @@ impl ElasticSearchBackend {
             match mistype {
                 "all" => {},
                 "asn_prepend" => {
-                    must_terms.push(json!({"match":{"tags":"newcomer-small-asn"}}));
-                    must_terms.push(json!({"match":{"tags":"all-newcomers-next-to-an-oldcomer"}}));
+                    must_terms.push(json!({"term":{"tags":"newcomer-small-asn"}}));
+                    must_terms.push(json!({"term":{"tags":"all-newcomers-next-to-an-oldcomer"}}));
                 },
                 "fatfinger_prefix" => {
-                    must_terms.push(json!({"match":{"tags":"prefix-small-edit-distance"}}));
+                    must_terms.push(json!({"term":{"tags":"prefix-small-edit-distance"}}));
                 },
                 "fatfinger_asn" => {
-                    must_terms.push(json!({"match":{"tags":"origin-small-edit-distance"}}));
+                    must_terms.push(json!({"term":{"tags":"origin-small-edit-distance"}}));
                 },
-                "fatfinger_reserved_space" => {
-                    must_terms.push(json!({"match":{"tags":"reserved-space"}}));
+                "reserved_space" => {
+                    must_terms.push(json!({"term":{"tags":"reserved-space"}}));
                 },
                 _ => {}
             }
@@ -168,9 +168,9 @@ impl ElasticSearchBackend {
                     if t.starts_with("!") {
                         // negative match
                         let new_t = t.trim_start_matches('!');
-                        must_not_terms.push(json!({"match":{"tags":new_t}}))
+                        must_not_terms.push(json!({"term":{"tags":new_t}}))
                     } else {
-                        must_terms.push(json!({"match":{"tags":t}}))
+                        must_terms.push(json!({"term":{"tags":t}}))
                     }
                 }
             }
@@ -197,7 +197,7 @@ impl ElasticSearchBackend {
         let res = self
             .es_client
             .search::<Value>()
-            .index(format!("hijacks-{}-*", etype))
+            .index(format!("bgphijacks-{}-*", etype))
             .body(query)
             .send()?;
 
