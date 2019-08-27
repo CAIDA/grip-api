@@ -68,6 +68,7 @@ impl ElasticSearchBackend {
         tags: &Option<String>,
         min_susp: &Option<usize>,
         max_susp: &Option<usize>,
+        misconf: &Option<bool>,
     ) -> Result<SearchResult, Box<dyn Error>> {
         let mut etype = event_type.to_owned();
 
@@ -99,21 +100,15 @@ impl ElasticSearchBackend {
         let mut must_not_terms = vec![];
         must_not_terms.push(json!({ "match": { "position.keyword": "FINISHED" } }));
 
-        // if want_misconf {
-        //     must_terms.push(json!({ "term": { "inference.misconfiguration" : true }}));
-        // } else if want_suspicious {
-        //     must_terms.push(json!({ "term": { "inference.suspicious" : true }}));
-        // } else {
-        //     must_terms.push(json!({ "term": { "inference.misconfiguration" : false }}));
-        //     must_terms.push(json!({ "term": { "inference.suspicious" : false }}));
-        // }
-
         let mut suspicion_filter = json!({"inference.suspicion.suspicion_level": {}});
         if let Some(max) = max_susp {
             suspicion_filter["inference.suspicion.suspicion_level"]["lte"] = json!(max.to_owned() as i32);
         }
         if let Some(min) = min_susp {
             suspicion_filter["inference.suspicion.suspicion_level"]["gte"] = json!(min.to_owned() as i32);
+        }
+        if let Some(mis) = misconf {
+            suspicion_filter["inference.misconfiguration"] = json!(mis);
         }
         must_terms.push(json!({"range": suspicion_filter} ));
 
