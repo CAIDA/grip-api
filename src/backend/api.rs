@@ -50,7 +50,9 @@ pub fn page_event_list(
     context.insert(
         "context".to_owned(),
         json!({
+            "onload_function":"load_events_table()",
             "debug": show_debug,
+            "page_type": "event_list",
         }),
     );
 
@@ -72,7 +74,9 @@ pub fn page_benign_event_list(
     context.insert(
         "context".to_owned(),
         json!({
+            "onload_function":"load_events_table()",
             "debug": show_debug,
+            "page_type": "event_list",
         }),
     );
     Template::render("event_list", context)
@@ -93,7 +97,9 @@ pub fn page_grey_event_list(
     context.insert(
         "context".to_owned(),
         json!({
+            "onload_function":"load_events_table()",
             "debug": show_debug,
+            "page_type": "event_list",
         }),
     );
     Template::render("event_list", context)
@@ -116,6 +122,7 @@ pub fn page_event_details(
         "context".to_owned(),
         json!({
             "onload_function":"load_event_details()",
+            "page_type": "event_details",
             "debug": show_debug,
         }),
     );
@@ -138,6 +145,7 @@ pub fn page_traceroutes_page(
         "context".to_owned(),
         json!({
             "onload_function":"load_pfx_event()",
+            "page_type": "pfx_event_details",
             "address": v[0],
             "mask": v[1],
         }),

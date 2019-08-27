@@ -27,7 +27,7 @@
     <link href="/app/hijacks_web/ui_components/custom.css" rel="stylesheet">
 </head>
 
-<body class="nav-md" onload="load_events_table()">
+<body class="nav-md" onload="{{context.onload_function}}">
 
 
     <div class=" container body">
@@ -137,8 +137,8 @@
 <script src="/app/vendors/renderjson/renderjson.js"></script>
 
 <!-- Custom Scripts -->
-<script src="/app/hijacks_web/index.js"></script>
-<script src="/app/hijacks_web/ui_components/custom.js"></script>
+    <script src="/app/hijacks_web/ui_components/custom.js"></script>
+    <script src="/app/hijacks_web/index.js"></script>
 
 </body>
 

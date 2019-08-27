@@ -1,4 +1,9 @@
 function load_events_table(only_benign=false) {
+
+    const elems = window.location.pathname.replace(/\/$/, "").split("/");
+    if(elems.length !==3){
+        return
+    }
     const event_type = get_event_type_from_url();
     const nature = get_event_nature_from_url();
 
