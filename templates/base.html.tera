@@ -45,25 +45,27 @@
                     <div class="menu_section">
                         <!--<h3>General</h3>-->
                         <ul class="nav side-menu">
-                            <li><a href="/events/all"><i class="fa"></i> All Suspicious Events </a></li>
-                            <li><a><i class="fa fa-times"></i> Suspicious Events <span class="fa fa-chevron-down"></span></a>
+                            <li><a><i class="fa fa-times"></i> Suspicious <span class="fa fa-chevron-down"></span></a>
                                 <ul class="nav child_menu">
+                                    <li><a href="/events/all">ALL</a></li>
                                     <li><a href="/events/moas">MOAS</a></li>
                                     <li><a href="/events/submoas">SUBMOAS</a></li>
                                     <li><a href="/events/defcon">DEFCON-16</a></li>
                                     <li><a href="/events/edges">Fake Path Hijacks</a></li>
                                 </ul>
                             </li>
-                            <li><a><i class="fa fa-check"></i> Grey Events <span class="fa fa-chevron-down"></span></a>
+                            <li><a><i class="fa fa-question"></i> Less Suspicious <span class="fa fa-chevron-down"></span></a>
                                 <ul class="nav child_menu">
+                                    <li><a href="/events_grey/all">ALL</a></li>
                                     <li><a href="/events_grey/moas">MOAS</a></li>
                                     <li><a href="/events_grey/submoas">SUBMOAS</a></li>
                                     <li><a href="/events_grey/defcon">DEFCON-16</a></li>
                                     <li><a href="/events_grey/edges">Fake Path Hijacks</a></li>
                                 </ul>
                             </li>
-                            <li><a><i class="fa fa-check"></i> Benign Events <span class="fa fa-chevron-down"></span></a>
+                            <li><a><i class="fa fa-check"></i> Benign <span class="fa fa-chevron-down"></span></a>
                                 <ul class="nav child_menu">
+                                    <li><a href="/events_benign/all">ALL</a></li>
                                     <li><a href="/events_benign/moas">MOAS</a></li>
                                     <li><a href="/events_benign/submoas">SUBMOAS</a></li>
                                     <li><a href="/events_benign/defcon">DEFCON-16</a></li>
