@@ -50,7 +50,6 @@ pub fn page_event_list(
     context.insert(
         "context".to_owned(),
         json!({
-            "onload_function":"load_events_table()" ,
             "debug": show_debug,
         }),
     );
@@ -73,7 +72,27 @@ pub fn page_benign_event_list(
     context.insert(
         "context".to_owned(),
         json!({
-            "onload_function":"load_events_table(true)" ,
+            "debug": show_debug,
+        }),
+    );
+    Template::render("event_list", context)
+}
+
+/// load events list page
+#[get("/events_grey/<_event_type>?<debug>")]
+pub fn page_grey_event_list(
+    _event_type: &RawStr,
+    debug: Option<bool>,
+    _data: State<SharedData>,
+) -> Template {
+    let mut context = HashMap::<String, Value>::new();
+    let show_debug = match debug {
+        Some(b) => b,
+        None => false,
+    };
+    context.insert(
+        "context".to_owned(),
+        json!({
             "debug": show_debug,
         }),
     );

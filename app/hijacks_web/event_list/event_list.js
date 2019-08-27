@@ -1,5 +1,7 @@
 function load_events_table(only_benign=false) {
     const event_type = get_event_type_from_url();
+    const nature = get_event_nature_from_url();
+
     let frame_type = event_type;
     if(frame_type==="all"){
         frame_type = "overall";
@@ -45,6 +47,7 @@ function load_events_table(only_benign=false) {
         }
 
         let num_plot_elem = document.getElementById("num_plot");
+        /*
         if(only_benign){
             url += "&max_susp=20";
             if(num_plot_elem != null){
@@ -60,6 +63,31 @@ function load_events_table(only_benign=false) {
             if(num_plot_elem == null){
                 num_plot_elem.style.display = "none";
             }
+            url += "&min_susp=80";
+        }
+        */
+
+        if(nature === "benign"){
+            url += "&max_susp=20";
+            if(num_plot_elem != null){
+                num_plot_elem.style.display = "none";
+            }
+        } else if (nature === "grey") {
+            if(num_plot_elem != null){
+                num_plot_elem.style.display = "none";
+            }
+            url += "&max_susp=79&min_susp=21";
+
+        } else if(nature === "misconf") {
+            if(num_plot_elem != null){
+                num_plot_elem.style.display = "none";
+            }
+            url += "&misconf=true";
+        } else {
+            $("#stats-frame").html(`<iframe src="//ioda.caida.org/public/hijacks-trworthy-${frame_type}" width="100%" height="500" frameborder="0"></iframe>`);
+            // if(num_plot_elem != null){
+            //     num_plot_elem.style.display = "none";
+            // }
             url += "&min_susp=80";
         }
 

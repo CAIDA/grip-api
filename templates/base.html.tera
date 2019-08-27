@@ -27,7 +27,7 @@
     <link href="/app/hijacks_web/ui_components/custom.css" rel="stylesheet">
 </head>
 
-<body class="nav-md" onload="{{context.onload_function}}">
+<body class="nav-md" onload="load_events_table()">
 
 
     <div class=" container body">
@@ -50,26 +50,36 @@
                                 <ul class="nav child_menu">
                                     <li><a href="/events/moas">MOAS</a></li>
                                     <li><a href="/events/submoas">SUBMOAS</a></li>
-                                    <li><a href="/events/defcon">DEFCON</a></li>
-                                    <li><a href="/events/edges">NEW EDGE</a></li>
+                                    <li><a href="/events/defcon">DEFCON-16</a></li>
+                                    <li><a href="/events/edges">Path Manipulation</a></li>
                                 </ul>
                             </li>
-                            <li><a><i class="fa fa-user"></i> Misconfiguration <span class="fa fa-chevron-down"></span></a>
+                            <li><a><i class="fa fa-check"></i> Grey Events <span class="fa fa-chevron-down"></span></a>
                                 <ul class="nav child_menu">
-                                    <li><a href="/events/misconf?tags=newcomer-small-asn"> ASN Prepending </a></li>
-                                    <li><a href="/events/misconf?tags=prefix-small-edit-distance,!reserved-space"> Fat-finger prefix </a></li>
-                                    <li><a href="/events/misconf?tags=origin-small-edit-distance"> Fat-finger ASN </a></li>
-                                    <li><a href="/events/misconf?tags=reserved-space"> Reserved Space </a></li>
+                                    <li><a href="/events_grey/moas">MOAS</a></li>
+                                    <li><a href="/events_grey/submoas">SUBMOAS</a></li>
+                                    <li><a href="/events_grey/defcon">DEFCON-16</a></li>
+                                    <li><a href="/events_grey/edges">Path Manipulation</a></li>
                                 </ul>
                             </li>
                             <li><a><i class="fa fa-check"></i> Benign Events <span class="fa fa-chevron-down"></span></a>
                                 <ul class="nav child_menu">
                                     <li><a href="/events_benign/moas">MOAS</a></li>
                                     <li><a href="/events_benign/submoas">SUBMOAS</a></li>
-                                    <li><a href="/events_benign/defcon">DEFCON</a></li>
+                                    <li><a href="/events_benign/defcon">DEFCON-16</a></li>
                                     <li><a href="/events_benign/edges">NEW EDGE</a></li>
                                 </ul>
                             </li>
+
+                            <li><a><i class="fa fa-user"></i> Misconfiguration <span class="fa fa-chevron-down"></span></a>
+                                <ul class="nav child_menu">
+                                    <li><a href="/events_misconf/asn_prepend"> ASN Prepending </a></li>
+                                    <li><a href="/events_misconf/fatfinger_prefix"> Fat-finger prefix </a></li>
+                                    <li><a href="/events_misconf/fatfinger_asn"> Fat-finger ASN </a></li>
+                                    <li><a href="/events_misconf/reserved_space"> Reserved Space </a></li>
+                                </ul>
+                            </li>
+
                             <li><a href="/blacklist"><i class="fa fa-book"></i> AS Blacklist </a></li>
 
                             {% if context.debug and context.debug == true %}

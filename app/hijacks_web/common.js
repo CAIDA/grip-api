@@ -66,12 +66,28 @@ function syntaxHighlight(json) {
 function get_event_id_from_url(){
     const elems = window.location.pathname.replace(/\/$/, "").split("/");
     return elems[3]
-
 }
 
 function get_event_type_from_url(){
     const elems =  window.location.pathname.replace(/\/$/, "").split("/");
     return elems[2]
+}
+
+function get_event_nature_from_url(){
+    const elems =  window.location.pathname.replace(/\/$/, "").split("/");
+    let fields = elems[1].split("_")
+    let nature = "";
+    if(fields.length === 1){
+        nature = "suspicious"
+    } else if (fields[1] === "benign") {
+        nature = "benign"
+    } else if (fields[1] === "grey") {
+        nature = "grey"
+    } else if (fields[1] === "misconf"){
+        nature = "misconf"
+    }
+
+    return nature
 }
 
 function get_guid() {
