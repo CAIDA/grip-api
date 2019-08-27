@@ -239,7 +239,7 @@ function draw_monitor_sankey(pfx_event) {
     } else if ("super_aspaths" in pfx_event) {
         path_data = extract_sankey_data(pfx_event["super_aspaths"], true)
     } else {
-        alert("no paths data available")
+        // alert("no paths data available")
     }
 
     function drawChart() {

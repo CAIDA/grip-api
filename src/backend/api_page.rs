@@ -180,7 +180,8 @@ pub fn page_traceroutes_page(
 ) -> Template {
     dbg!(pfx_finger_print.to_string().replace("-", "\\/"));
     let address_str = pfx_finger_print.to_string();
-    let v: Vec<&str> = address_str.split('-').collect();
+    let addrs: Vec<&str> = address_str.split('_').collect();
+    let v: Vec<&str> = addrs[0].split("-").collect();
     let mut context = HashMap::<String, Value>::new();
     context.insert(
         "context".to_owned(),
