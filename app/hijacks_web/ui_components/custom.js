@@ -178,29 +178,37 @@ function init_sidebar() {
 
 /* DATERANGEPICKER */
 
+function current(){
+    return moment().utc()
+}
+
 function init_daterangepicker() {
 
     if( typeof ($.fn.daterangepicker) === 'undefined'){ return; }
 
     var cb = function(start, end, label) {
-        $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+        // $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+        // TODO refresh page
+        $('#reportrange span').html(start.format('YYYY-MM-DDTHH:mm') + ' - ' + end.format('YYYY-MM-DDTHH:mm'));
+        console.log("date applied");
+        update_page_dates();
     };
 
     var optionSet1 = {
-        startDate: moment().subtract(29, 'days').startOf('hour'),
-        endDate: moment().startOf('hour'),
+        startDate: current().utc().subtract(1, 'days').startOf('hour'),
+        endDate: current().utc().startOf('hour'),
         showDropdowns: true,
         showWeekNumbers: true,
         timePicker: true,
         timePickerIncrement: 10,
         timePicker24Hour: true,
         ranges: {
-            'Today': [moment().startOf('day'), moment()],
-            'Yesterday': [moment().subtract(2, 'days').startOf('day'), moment().subtract(1, 'days').startOf('day')],
-            'Last 7 Days': [moment().subtract(6, 'days').startOf('day'), moment()],
-            'Last 30 Days': [moment().subtract(29, 'days').startOf('day'), moment()],
-            'This Month': [moment().startOf('month'), moment().endOf('month')],
-            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            'Today': [current().startOf('day'), current()],
+            'Yesterday': [current().subtract(2, 'days').startOf('day'), current().subtract(1, 'days').startOf('day')],
+            'Last 7 Days': [current().subtract(6, 'days').startOf('day'), current()],
+            'Last 30 Days': [current().subtract(29, 'days').startOf('day'), current()],
+            'This Month': [current().startOf('month'), current().endOf('month')],
+            'Last Month': [current().subtract(1, 'month').startOf('month'), current().subtract(1, 'month').endOf('month')]
         },
         opens: 'left',
         buttonClasses: ['btn btn-default'],
@@ -220,22 +228,13 @@ function init_daterangepicker() {
         }
     };
 
-    $('#reportrange span').html(moment().subtract(1, 'days').format('YYYY-MM-DDTHH:mmZZ') + ' - ' + moment().format('YYYY-MM-DDTHH:mmZZ'));
+    $('#reportrange span').html(current().subtract(1, 'days').utc().format('YYYY-MM-DDTHH:mm') + ' - ' + current().utc().format('YYYY-MM-DDTHH:mm'));
     let daterange = $('#reportrange');
     daterange.daterangepicker(optionSet1, cb);
-    daterange.on('show.daterangepicker', function() {
-        console.log("show event fired");
-    });
-    daterange.on('hide.daterangepicker', function() {
-        console.log("hide event fired");
-    });
-    daterange.on('apply.daterangepicker', function(ev, picker) {
-        $('#reportrange span').html(picker.startDate.format('YYYY-MM-DDTHH:mmZZ') + ' - ' + picker.endDate.format('YYYY-MM-DDTHH:mmZZ'));
-    });
-    daterange.on('cancel.daterangepicker', function(ev, picker) {
-        console.log("cancel event fired");
-    });
 
+    daterange.on('apply.daterangepicker', function(ev, picker) {
+        $('#reportrange span').html(picker.startDate.format('YYYY-MM-DDTHH:mm') + ' - ' + picker.endDate.format('YYYY-MM-DDTHH:mm'));
+    });
 }
 
 $('[data-toggle="tooltip"]').tooltip();

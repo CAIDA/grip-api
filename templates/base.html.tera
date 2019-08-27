@@ -51,7 +51,7 @@
                                     <li><a href="/events/moas">MOAS</a></li>
                                     <li><a href="/events/submoas">SUBMOAS</a></li>
                                     <li><a href="/events/defcon">DEFCON-16</a></li>
-                                    <li><a href="/events/edges">Path Manipulation</a></li>
+                                    <li><a href="/events/edges">Fake Path Hijacks</a></li>
                                 </ul>
                             </li>
                             <li><a><i class="fa fa-check"></i> Grey Events <span class="fa fa-chevron-down"></span></a>
@@ -59,7 +59,7 @@
                                     <li><a href="/events_grey/moas">MOAS</a></li>
                                     <li><a href="/events_grey/submoas">SUBMOAS</a></li>
                                     <li><a href="/events_grey/defcon">DEFCON-16</a></li>
-                                    <li><a href="/events_grey/edges">Path Manipulation</a></li>
+                                    <li><a href="/events_grey/edges">Fake Path Hijacks</a></li>
                                 </ul>
                             </li>
                             <li><a><i class="fa fa-check"></i> Benign Events <span class="fa fa-chevron-down"></span></a>

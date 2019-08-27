@@ -245,26 +245,6 @@ function load_events_table(only_benign=false) {
         });
     }); // end of document.ready
 
-    $("#range-btn").click(function () {
-        let url = window.location.pathname.replace(/\?.*\/$/, "");
-        url+="?";
-        if(!params.has("")){
-            params.forEach(function(value, key, map){
-                if(!key.startsWith("ts_")) {
-                    // strip existing searching ranges
-                    url += `${key}=${value}&`;
-                }
-            });
-        }
-        let times = $('#reportrange span').html().split(" - ");
-        if(Date.parse(times[0]) !==null){
-            url += `ts_start=${times[0]}&ts_end=${times[1]}`;
-        }
-        url = url.replace(/[?&]$/i, "");
-        console.log(url);
-        window.open(url, '_self', false);
-    });
-
     $("#search-btn").click(function () {
         let fields = $("#search-box").val().trim().split(" ");
         if(fields.length > 2){

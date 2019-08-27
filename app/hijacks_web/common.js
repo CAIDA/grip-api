@@ -90,6 +90,27 @@ function get_event_nature_from_url(){
     return nature
 }
 
+function update_page_dates(){
+    let url = window.location.pathname.replace(/\?.*\/$/, "");
+    url+="?";
+    if(!params.has("")){
+        params.forEach(function(value, key, map){
+            if(!key.startsWith("ts_")) {
+                // strip existing searching ranges
+                url += `${key}=${value}&`;
+            }
+        });
+    }
+    let times = $('#reportrange span').html().split(" - ");
+    alert("times: " + times);
+    if(Date.parse(times[0]) !==null){
+        url += `ts_start=${times[0]}&ts_end=${times[1]}`;
+    }
+    url = url.replace(/[?&]$/i, "");
+    console.log(url);
+    window.open(url, '_self', false);
+}
+
 function get_guid() {
     function s4() {
         return Math.floor((1 + Math.random()) * 0x10000)
