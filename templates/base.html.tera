@@ -45,21 +45,30 @@
                     <div class="menu_section">
                         <!--<h3>General</h3>-->
                         <ul class="nav side-menu">
-                            <li><a><i class="fa fa-times"></i> Suspicious <span class="fa fa-chevron-down"></span></a>
+                            <li>
+                                <a><i class="fa fa-times"></i> Suspicious <span class="fa fa-chevron-down"></span></a>
                                 <ul class="nav child_menu">
                                     <li><a href="/events_suspicious/all">ALL</a></li>
-                                    <li><a href="/events_suspicious/moas">MOAS</a></li>
-                                    <li><a href="/events_suspicious/submoas">SUBMOAS</a></li>
-                                    <li><a href="/events_suspicious/defcon">DEFCON-16</a></li>
+                                    <li class="active"><a>ORIGIN HIJACKS<span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu" style="display: block;">
+                                            <li><a href="/events_suspicious/moas">MOAS</a></li>
+                                            <li><a href="/events_suspicious/submoas">SUBMOAS</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="/events_suspicious/defcon">DEFCON-16 HIJACKS</a></li>
                                     <li><a href="/events_suspicious/edges">FAKE PATH HIJACKS</a></li>
                                 </ul>
                             </li>
                             <li><a><i class="fa fa-question"></i> Less Suspicious <span class="fa fa-chevron-down"></span></a>
                                 <ul class="nav child_menu">
                                     <li><a href="/events_grey/all">ALL</a></li>
-                                    <li><a href="/events_grey/moas">MOAS</a></li>
-                                    <li><a href="/events_grey/submoas">SUBMOAS</a></li>
-                                    <li><a href="/events_grey/defcon">DEFCON-16</a></li>
+                                    <li class="active"><a>ORIGIN HIJACKS<span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu" style="display: block;">
+                                            <li><a href="/events_grey/moas">MOAS</a></li>
+                                            <li><a href="/events_grey/submoas">SUBMOAS</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="/events_grey/defcon">DEFCON-16 HIJACKS</a></li>
                                     <li><a href="/events_grey/edges">FAKE PATH HIJACKS</a></li>
                                 </ul>
                             </li>
@@ -75,6 +84,7 @@
 
                             <li><a><i class="fa fa-user"></i> Misconfiguration <span class="fa fa-chevron-down"></span></a>
                                 <ul class="nav child_menu">
+                                    <li><a href="/events_misconf/all"> ALL </a></li>
                                     <li><a href="/events_misconf/asn_prepend"> ASN Prepending </a></li>
                                     <li><a href="/events_misconf/fatfinger_prefix"> Fat-finger prefix </a></li>
                                     <li><a href="/events_misconf/fatfinger_asn"> Fat-finger ASN </a></li>
