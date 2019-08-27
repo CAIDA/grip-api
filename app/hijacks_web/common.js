@@ -104,7 +104,6 @@ function update_page_dates(){
         });
     }
     let times = $('#reportrange span').html().split(" - ");
-    alert("times: " + times);
     if(Date.parse(times[0]) !==null){
         url += `ts_start=${times[0]}&ts_end=${times[1]}`;
     }

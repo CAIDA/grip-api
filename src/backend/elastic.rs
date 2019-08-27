@@ -69,6 +69,7 @@ impl ElasticSearchBackend {
         min_susp: &Option<usize>,
         max_susp: &Option<usize>,
         misconf: &Option<bool>,
+        misconf_type: &Option<String>,
     ) -> Result<SearchResult, Box<dyn Error>> {
         let mut etype = event_type.to_owned();
 
@@ -107,10 +108,34 @@ impl ElasticSearchBackend {
         if let Some(min) = min_susp {
             suspicion_filter["inference.suspicion.suspicion_level"]["gte"] = json!(min.to_owned() as i32);
         }
-        if let Some(mis) = misconf {
-            suspicion_filter["inference.misconfiguration"] = json!(mis);
-        }
         must_terms.push(json!({"range": suspicion_filter} ));
+
+        if let Some(mis) = misconf {
+            must_terms.push(json!({"term": {"inference.misconfiguration": mis}}));
+            must_not_terms.push(json!({"match":{"tags":"newcomer-is-sibling"}}));
+            must_not_terms.push(json!({"match":{"tags":"newcomer-is-friend"}}));
+            let mut mistype = "all";
+            if let Some(t) = misconf_type{
+                mistype = t.as_str();
+            }
+            match mistype {
+                "all" => {},
+                "asn_prepend" => {
+                    must_terms.push(json!({"match":{"tags":"newcomer-small-asn"}}));
+                    must_terms.push(json!({"match":{"tags":"all-newcomers-next-to-an-oldcomer"}}));
+                },
+                "fatfinger_prefix" => {
+                    must_terms.push(json!({"match":{"tags":"prefix-small-edit-distance"}}));
+                },
+                "fatfinger_asn" => {
+                    must_terms.push(json!({"match":{"tags":"origin-small-edit-distance"}}));
+                },
+                "fatfinger_reserved_space" => {
+                    must_terms.push(json!({"match":{"tags":"reserved-space"}}));
+                },
+                _ => {}
+            }
+        }
 
         match prefix {
             Some(p) => {
@@ -143,9 +168,9 @@ impl ElasticSearchBackend {
                     if t.starts_with("!") {
                         // negative match
                         let new_t = t.trim_start_matches('!');
-                        must_not_terms.push(json!({"exists":{"field":format!("tags.{}", new_t)}}))
+                        must_not_terms.push(json!({"match":{"tags":new_t}}))
                     } else {
-                        must_terms.push(json!({"exists":{"field":format!("tags.{}", t)}}))
+                        must_terms.push(json!({"match":{"tags":t}}))
                     }
                 }
             }
