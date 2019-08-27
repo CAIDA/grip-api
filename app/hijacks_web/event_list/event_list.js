@@ -243,7 +243,7 @@ function load_events_table(only_benign=false) {
             }
             var data = datatable.row($(this)).data();
             let base = window.location.pathname.split("/")[1];
-            if(base === "events_benign"){
+            if(base === "events_benign" || base === "events_grey"){
                 base = "events"
             }
             window.open(`/${base}/` + data['event_type'] + "/" + data['id'], '_self', false);
