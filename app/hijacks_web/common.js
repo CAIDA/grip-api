@@ -78,6 +78,8 @@ function get_event_nature_from_url(){
     let fields = elems[1].split("_")
     let nature = "";
     if(fields.length === 1){
+        nature = "all"
+    } else if (fields[1] === "suspicious") {
         nature = "suspicious"
     } else if (fields[1] === "benign") {
         nature = "benign"

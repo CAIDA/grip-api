@@ -68,6 +68,7 @@ fn main() {
             routes![
                 page_index,
                 page_event_list,
+                page_suspicious_event_list,
                 page_grey_event_list,
                 page_benign_event_list,
                 page_event_details,

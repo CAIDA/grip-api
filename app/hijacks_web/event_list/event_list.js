@@ -72,7 +72,10 @@ function load_events_table(only_benign=false) {
         }
         */
 
-        if(nature === "benign"){
+        if(nature === "suspicious") {
+            $("#stats-frame").html(`<iframe src="//ioda.caida.org/public/hijacks-trworthy-${frame_type}" width="100%" height="500" frameborder="0"></iframe>`);
+            url += "&min_susp=80";
+        } else if(nature === "benign"){
             url += "&max_susp=20";
             if(num_plot_elem != null){
                 num_plot_elem.style.display = "none";
@@ -88,12 +91,10 @@ function load_events_table(only_benign=false) {
                 num_plot_elem.style.display = "none";
             }
             url += "&misconf=true";
-        } else {
-            $("#stats-frame").html(`<iframe src="//ioda.caida.org/public/hijacks-trworthy-${frame_type}" width="100%" height="500" frameborder="0"></iframe>`);
-            // if(num_plot_elem != null){
-            //     num_plot_elem.style.display = "none";
-            // }
-            url += "&min_susp=80";
+        } else if(nature === "all") {
+            if(num_plot_elem != null){
+                num_plot_elem.style.display = "none";
+            }
         }
 
 
@@ -243,10 +244,10 @@ function load_events_table(only_benign=false) {
             }
             var data = datatable.row($(this)).data();
             let base = window.location.pathname.split("/")[1];
-            if(base === "events_benign" || base === "events_grey"){
-                base = "events"
-            }
-            window.open(`/${base}/` + data['event_type'] + "/" + data['id'], '_self', false);
+            // if(base === "events_benign" || base === "events_grey"){
+            //     base = "events"
+            // }
+            window.open(`/events/` + data['event_type'] + "/" + data['id'], '_self', false);
         });
     }); // end of document.ready
 
