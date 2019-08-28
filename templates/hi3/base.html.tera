@@ -75,7 +75,6 @@
 <!-- Custom Scripts -->
 <script src="/app/hijacks_web/index.js"></script>
 <script src="/app/hijacks_web/ui_components/custom.js"></script>
-<script src="https://stat.ripe.net/widgets/widget_api.js"></script>
 </body>
 
 </html>

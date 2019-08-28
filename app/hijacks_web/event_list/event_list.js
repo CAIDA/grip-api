@@ -232,7 +232,12 @@ function load_events_table(only_benign=false) {
             // if(base === "events_benign" || base === "events_grey"){
             //     base = "events"
             // }
-            window.open(`/events/` + data['event_type'] + "/" + data['id'], '_self', false);
+            if(base==='hi3'){
+                base = "hi3"
+            } else {
+                base = "events"
+            }
+            window.open(`/${base}/` + data['event_type'] + "/" + data['id'], '_self', false);
         });
     }); // end of document.ready
 
