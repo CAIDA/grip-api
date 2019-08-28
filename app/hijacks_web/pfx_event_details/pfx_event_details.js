@@ -28,17 +28,20 @@ function load_pfx_event() {
             success: function (pfx_event) {
                 draw_pfx_event_table(pfx_event, event_id, pfx_fingerprint);
                 console.log(pfx_event["prefix"]);
-                let measurements = draw_traceroute_table(pfx_event);
-                draw_sankeys(pfx_event);
-                // draw_traceroute_vis(measurements);
+                draw_monitor_sankey(pfx_event);
+                if(pfx_event["traceroutes"].length === 0){
+                    $("#tr_block").css("display", "none")
+                } else {
+                    let measurements = draw_traceroute_table(pfx_event);
+                    draw_tr_sankey(pfx_event);
+                    // draw_traceroute_vis(measurements);
+                }
             }
         });
     });
 }
 
 function draw_sankeys(pfx_event){
-    draw_monitor_sankey(pfx_event);
-    draw_tr_sankey(pfx_event);
 }
 colors = [
 "#63b598", "#ce7d78", "#ea9e70", "#a48a9e", "#c6e1e8", "#648177" ,"#0d5ac1" ,
@@ -239,8 +242,9 @@ function draw_monitor_sankey(pfx_event) {
     } else if ("super_aspaths" in pfx_event) {
         path_data = extract_sankey_data(pfx_event["super_aspaths"], true)
     } else {
-        // alert("no paths data available")
+        console.log("no paths data available")
     }
+    console.log(path_data)
 
     function drawChart() {
         var data = new google.visualization.DataTable();
