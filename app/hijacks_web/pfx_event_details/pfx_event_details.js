@@ -195,14 +195,14 @@ function draw_traceroute_table(pfx_event) {
 function extract_sankey_data(path_lst, space_separated = true) {
     path_count_dict = {};
 
-    path_lst.forEach(function (path) {
-        let asns = [];
-        if (space_separated) {
-            path = path.trim().replace(/ {2}/g, ' ');
-            asns = path.split(" ");
-        } else {
-            asns = path.split(";");
-        }
+    path_lst.forEach(function (asns) {
+        // let asns = [];
+        // if (space_separated) {
+        //     path = path.trim().replace(/ {2}/g, ' ');
+        //     asns = path.split(" ");
+        // } else {
+        //     asns = path.split(";");
+        // }
         if (asns.length > 1) {
             for (let i = 0; i < asns.length - 1; i++) {
                 if (asns[i] === asns[i + 1]) {
