@@ -26,7 +26,7 @@ LOAD HTML PAGES
 /// load index page
 #[get("/")]
 pub fn page_index() -> Redirect {
-    Redirect::to("/events/moas")
+    Redirect::to("/events_suspicious/all")
 }
 
 /// load events list page
