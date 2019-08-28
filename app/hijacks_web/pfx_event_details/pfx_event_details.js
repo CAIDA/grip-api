@@ -210,7 +210,7 @@ function extract_sankey_data(path_lst, space_separated = true) {
                 }
                 let segment = `${asns[i]},${asns[i + 1]}`;
                 if (asns[i] === " " || asns[i + 1] === " ") {
-                    alert(`${path} => ${asns} => ${i}: "${asns[i]}" "${asns[i + 1]}"`)
+                    console.log(`mal-formated paths data: ${asns} => ${i}: "${asns[i]}" "${asns[i + 1]}"`)
                 }
                 if (!(segment in path_count_dict)) {
                     path_count_dict[segment] = 0
@@ -268,9 +268,12 @@ function draw_tr_sankey(pfx_event) {
     traceroutes.forEach(function (traceroute) {
         if ("results" in traceroute) {
             traceroute["results"].forEach(function (result) {
-                as_routes.push(
-                    result["as_traceroute"].filter(asn => asn !== "*").join(";")
-                );
+                tr_path = result["as_traceroute"].filter(asn => asn !== "*");
+                if (tr_path.length===0){
+                    console.log(`error tr path: '${tr_path}'`);
+                } else {
+                    as_routes.push(tr_path);
+                }
             });
         }
     });
