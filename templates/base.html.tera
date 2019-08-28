@@ -49,7 +49,7 @@
                                         <a><i class="fa fa-times"></i> Suspicious <span class="fa fa-chevron-down"></span></a>
                                         <ul class="nav child_menu">
                                             <li><a href="/events_suspicious/all">ALL</a></li>
-                                            <li class="active"><a>ORIGIN HIJACKS<span class="fa fa-chevron-down"></span></a>
+                                            <li><a>ORIGIN HIJACKS<span class="fa fa-chevron-down"></span></a>
                                                 <ul class="nav child_menu" style="display: block;">
                                                     <li><a href="/events_suspicious/moas">MOAS</a></li>
                                                     <li><a href="/events_suspicious/submoas">SUBMOAS</a></li>
@@ -62,7 +62,7 @@
                                     <li><a><i class="fa fa-question"></i> Less Suspicious <span class="fa fa-chevron-down"></span></a>
                                         <ul class="nav child_menu">
                                             <li><a href="/events_grey/all">ALL</a></li>
-                                            <li class="active"><a>ORIGIN HIJACKS<span class="fa fa-chevron-down"></span></a>
+                                            <li><a>ORIGIN HIJACKS<span class="fa fa-chevron-down"></span></a>
                                                 <ul class="nav child_menu" style="display: block;">
                                                     <li><a href="/events_grey/moas">MOAS</a></li>
                                                     <li><a href="/events_grey/submoas">SUBMOAS</a></li>
