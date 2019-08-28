@@ -61,6 +61,9 @@ function load_events_table(only_benign=false) {
         if(nature === "suspicious") {
             $("#stats-frame").html(`<iframe src="//ioda.caida.org/public/hijacks-trworthy-${frame_type}" width="100%" height="500" frameborder="0"></iframe>`);
             url += "&min_susp=80";
+            if(num_plot_elem != null){
+                num_plot_elem.style.display = "none";
+            }
         } else if(nature === "benign"){
             url += "&max_susp=20";
             if(num_plot_elem != null){
