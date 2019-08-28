@@ -286,7 +286,8 @@ function render_prefix_link(prefix) {
     // load_ripe_data(prefix, prefix_class);
     load_who_is(prefix);
     // return `<a class="btn btn-default pfx-btn-${prefix_class}" target="_blank" href='//stat.ripe.net/${prefix}#tabId=at-a-glance')> ${prefix}</a>`
-    return `<a class="link pfx-btn-${prefix_class}" target="_blank" href='//stat.ripe.net/${prefix}#tabId=at-a-glance')> ${prefix}</a>`
+    // return `<a class="link pfx-btn-${prefix_class}" target="_blank" href='//stat.ripe.net/${prefix}#tabId=at-a-glance')> ${prefix}</a>`
+    return `<a class="link pfx-btn-${prefix_class}" target="_blank" href='//stat.ripe.net/widget/routing-history#w.resource=${prefix}')> ${prefix}</a>`
 }
 
 function render_traceroutes_link(data) {
