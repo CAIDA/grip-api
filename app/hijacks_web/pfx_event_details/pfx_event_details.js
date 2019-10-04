@@ -239,12 +239,12 @@ function draw_monitor_sankey(pfx_event) {
     let path_data = [];
     if ("aspaths" in pfx_event) {
         path_data = extract_sankey_data(pfx_event["aspaths"], true)
-    } else if ("super_aspaths" in pfx_event) {
-        path_data = extract_sankey_data(pfx_event["super_aspaths"], true)
+    } else if ("sub_aspaths" in pfx_event) {
+        path_data = extract_sankey_data(pfx_event["sub_aspaths"], true)
     } else {
         console.log("no paths data available")
     }
-    console.log(path_data)
+    console.log(path_data);
 
     function drawChart() {
         var data = new google.visualization.DataTable();
