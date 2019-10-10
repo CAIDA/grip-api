@@ -14,7 +14,7 @@ JSON QUERY APIS
 
 #[get("/json/tags")]
 pub fn json_get_tags() -> Json<Value> {
-    let tags: Value = reqwest::get(format!("http://10.250.203.3:5000/tags/moas").as_str())
+    let tags: Value = reqwest::get(format!("http://10.250.203.3:5000/tags").as_str())
         .unwrap()
         .json()
         .unwrap();
