@@ -37,7 +37,7 @@ impl ElasticSearchBackend {
         let datetime = DateTime::<Utc>::from(d);
 
         let query = format!(
-            "http://clayface.caida.org:9200/bgphijacks-{}-{}-{:02}-{:02}/event_result/{}",
+            "http://clayface.caida.org:9200/observatory-{}-{}-{:02}-{:02}/event_result/{}",
             event_type,
             datetime.year(),
             datetime.month(),
@@ -197,7 +197,7 @@ impl ElasticSearchBackend {
         let res = self
             .es_client
             .search::<Value>()
-            .index(format!("bgphijacks-{}-*", etype))
+            .index(format!("observatory-{}-*", etype))
             .body(query)
             .send()?;
 
