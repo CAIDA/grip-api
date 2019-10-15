@@ -4,15 +4,15 @@ use std::error::Error;
 use std::time::{Duration, UNIX_EPOCH};
 
 use elastic::prelude::*;
+use lazy_static::lazy_static;
 use serde_json::json;
 use serde_json::Value;
-use lazy_static::lazy_static;
 
 use crate::backend::errors::MyError;
 use regex::Regex;
 
 lazy_static! {
-    static ref OLD_FORMAT:Regex = Regex::new(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$").unwrap();
+    static ref OLD_FORMAT: Regex = Regex::new(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$").unwrap();
 }
 
 pub struct ElasticSearchBackend {
@@ -29,8 +29,8 @@ fn convert_time_str(ts_str: &String) -> String {
         true => {
             let ts_vec = ts_str.split("T").collect::<Vec<&str>>();
             format!("{} {}:00", ts_vec[0], ts_vec[1])
-        },
-        false => ts_str.to_owned()
+        }
+        false => ts_str.to_owned(),
     }
 }
 
@@ -71,8 +71,6 @@ impl ElasticSearchBackend {
             Err(Box::new(MyError("Oops".into())))
         }
     }
-
-
 
     pub fn list_events(
         &self,
@@ -121,36 +119,38 @@ impl ElasticSearchBackend {
 
         let mut suspicion_filter = json!({"inference.suspicion.suspicion_level": {}});
         if let Some(max) = max_susp {
-            suspicion_filter["inference.suspicion.suspicion_level"]["lte"] = json!(max.to_owned() as i32);
+            suspicion_filter["inference.suspicion.suspicion_level"]["lte"] =
+                json!(max.to_owned() as i32);
         }
         if let Some(min) = min_susp {
-            suspicion_filter["inference.suspicion.suspicion_level"]["gte"] = json!(min.to_owned() as i32);
+            suspicion_filter["inference.suspicion.suspicion_level"]["gte"] =
+                json!(min.to_owned() as i32);
         }
-        must_terms.push(json!({"range": suspicion_filter} ));
+        must_terms.push(json!({ "range": suspicion_filter }));
 
         if let Some(mis) = misconf {
             must_terms.push(json!({"term": {"inference.misconfiguration": mis}}));
             must_not_terms.push(json!({"match":{"tags":"newcomer-is-sibling"}}));
             must_not_terms.push(json!({"match":{"tags":"newcomer-is-friend"}}));
             let mut mistype = "all";
-            if let Some(t) = misconf_type{
+            if let Some(t) = misconf_type {
                 mistype = t.as_str();
             }
             match mistype {
-                "all" => {},
+                "all" => {}
                 "asn_prepend" => {
                     must_terms.push(json!({"term":{"tags":"newcomer-small-asn"}}));
                     must_terms.push(json!({"term":{"tags":"all-newcomers-next-to-an-oldcomer"}}));
-                },
+                }
                 "fatfinger_prefix" => {
                     must_terms.push(json!({"term":{"tags":"prefix-small-edit-distance"}}));
-                },
+                }
                 "fatfinger_asn" => {
                     must_terms.push(json!({"term":{"tags":"origin-small-edit-distance"}}));
-                },
+                }
                 "reserved_space" => {
                     must_terms.push(json!({"term":{"tags":"reserved-space"}}));
-                },
+                }
                 _ => {}
             }
         }
