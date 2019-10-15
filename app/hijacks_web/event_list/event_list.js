@@ -153,6 +153,7 @@ function load_events_table(only_benign=false) {
                     {
                         "width": "8em",
                         "render": function (data, type, row) {
+                            console.log(row);
                             return extract_largest_prefix(data)
                         },
                         "targets": [2]
@@ -168,7 +169,9 @@ function load_events_table(only_benign=false) {
                     {
                         "width": "10em",
                         "render": function (data, type, row) {
-                            return data.split("T").join("  ")
+                            let d = new Date(data*1000);
+                            let time_str = `${d.getUTCFullYear()}-${d.getUTCMonth()}-${d.getUTCDate()} ${d.getUTCHours()}:${d.getUTCMinutes()}`;
+                            return time_str
                         },
                         "targets": [4]
                     },

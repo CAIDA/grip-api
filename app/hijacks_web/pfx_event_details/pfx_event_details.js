@@ -27,7 +27,6 @@ function load_pfx_event() {
             url: `/json/pfx_event/id/${event_id}/${pfx_fingerprint}`,
             success: function (pfx_event) {
                 draw_pfx_event_table(pfx_event, event_id, pfx_fingerprint);
-                console.log(pfx_event["prefix"]);
                 draw_monitor_sankey(pfx_event);
                 if(pfx_event["traceroutes"].length === 0){
                     $("#tr_block").css("display", "none")
@@ -161,7 +160,7 @@ function draw_pfx_event_table(pfx_event, event_id, fingerprint){
 function draw_traceroute_table(pfx_event) {
     let measurements = [];
     $('#traceroutes_table').DataTable({
-        data: pfx_event["traceroutes"],
+        data: pfx_event["traceroutes"]["msms"],
         columns: [
             {title: "Measurement ID", data: "msm_id"},
             {title: "Target ASN", data: "target_asn"},
@@ -195,17 +194,18 @@ function draw_traceroute_table(pfx_event) {
     return measurements
 }
 
+function path_str_to_lists(aspaths_str){
+    let res_lst = [];
+    aspaths_str.split(":").forEach(function (asns_str){
+        res_lst.push(asns_str.split(" "))
+    });
+    return res_lst
+}
+
 function extract_sankey_data(path_lst, space_separated = true) {
-    path_count_dict = {};
+    let path_count_dict = {};
 
     path_lst.forEach(function (asns) {
-        // let asns = [];
-        // if (space_separated) {
-        //     path = path.trim().replace(/ {2}/g, ' ');
-        //     asns = path.split(" ");
-        // } else {
-        //     asns = path.split(";");
-        // }
         if (asns.length > 1) {
             for (let i = 0; i < asns.length - 1; i++) {
                 if (asns[i] === asns[i + 1]) {
@@ -237,14 +237,13 @@ function draw_monitor_sankey(pfx_event) {
     google.charts.setOnLoadCallback(drawChart);
 
     let path_data = [];
-    if ("aspaths" in pfx_event) {
-        path_data = extract_sankey_data(pfx_event["aspaths"], true)
-    } else if ("sub_aspaths" in pfx_event) {
-        path_data = extract_sankey_data(pfx_event["sub_aspaths"], true)
+    if ("aspaths" in pfx_event["details"]) {
+        path_data = extract_sankey_data(path_str_to_lists(pfx_event["details"]["aspaths"]), true)
+    } else if ("sub_aspaths" in pfx_event["details"]) {
+        path_data = extract_sankey_data(path_str_to_lists(pfx_event["details"]["sub_aspaths"]), true)
     } else {
         console.log("no paths data available")
     }
-    console.log(path_data);
 
     function drawChart() {
         var data = new google.visualization.DataTable();
@@ -267,16 +266,19 @@ function draw_monitor_sankey(pfx_event) {
 
 function draw_tr_sankey(pfx_event) {
 
-    let traceroutes = pfx_event["traceroutes"];
+    let traceroutes = pfx_event["traceroutes"]["msms"];
     let as_routes = [];
     traceroutes.forEach(function (traceroute) {
         if ("results" in traceroute) {
             traceroute["results"].forEach(function (result) {
-                tr_path = result["as_traceroute"].filter(asn => asn !== "*");
-                if (tr_path.length===0){
-                    console.log(`error tr path: '${tr_path}'`);
-                } else {
-                    as_routes.push(tr_path);
+                let as_traceroute = result["as_traceroute"];
+                if(as_traceroute.length!==0){
+                    let tr_path = result["as_traceroute"].filter(asn => asn !== "*");
+                    if (tr_path.length===0){
+                        console.log(`error as tr path: '${tr_path}', from ${result["as_traceroute"]}`);
+                    } else {
+                        as_routes.push(tr_path);
+                    }
                 }
             });
         }

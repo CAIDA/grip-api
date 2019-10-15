@@ -2,14 +2,17 @@
     Utilities
 */
 
-use serde_json::Value;
 use regex::Regex;
+use serde_json::Value;
 
 /// Find one specific prefix event from all prefix events in a event
-pub fn filter_pfx_events_by_fingerprint<'a>(fingerprint: &str, event: &'a Value) -> Option<&'a Value> {
+pub fn filter_pfx_events_by_fingerprint<'a>(
+    fingerprint: &str,
+    event: &'a Value,
+) -> Option<&'a Value> {
     let event_type = match event["event_type"].as_str() {
         Some(t) => t,
-        None => return None
+        None => return None,
     };
 
     let re = Regex::new(r"-").unwrap();
@@ -22,7 +25,7 @@ pub fn filter_pfx_events_by_fingerprint<'a>(fingerprint: &str, event: &'a Value)
 
     let pfx_events: &Vec<Value> = match event["pfx_events"].as_array() {
         Some(events) => events,
-        None => return None
+        None => return None,
     };
 
     match event_type {
@@ -33,9 +36,13 @@ pub fn filter_pfx_events_by_fingerprint<'a>(fingerprint: &str, event: &'a Value)
             }
 
             for pfx_event in pfx_events {
-                match pfx_event["prefix"].as_str() {
-                    Some(pfx) => if pfx == prefixes[0] { return Some(&pfx_event); }
-                    None => continue
+                match pfx_event["details"]["prefix"].as_str() {
+                    Some(pfx) => {
+                        if pfx == prefixes[0] {
+                            return Some(&pfx_event);
+                        }
+                    }
+                    None => continue,
                 }
             }
             return None;
@@ -47,13 +54,13 @@ pub fn filter_pfx_events_by_fingerprint<'a>(fingerprint: &str, event: &'a Value)
             }
 
             for pfx_event in pfx_events {
-                let sub_pfx = match pfx_event["sub_pfx"].as_str() {
+                let sub_pfx = match pfx_event["details"]["sub_pfx"].as_str() {
                     Some(pfx) => pfx,
-                    None => continue
+                    None => continue,
                 };
-                let super_pfx = match pfx_event["super_pfx"].as_str() {
+                let super_pfx = match pfx_event["details"]["super_pfx"].as_str() {
                     Some(pfx) => pfx,
-                    None => continue
+                    None => continue,
                 };
 
                 if sub_pfx == prefixes[0] && super_pfx == prefixes[1] {
@@ -63,6 +70,6 @@ pub fn filter_pfx_events_by_fingerprint<'a>(fingerprint: &str, event: &'a Value)
             }
             return None;
         }
-        _ => return None
+        _ => return None,
     }
 }
