@@ -101,8 +101,18 @@ pub fn json_list_events(
     let backend = ElasticSearchBackend::new(&base_url.es_url).unwrap();
     let query_result = backend
         .list_events(
-            event_type, &start, &length, &asn, &prefix, &ts_start, &ts_end,  &tags,
-            &min_susp, &max_susp, &misconf, &misconf_type
+            event_type,
+            &start,
+            &length,
+            &asn,
+            &prefix,
+            &ts_start,
+            &ts_end,
+            &tags,
+            &min_susp,
+            &max_susp,
+            &misconf,
+            &misconf_type,
         )
         .unwrap();
     let res_data: Vec<Value> = query_result
@@ -122,4 +132,3 @@ pub fn json_list_events(
     // println!("{}", serde_json::to_string_pretty(&object).unwrap());
     Json(object.to_owned())
 }
-

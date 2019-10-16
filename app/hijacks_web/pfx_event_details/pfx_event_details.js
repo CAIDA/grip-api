@@ -14,7 +14,6 @@ function load_pfx_event() {
         let event_id = path_segments[path_segments.length - 2];
         let pfx_fingerprint = path_segments[path_segments.length - 1];
 
-        // TODO: the following page loads duplicate information from backend, should update later to reduce overhead
         $.ajax({
             url: "/json/event/id/" + event_id,
             success: function (event) {
@@ -26,6 +25,7 @@ function load_pfx_event() {
         $.ajax({
             url: `/json/pfx_event/id/${event_id}/${pfx_fingerprint}`,
             success: function (pfx_event) {
+                pfx_event = convert_pfx_event(pfx_event);
                 draw_pfx_event_table(pfx_event, event_id, pfx_fingerprint);
                 draw_monitor_sankey(pfx_event);
                 if(pfx_event["traceroutes"].length === 0){
@@ -38,6 +38,17 @@ function load_pfx_event() {
             }
         });
     });
+}
+
+function convert_pfx_event(pfx_event){
+    pfx_event["prefix"] = pfx_event["details"]["prefix"];
+    pfx_event["sub_pfx"] = pfx_event["details"]["sub_pfx"];
+    pfx_event["super_pfx"] = pfx_event["details"]["super_pfx"];
+
+    pfx_event["tr_worthy"] = pfx_event["traceroutes"]["worthy"];
+    pfx_event["traceroutes"] = pfx_event["traceroutes"]["msms"];
+
+    return pfx_event
 }
 
 function draw_sankeys(pfx_event){
@@ -107,7 +118,6 @@ function draw_traceroute_vis(measurements) {
     measurements.forEach(function(measurement){
         measurement["results"].forEach(function(result){
             let nodes = []
-            console.log(result["hops"])
             for(let key in result["hops"]){
                 hop = result["hops"][key]
                 if("lat" in hop && hop["lat"]!==0){
@@ -141,7 +151,8 @@ function draw_traceroute_vis(measurements) {
 }
 
 function draw_pfx_event_table(pfx_event, event_id, fingerprint){
-    render_pfx_event_table(get_event_type_from_url(), [pfx_event], false, "", event_id, "#pfx_event_table", false)
+
+    render_pfx_event_table(get_event_type_from_url(), [pfx_event], false, "", event_id, "#pfx_event_table", false);
 
     prefix_modal_info["download_path"] = event_id + "-" + fingerprint + ".json";
     prefix_modal_info["json_raw_str"] = JSON.stringify(pfx_event, undefined, 4);
@@ -160,7 +171,7 @@ function draw_pfx_event_table(pfx_event, event_id, fingerprint){
 function draw_traceroute_table(pfx_event) {
     let measurements = [];
     $('#traceroutes_table').DataTable({
-        data: pfx_event["traceroutes"]["msms"],
+        data: pfx_event["traceroutes"],
         columns: [
             {title: "Measurement ID", data: "msm_id"},
             {title: "Target ASN", data: "target_asn"},
@@ -266,7 +277,7 @@ function draw_monitor_sankey(pfx_event) {
 
 function draw_tr_sankey(pfx_event) {
 
-    let traceroutes = pfx_event["traceroutes"]["msms"];
+    let traceroutes = pfx_event["traceroutes"];
     let as_routes = [];
     traceroutes.forEach(function (traceroute) {
         if ("results" in traceroute) {
