@@ -14,7 +14,6 @@ function load_pfx_event() {
         let event_id = path_segments[path_segments.length - 2];
         let pfx_fingerprint = path_segments[path_segments.length - 1];
 
-        // TODO: the following page loads duplicate information from backend, should update later to reduce overhead
         $.ajax({
             url: "/json/event/id/" + event_id,
             success: function (event) {
@@ -26,8 +25,8 @@ function load_pfx_event() {
         $.ajax({
             url: `/json/pfx_event/id/${event_id}/${pfx_fingerprint}`,
             success: function (pfx_event) {
+                pfx_event = convert_pfx_event(pfx_event);
                 draw_pfx_event_table(pfx_event, event_id, pfx_fingerprint);
-                console.log(pfx_event["prefix"]);
                 draw_monitor_sankey(pfx_event);
                 if(pfx_event["traceroutes"].length === 0){
                     $("#tr_block").css("display", "none")
@@ -39,6 +38,17 @@ function load_pfx_event() {
             }
         });
     });
+}
+
+function convert_pfx_event(pfx_event){
+    pfx_event["prefix"] = pfx_event["details"]["prefix"];
+    pfx_event["sub_pfx"] = pfx_event["details"]["sub_pfx"];
+    pfx_event["super_pfx"] = pfx_event["details"]["super_pfx"];
+
+    pfx_event["tr_worthy"] = pfx_event["traceroutes"]["worthy"];
+    pfx_event["traceroutes"] = pfx_event["traceroutes"]["msms"];
+
+    return pfx_event
 }
 
 function draw_sankeys(pfx_event){
@@ -108,7 +118,6 @@ function draw_traceroute_vis(measurements) {
     measurements.forEach(function(measurement){
         measurement["results"].forEach(function(result){
             let nodes = []
-            console.log(result["hops"])
             for(let key in result["hops"]){
                 hop = result["hops"][key]
                 if("lat" in hop && hop["lat"]!==0){
@@ -142,7 +151,8 @@ function draw_traceroute_vis(measurements) {
 }
 
 function draw_pfx_event_table(pfx_event, event_id, fingerprint){
-    render_pfx_event_table(get_event_type_from_url(), [pfx_event], false, "", event_id, "#pfx_event_table", false)
+
+    render_pfx_event_table(get_event_type_from_url(), [pfx_event], false, "", event_id, "#pfx_event_table", false);
 
     prefix_modal_info["download_path"] = event_id + "-" + fingerprint + ".json";
     prefix_modal_info["json_raw_str"] = JSON.stringify(pfx_event, undefined, 4);
@@ -195,17 +205,18 @@ function draw_traceroute_table(pfx_event) {
     return measurements
 }
 
+function path_str_to_lists(aspaths_str){
+    let res_lst = [];
+    aspaths_str.split(":").forEach(function (asns_str){
+        res_lst.push(asns_str.split(" "))
+    });
+    return res_lst
+}
+
 function extract_sankey_data(path_lst, space_separated = true) {
-    path_count_dict = {};
+    let path_count_dict = {};
 
     path_lst.forEach(function (asns) {
-        // let asns = [];
-        // if (space_separated) {
-        //     path = path.trim().replace(/ {2}/g, ' ');
-        //     asns = path.split(" ");
-        // } else {
-        //     asns = path.split(";");
-        // }
         if (asns.length > 1) {
             for (let i = 0; i < asns.length - 1; i++) {
                 if (asns[i] === asns[i + 1]) {
@@ -237,14 +248,13 @@ function draw_monitor_sankey(pfx_event) {
     google.charts.setOnLoadCallback(drawChart);
 
     let path_data = [];
-    if ("aspaths" in pfx_event) {
-        path_data = extract_sankey_data(pfx_event["aspaths"], true)
-    } else if ("sub_aspaths" in pfx_event) {
-        path_data = extract_sankey_data(pfx_event["sub_aspaths"], true)
+    if ("aspaths" in pfx_event["details"]) {
+        path_data = extract_sankey_data(path_str_to_lists(pfx_event["details"]["aspaths"]), true)
+    } else if ("sub_aspaths" in pfx_event["details"]) {
+        path_data = extract_sankey_data(path_str_to_lists(pfx_event["details"]["sub_aspaths"]), true)
     } else {
         console.log("no paths data available")
     }
-    console.log(path_data);
 
     function drawChart() {
         var data = new google.visualization.DataTable();
@@ -272,11 +282,14 @@ function draw_tr_sankey(pfx_event) {
     traceroutes.forEach(function (traceroute) {
         if ("results" in traceroute) {
             traceroute["results"].forEach(function (result) {
-                tr_path = result["as_traceroute"].filter(asn => asn !== "*");
-                if (tr_path.length===0){
-                    console.log(`error tr path: '${tr_path}'`);
-                } else {
-                    as_routes.push(tr_path);
+                let as_traceroute = result["as_traceroute"];
+                if(as_traceroute.length!==0){
+                    let tr_path = result["as_traceroute"].filter(asn => asn !== "*");
+                    if (tr_path.length===0){
+                        console.log(`error as tr path: '${tr_path}', from ${result["as_traceroute"]}`);
+                    } else {
+                        as_routes.push(tr_path);
+                    }
                 }
             });
         }

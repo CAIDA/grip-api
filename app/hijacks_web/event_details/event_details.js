@@ -117,6 +117,9 @@ function render_pfx_event_table(event_type, pfx_events, tr_skipped = false, tr_s
 function render_tr_availability(tr_results, pfx_event){
     if(tr_results.length > 0){
         let earliest_time = 0;
+        if(tr_results[0]['results'].length===0 || !("results" in tr_results[0])){
+            return "<div class='no_tr'>no</div>"
+        }
         for(let tr of tr_results[0]['results']){
             if(earliest_time ===0){
                 earliest_time = tr['endtime'];

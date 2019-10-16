@@ -4,10 +4,16 @@ use std::error::Error;
 use std::time::{Duration, UNIX_EPOCH};
 
 use elastic::prelude::*;
+use lazy_static::lazy_static;
 use serde_json::json;
 use serde_json::Value;
 
 use crate::backend::errors::MyError;
+use regex::Regex;
+
+lazy_static! {
+    static ref OLD_FORMAT: Regex = Regex::new(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$").unwrap();
+}
 
 pub struct ElasticSearchBackend {
     es_client: SyncClient,
@@ -16,6 +22,16 @@ pub struct ElasticSearchBackend {
 pub struct SearchResult {
     pub results: Vec<Value>,
     pub total: u64,
+}
+
+fn convert_time_str(ts_str: &String) -> String {
+    match OLD_FORMAT.is_match(ts_str) {
+        true => {
+            let ts_vec = ts_str.split("T").collect::<Vec<&str>>();
+            format!("{} {}:00", ts_vec[0], ts_vec[1])
+        }
+        false => ts_str.to_owned(),
+    }
 }
 
 impl ElasticSearchBackend {
@@ -37,7 +53,7 @@ impl ElasticSearchBackend {
         let datetime = DateTime::<Utc>::from(d);
 
         let query = format!(
-            "http://clayface.caida.org:9200/bgphijacks-{}-{}-{:02}-{:02}/event_result/{}",
+            "http://clayface.caida.org:9200/observatory-{}-{}-{:02}-{:02}/event_result/{}",
             event_type,
             datetime.year(),
             datetime.month(),
@@ -85,10 +101,10 @@ impl ElasticSearchBackend {
 
         let mut range_filter = json!({"view_ts":{}});
         if let Some(start_str) = ts_start {
-            range_filter["view_ts"]["gte"] = json!(start_str);
+            range_filter["view_ts"]["gte"] = json!(convert_time_str(start_str));
         }
         if let Some(end_str) = ts_end {
-            range_filter["view_ts"]["lte"] = json!(end_str);
+            range_filter["view_ts"]["lte"] = json!(convert_time_str(end_str));
         }
 
         let max_entries = match max {
@@ -103,36 +119,38 @@ impl ElasticSearchBackend {
 
         let mut suspicion_filter = json!({"inference.suspicion.suspicion_level": {}});
         if let Some(max) = max_susp {
-            suspicion_filter["inference.suspicion.suspicion_level"]["lte"] = json!(max.to_owned() as i32);
+            suspicion_filter["inference.suspicion.suspicion_level"]["lte"] =
+                json!(max.to_owned() as i32);
         }
         if let Some(min) = min_susp {
-            suspicion_filter["inference.suspicion.suspicion_level"]["gte"] = json!(min.to_owned() as i32);
+            suspicion_filter["inference.suspicion.suspicion_level"]["gte"] =
+                json!(min.to_owned() as i32);
         }
-        must_terms.push(json!({"range": suspicion_filter} ));
+        must_terms.push(json!({ "range": suspicion_filter }));
 
         if let Some(mis) = misconf {
             must_terms.push(json!({"term": {"inference.misconfiguration": mis}}));
             must_not_terms.push(json!({"match":{"tags":"newcomer-is-sibling"}}));
             must_not_terms.push(json!({"match":{"tags":"newcomer-is-friend"}}));
             let mut mistype = "all";
-            if let Some(t) = misconf_type{
+            if let Some(t) = misconf_type {
                 mistype = t.as_str();
             }
             match mistype {
-                "all" => {},
+                "all" => {}
                 "asn_prepend" => {
                     must_terms.push(json!({"term":{"tags":"newcomer-small-asn"}}));
                     must_terms.push(json!({"term":{"tags":"all-newcomers-next-to-an-oldcomer"}}));
-                },
+                }
                 "fatfinger_prefix" => {
                     must_terms.push(json!({"term":{"tags":"prefix-small-edit-distance"}}));
-                },
+                }
                 "fatfinger_asn" => {
                     must_terms.push(json!({"term":{"tags":"origin-small-edit-distance"}}));
-                },
+                }
                 "reserved_space" => {
                     must_terms.push(json!({"term":{"tags":"reserved-space"}}));
-                },
+                }
                 _ => {}
             }
         }
@@ -197,7 +215,7 @@ impl ElasticSearchBackend {
         let res = self
             .es_client
             .search::<Value>()
-            .index(format!("bgphijacks-{}-*", etype))
+            .index(format!("observatory-{}-*", etype))
             .body(query)
             .send()?;
 
