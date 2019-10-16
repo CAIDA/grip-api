@@ -110,7 +110,7 @@ function load_events_table(only_benign=false) {
                     {title: "Largest Prefix", "data": 'prefixes'},
                     {title: "# Prefix Events", "data": 'prefixes'},
                     {title: "Start Time", "data": 'view_ts'},
-                    {title: "Duration", "data": 'duration'},
+                    {title: "Duration", "data": 'finished_ts'},
                     {title: "Type", "data": 'event_type'},
                 ],
                 "columnDefs": [
@@ -153,7 +153,6 @@ function load_events_table(only_benign=false) {
                     {
                         "width": "8em",
                         "render": function (data, type, row) {
-                            console.log(row);
                             return extract_largest_prefix(data)
                         },
                         "targets": [2]
@@ -169,9 +168,7 @@ function load_events_table(only_benign=false) {
                     {
                         "width": "10em",
                         "render": function (data, type, row) {
-                            let d = new Date(data*1000);
-                            let time_str = `${d.getUTCFullYear()}-${d.getUTCMonth()}-${d.getUTCDate()} ${d.getUTCHours()}:${d.getUTCMinutes()}`;
-                            return time_str
+                            return unix_time_to_str(data)
                         },
                         "targets": [4]
                     },
@@ -181,12 +178,10 @@ function load_events_table(only_benign=false) {
                             if (data === null) {
                                 return "ongoing"
                             } else {
-                                // let start_ts = Date.parse(row["view_ts"]);
-                                // let end_ts = Date.parse(data);
-                                // let duration = (end_ts-start_ts)/1000/60;
-                                let duration = data/60;
+                                let duration = (row["finished_ts"] - row["view_ts"])/60;
                                 if(duration < 0 ){
-                                    // FIXME: figure out why duration would be below 0
+                                    console.log("negative duration for event");
+                                    console.log(row);
                                     duration = 0;
                                 }
                                 return `${duration} min`

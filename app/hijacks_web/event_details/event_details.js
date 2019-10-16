@@ -26,6 +26,7 @@ function load_event_details() {
             url: "/json/event/id/" + event_id,
             success: function (event) {
                 // console.log(event);
+                console.log(event);
                 render_event_details_table(event_type, event);
                 render_pfx_event_table(event_type, event['pfx_events'], event['tr_metrics']['tr_skipped'], event['tr_metrics']['tr_skip_reason']);
             }
@@ -117,7 +118,7 @@ function render_pfx_event_table(event_type, pfx_events, tr_skipped = false, tr_s
 function render_tr_availability(tr_results, pfx_event){
     if(tr_results.length > 0){
         let earliest_time = 0;
-        if(tr_results[0]['results'].length===0 || !("results" in tr_results[0])){
+        if(isEmpty(tr_results[0].results)){
             return "<div class='no_tr'>no</div>"
         }
         for(let tr of tr_results[0]['results']){
@@ -181,15 +182,15 @@ function render_event_details_table(event_type, event) {
     );
     let [num_pfx, num_addrs] = extract_impact(event["prefixes"]);
     $("#event-details-impact").text(render_impact(num_pfx, num_addrs));
-    $("#event-details-startts").text(event["view_ts"]);
+    $("#event-details-startts").text(unix_time_to_str(event["view_ts"]));
     $("#event-details-type").text(event_type_explain[event_type]);
 
-    if (event["duration"] === null) {
+    if (event["finished_ts"] === null) {
         $("#event-details-duration").text("ongoing");
         $("#event-details-endts").text("Unknown");
     } else {
-        $("#event-details-duration").text(`${(event["duration"]) / 60} min`);
-        $("#event-details-endts").text(event["finished_ts"]);
+        $("#event-details-duration").text(`${(event["finished_ts"] - event["view_ts"]) / 60} min`);
+        $("#event-details-endts").text(unix_time_to_str(event["finished_ts"]));
     }
 
     let comment_html = "";
