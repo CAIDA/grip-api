@@ -133,7 +133,7 @@ function render_tr_availability(tr_results, pfx_event){
         let res = "yes";
         let tr_time = (new Date(earliest_time*1000));
         if('finished_ts' in pfx_event && pfx_event['finished_ts'] !== null){
-            let finish_time = Date.parse(pfx_event['finished_ts']);
+            let finish_time = new Date(pfx_event['finished_ts']*1000);
             if(finish_time < tr_time){
                 let diff_minutes = Math.floor((tr_time - finish_time)/1000/60);
                 let explain = `traceroute performed ${diff_minutes} minutes after the event finished`;
