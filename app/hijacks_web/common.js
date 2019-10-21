@@ -5,7 +5,7 @@ function zeroPad(num, places) {
 function unix_time_to_str(unix_time){
     let d = new Date(unix_time*1000);
     let year = d.getUTCFullYear();
-    let month = zeroPad(d.getUTCMonth(), 2);
+    let month = zeroPad(d.getUTCMonth()+1, 2);
     let day = zeroPad(d.getUTCDate(), 2);
     let hour = zeroPad(d.getUTCHours(), 2);
     let minute = zeroPad(d.getUTCMinutes(), 2);
