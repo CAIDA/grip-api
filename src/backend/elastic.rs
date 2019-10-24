@@ -63,8 +63,10 @@ impl ElasticSearchBackend {
 
         let doc: Value = reqwest::get(query.as_str()).unwrap().json().unwrap();
         if doc["found"] == true {
+            let mut document = doc["_source"].clone();
+            document["url"] = Value::String(query);
             return Ok(SearchResult {
-                results: vec![doc["_source"].clone()],
+                results: vec![document],
                 total: 1,
             });
         } else {
@@ -115,7 +117,7 @@ impl ElasticSearchBackend {
         // match must terms
         let mut must_terms = vec![];
         let mut must_not_terms = vec![];
-        must_not_terms.push(json!({ "match": { "position.keyword": "FINISHED" } }));
+        must_not_terms.push(json!({ "match": { "position": "FINISHED" } }));
 
         let mut suspicion_filter = json!({"inference.suspicion.suspicion_level": {}});
         if let Some(max) = max_susp {
@@ -156,27 +158,11 @@ impl ElasticSearchBackend {
         }
 
         match prefix {
-            Some(p) => {
-                // https://stackoverflow.com/questions/40573981/multiple-should-queries-with-must-query
-                let mut pfx_must = vec![];
-                pfx_must.push(json!({ "prefix": { "pfx_events.sub_pfx.keyword" : p }}));
-                pfx_must.push(json!({ "prefix": { "pfx_events.super_pfx.keyword" : p }}));
-                pfx_must.push(json!({ "prefix": { "pfx_events.prefix.keyword" : p }}));
-                must_terms.push(json!({"bool": {"minimum_should_match": 1, "should": pfx_must}}));
-            }
+            Some(p) => must_terms.push(json!({ "term":{ "summary.prefixes":p }})),
             _ => {}
         }
         match asn {
-            Some(value) => {
-                // https://stackoverflow.com/questions/40573981/multiple-should-queries-with-must-query
-                let mut asn_must = vec![];
-                asn_must.push(json!({ "match": { "pfx_events.origins" : value }}));
-                asn_must.push(json!({ "match": { "pfx_events.super_origins" : value }}));
-                asn_must.push(json!({ "match": { "pfx_events.sub_origins" : value }}));
-                asn_must.push(json!({ "match": { "pfx_events.as1.keyword" : value }}));
-                asn_must.push(json!({ "match": { "pfx_events.as2.keyword" : value }}));
-                must_terms.push(json!({"bool": {"minimum_should_match": 1, "should": asn_must}}));
-            }
+            Some(value) => must_terms.push(json!({ "term":{ "summary.ases":value }})),
             _ => {}
         }
         match tags {
