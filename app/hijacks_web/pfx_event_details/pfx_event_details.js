@@ -210,27 +210,74 @@ function path_str_to_lists(aspaths_str){
     aspaths_str.split(":").forEach(function (asns_str){
         res_lst.push(asns_str.split(" "))
     });
-    return res_lst
+
+    return clean_graph(res_lst);
+}
+
+/**
+ * clean graph data:
+ * - remove consecutive duplicate asns
+ * - detect, warn, and remove cycles from graph
+ *
+ * @param path_lst list of as paths
+ * @returns {[]} cleaned-up list of paths
+ */
+function clean_graph(path_lst){
+    let downstream = {};
+    let new_path_lst = [];
+    path_lst.forEach(function (asns) {
+        let newpath = [];
+        asns = asns.filter(item => item!==undefined);
+        for (let i = 0; i < asns.length - 1; i++) {
+            if (asns[i] === asns[i + 1]) {
+                continue
+            }
+            newpath.push(asns[i])
+        }
+        if(!(asns[asns.length-1] in newpath)){
+            newpath.push(asns[asns.length-1])
+        }
+
+        let has_cycle = false;
+        for (let i = 0; i < newpath.length - 1; i++) {
+            if(!(asns[i] in downstream)){
+                downstream[asns[i]] = new Set()
+            }
+            for (let j = i+1; j < newpath.length ; j++) {
+                if(asns[j] in downstream && downstream[asns[j]].has(asns[i])){
+                    console.log(`cycle found in ${newpath} ${asns[j]} ${asns[i]}`);
+                    has_cycle = true;
+                    break
+                }
+                downstream[asns[i]].add(asns[j])
+            }
+            if(has_cycle){
+                break
+            }
+            new_path_lst.push(newpath)
+        }
+    });
+
+    return new_path_lst;
 }
 
 function extract_sankey_data(path_lst, space_separated = true) {
     let path_count_dict = {};
-
     path_lst.forEach(function (asns) {
         if (asns.length > 1) {
-            for (let i = 0; i < asns.length - 1; i++) {
-                if (asns[i] === asns[i + 1]) {
-                    continue
+                for (let i = 0; i < asns.length - 1; i++) {
+                    if (asns[i] === asns[i + 1]) {
+                        continue
+                    }
+                    let segment = `${asns[i]},${asns[i + 1]}`;
+                    if (asns[i] === " " || asns[i + 1] === " ") {
+                        console.log(`mal-formated paths data: ${asns} => ${i}: "${asns[i]}" "${asns[i + 1]}"`)
+                    }
+                    if (!(segment in path_count_dict)) {
+                        path_count_dict[segment] = 0
+                    }
+                    path_count_dict[segment]++
                 }
-                let segment = `${asns[i]},${asns[i + 1]}`;
-                if (asns[i] === " " || asns[i + 1] === " ") {
-                    console.log(`mal-formated paths data: ${asns} => ${i}: "${asns[i]}" "${asns[i + 1]}"`)
-                }
-                if (!(segment in path_count_dict)) {
-                    path_count_dict[segment] = 0
-                }
-                path_count_dict[segment]++
-            }
         }
     });
 
