@@ -341,7 +341,7 @@ function draw_tr_sankey(pfx_event) {
             });
         }
     });
-
+    as_routes = clean_graph(as_routes);
     let path_data = extract_sankey_data(as_routes, false);
 
     if (path_data.length === 0) {
