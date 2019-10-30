@@ -153,14 +153,14 @@ function load_events_table(only_benign=false) {
                     {
                         "width": "8em",
                         "render": function (data, type, row) {
-                            return extract_largest_prefix(data)
+                            return extract_largest_prefix(row)
                         },
                         "targets": [2]
                     },
                     {
                         "width": "12em",
                         "render": function (data, type, row) {
-                            [num_pfx, num_addrs] = extract_impact(data);
+                            [num_pfx, num_addrs] = extract_impact(row);
                             return render_impact(num_pfx, num_addrs)
                         },
                         "targets": [3]

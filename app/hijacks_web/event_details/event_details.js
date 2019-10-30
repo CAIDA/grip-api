@@ -177,10 +177,10 @@ function render_event_details_table(event_type, event) {
     );
     $("#event-details-prefix").html(
         render_prefix_link(
-            extract_largest_prefix(event["prefixes"])
+            extract_largest_prefix(event)
         )
     );
-    let [num_pfx, num_addrs] = extract_impact(event["prefixes"]);
+    let [num_pfx, num_addrs] = extract_impact(event);
     $("#event-details-impact").text(render_impact(num_pfx, num_addrs));
     $("#event-details-startts").text(unix_time_to_str(event["view_ts"]));
     $("#event-details-type").text(event_type_explain[event_type]);

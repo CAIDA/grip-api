@@ -147,7 +147,21 @@ function isEmpty(obj) {
     return Object.keys(obj).length === 0;
 }
 
-function extract_largest_prefix(prefixes){
+function extract_prefixes(pfx_events){
+    let prefixes = [];
+    for(let pfx_event of pfx_events){
+        if("prefix" in pfx_event){
+            prefixes.push(pfx_event["prefix"])
+        }
+        if("sub_pfx" in pfx_event){
+            prefixes.push(pfx_event["sub_pfx"])
+        }
+    }
+    return prefixes
+}
+
+function extract_largest_prefix(event){
+    let prefixes = extract_prefixes(event["pfx_events"]);
     let largest_pfx_len = 1000;
     let largest_pfx = "";
     for(let p of prefixes){
@@ -160,7 +174,8 @@ function extract_largest_prefix(prefixes){
     return largest_pfx;
 }
 
-function extract_impact(prefixes){
+function extract_impact(event){
+    let prefixes = extract_prefixes(event["pfx_events"]);
     let num_pfx = 0;
     let num_addrs = 0;
     for(let p of prefixes){

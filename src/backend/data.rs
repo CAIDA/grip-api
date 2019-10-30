@@ -1,5 +1,4 @@
 use serde_json::{json, Value};
-use std::collections::HashSet;
 
 /// shared state across rocket threads
 pub struct SharedData {
