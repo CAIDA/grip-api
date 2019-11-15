@@ -261,8 +261,15 @@ function render_origin_links(origin_lst, show_asn = false, external = null) {
         let as_html, as_tooltip;
         [as_html, as_tooltip] = render_origin(origin, external, show_asn);
         let blacklist_symbol = "";
-        if(blacklist_ases.has(parseInt(origin))){
+        let asn = parseInt(origin);
+        if(blacklist_ases.has(asn)){
             blacklist_symbol = ` <span class="glyphicon glyphicon-warning-sign" data-toggle="tooltip" data-original-title="This AS is on blacklist" data-html="true" data-placement="auto" aria-hidden="true"></span>`
+        }
+
+        let is_private = (asn>=64512 && asn<=65534) || (asn>=4200000000 && asn<=4294967294);
+        let private_asn_symbol="";
+        if(is_private){
+           private_asn_symbol="<span className=\"badge badge-info\">private</span>"
         }
         let external_links = "";
         if(show_asn){
@@ -277,6 +284,7 @@ function render_origin_links(origin_lst, show_asn = false, external = null) {
 ${as_html}
 </span>
 ${blacklist_symbol}
+${private_asn_symbol}
 
 </div>`)
     });
