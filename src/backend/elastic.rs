@@ -192,11 +192,6 @@ impl ElasticSearchBackend {
         });
 
         // DEBUG line below
-        println!(
-            "request sending to index: {}",
-            format!("observatory-events-{}-*", etype)
-        );
-        println!("{}", serde_json::to_string_pretty(&query).unwrap());
 
         let res = self
             .es_client
@@ -204,9 +199,6 @@ impl ElasticSearchBackend {
             .index(format!("observatory-events-{}-*", etype))
             .body(query)
             .send()?;
-
-        dbg!("request finished");
-        dbg!(&res);
 
         // Iterate through the hits in the response and build a vector.
         let mut res_vec: Vec<Value> = Vec::new();
