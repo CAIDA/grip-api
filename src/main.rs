@@ -1,36 +1,41 @@
 #![feature(proc_macro_hygiene)]
 
 use rocket::fairing::AdHoc;
+use rocket::fairing::{Fairing, Info, Kind};
+use rocket::http::{ContentType, Header, Method};
 use rocket::routes;
 use rocket::{Request, Response};
 use rocket_contrib::templates::Template;
-use rocket::fairing::{Fairing, Info, Kind};
-use rocket::http::{Header, ContentType, Method};
 use std::io::Cursor;
 use structopt::StructOpt;
 
-use hijacks_dashboard::backend::api_page::*;
-use hijacks_dashboard::backend::api_json::*;
-use hijacks_dashboard::backend::api_hi3::*;
-use hijacks_dashboard::backend::api_stats::*;
 use hijacks_dashboard::backend::api_external::*;
+use hijacks_dashboard::backend::api_hi3::*;
+use hijacks_dashboard::backend::api_json::*;
+use hijacks_dashboard::backend::api_page::*;
+use hijacks_dashboard::backend::api_stats::*;
 use hijacks_dashboard::backend::data::SharedData;
-use std::collections::HashMap;
 use rocket::Config;
-
+use std::collections::HashMap;
 
 pub struct CORS();
 
 impl Fairing for CORS {
-
     fn info(&self) -> Info {
-        Info { name: "Add CORS headers to requests", kind: Kind::Response }
+        Info {
+            name: "Add CORS headers to requests",
+            kind: Kind::Response,
+        }
     }
 
     fn on_response(&self, request: &Request, response: &mut Response) {
-        if request.method() == Method::Options || response.content_type() == Some(ContentType::JSON) {
+        if request.method() == Method::Options || response.content_type() == Some(ContentType::JSON)
+        {
             response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
-            response.set_header(Header::new("Access-Control-Allow-Methods", "POST, GET, OPTIONS"));
+            response.set_header(Header::new(
+                "Access-Control-Allow-Methods",
+                "POST, GET, OPTIONS",
+            ));
             response.set_header(Header::new("Access-Control-Allow-Headers", "Content-Type"));
             response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
         }
@@ -53,12 +58,15 @@ fn main() {
     let resource_dir: String;
     match opts.directory {
         Some(d) => resource_dir = d,
-        None => resource_dir = "./".to_owned()
+        None => resource_dir = "./".to_owned(),
     };
 
     let mut config = Config::active().unwrap();
     let mut extra_config = HashMap::new();
-    extra_config.insert("template_dir".to_owned(), format!("{}/templates",&resource_dir).into());
+    extra_config.insert(
+        "template_dir".to_owned(),
+        format!("{}/templates", &resource_dir).into(),
+    );
     config.set_extras(extra_config);
     config.set_address("0.0.0.0").unwrap();
     // config.set_port(8001);
@@ -96,10 +104,16 @@ fn main() {
         .attach(CORS())
         .attach(AdHoc::on_attach("get elastic search url", |rocket| {
             // set ElasticSearch URL
-            let es_url = rocket.config().get_str("elastic_url")
-                .unwrap_or("http://clayface.caida.org:9200") .to_string();
+            let es_url = rocket
+                .config()
+                .get_str("elastic_url")
+                .unwrap_or("http://clayface.caida.org:9200")
+                .to_string();
             // pass in tags
-            Ok(rocket.manage(SharedData { es_url, resource_dir}))
+            Ok(rocket.manage(SharedData {
+                es_url,
+                resource_dir,
+            }))
         }))
         .attach(Template::fairing())
         .launch();

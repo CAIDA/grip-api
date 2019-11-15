@@ -37,10 +37,7 @@ fn convert_time_str(ts_str: &String) -> String {
 impl ElasticSearchBackend {
     // constructor static method
     pub fn new(base_url: &str) -> Result<ElasticSearchBackend, Box<dyn Error>> {
-        let client = SyncClientBuilder::new()
-            // .base_url("http://hammer.caida.org:9200")
-            .base_url(base_url)
-            .build()?;
+        let client = SyncClientBuilder::new().static_node(base_url).build()?;
         Ok(ElasticSearchBackend { es_client: client })
     }
 
@@ -195,6 +192,10 @@ impl ElasticSearchBackend {
         });
 
         // DEBUG line below
+        println!(
+            "request sending to index: {}",
+            format!("observatory-events-{}-*", etype)
+        );
         println!("{}", serde_json::to_string_pretty(&query).unwrap());
 
         let res = self
@@ -204,11 +205,14 @@ impl ElasticSearchBackend {
             .body(query)
             .send()?;
 
+        dbg!("request finished");
+        dbg!(&res);
+
         // Iterate through the hits in the response and build a vector.
         let mut res_vec: Vec<Value> = Vec::new();
         for hit in res.hits() {
             let mut doc = json!(hit.document().unwrap());
-            doc["_esid"] = json!(hit.index().to_owned());
+            doc["_esid"] = json!(hit.index().to_owned().to_string());
             res_vec.push(doc);
         }
 
