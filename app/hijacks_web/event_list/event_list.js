@@ -282,10 +282,10 @@ function load_events_table(only_benign=false) {
         }
         let url = `/${window.location.pathname.split("/")[1]}/${event_type}?`;
         if(prefix!==""){
-            url+=`prefix=${prefix}&`;
+            url+=`pfxs=${prefix}&`;
         }
         if(asn!==""){
-            url+=`asn=${asn}&`;
+            url+=`asns=${asn}&`;
         }
         if(tags.length>0){
             url+=`tags=${tags.join(",")}`

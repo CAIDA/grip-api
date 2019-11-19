@@ -75,8 +75,8 @@ impl ElasticSearchBackend {
         event_type: &str,
         start: &Option<usize>,
         max: &Option<usize>,
-        asn: &Option<usize>,
-        prefix: &Option<String>,
+        asns: &Option<String>,
+        pfxs: &Option<String>,
         ts_start: &Option<String>,
         ts_end: &Option<String>,
         tags: &Option<String>,
@@ -153,12 +153,35 @@ impl ElasticSearchBackend {
             }
         }
 
-        match prefix {
-            Some(p) => must_terms.push(json!({ "term":{ "summary.prefixes":p }})),
+        match pfxs {
+            Some(prefixes_string) => {
+                let pfx_lst: Vec<&str> = prefixes_string.split(",").collect();
+                for pfx in pfx_lst {
+                    if pfx.starts_with("!") {
+                        // negative match
+                        let new_p = pfx.trim_start_matches('!');
+                        must_not_terms.push(json!({"term":{"summary.prefixes":new_p}}))
+                    } else {
+                        must_terms.push(json!({"term":{"summary.prefixes":pfx}}))
+                    }
+
+                }
+            },
             _ => {}
         }
-        match asn {
-            Some(value) => must_terms.push(json!({ "term":{ "summary.ases":value }})),
+        match asns {
+            Some(asn_string) => {
+                let asn_lst: Vec<&str> = asn_string.split(",").collect();
+                for asn in asn_lst {
+                    if asn.starts_with("!") {
+                        // negative match
+                        let new_a = asn.trim_start_matches('!');
+                        must_not_terms.push(json!({"term":{"summary.ases":new_a}}))
+                    } else {
+                        must_terms.push(json!({"term":{"summary.ases":asn}}))
+                    }
+                }
+            },
             _ => {}
         }
         match tags {
