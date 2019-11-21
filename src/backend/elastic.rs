@@ -72,7 +72,7 @@ impl ElasticSearchBackend {
 
     pub fn list_events(
         &self,
-        event_type: &str,
+        event_type: &Option<String>,
         start: &Option<usize>,
         max: &Option<usize>,
         asns: &Option<String>,
@@ -85,11 +85,10 @@ impl ElasticSearchBackend {
         misconf: &Option<bool>,
         misconf_type: &Option<String>,
     ) -> Result<SearchResult, Box<dyn Error>> {
-        let mut etype = event_type.to_owned();
-
-        if etype == "all" {
-            // if event type is all or misconf (misconfiguration), show all events that matches
-            etype = "*".to_owned();
+        // event type default to "*"
+        let mut etype = "*".to_owned();
+        if let Some(et) = event_type {
+            etype = et.to_owned();
         }
 
         let mut query_from = 0;
@@ -164,9 +163,8 @@ impl ElasticSearchBackend {
                     } else {
                         must_terms.push(json!({"term":{"summary.prefixes":pfx}}))
                     }
-
                 }
-            },
+            }
             _ => {}
         }
         match asns {
@@ -181,7 +179,7 @@ impl ElasticSearchBackend {
                         must_terms.push(json!({"term":{"summary.ases":asn}}))
                     }
                 }
-            },
+            }
             _ => {}
         }
         match tags {

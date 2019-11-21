@@ -81,9 +81,9 @@ pub fn json_pfx_event_by_id(
     }
 }
 
-#[get("/json/events/<event_type>?<ts_start>&<ts_end>&<draw>&<start>&<length>&<asns>&<pfxs>&<tags>&<min_susp>&<max_susp>&<misconf>&<misconf_type>")]
+#[get("/json/events?<event_type>&<ts_start>&<ts_end>&<draw>&<start>&<length>&<asns>&<pfxs>&<tags>&<min_susp>&<max_susp>&<misconf>&<misconf_type>")]
 pub fn json_list_events(
-    event_type: &RawStr,
+    event_type: Option<String>,
     ts_start: Option<String>,
     ts_end: Option<String>,
     draw: Option<usize>,
@@ -101,7 +101,7 @@ pub fn json_list_events(
     let backend = ElasticSearchBackend::new(&base_url.es_url).unwrap();
     let query_result = backend
         .list_events(
-            event_type,
+            &event_type,
             &start,
             &length,
             &asns,
