@@ -22,10 +22,13 @@ function load_events_table(only_benign=false) {
     });
     $(document).ready(function () {
         $('body').tooltip({selector: '[data-toggle="tooltip"]'});
-        let url = `/json/events/${event_type}?`;
+        let url = `/json/events?`;
         let search_text = [];
         let start_ts = "";
         let end_ts = "";
+        if(event_type!=="all"){
+            url+= `event_type=${event_type}&`
+        }
         if(!params.has("")){
             params.forEach(function(value, key, map){
                 if(!key.startsWith("ts_")) {
