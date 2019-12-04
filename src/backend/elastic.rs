@@ -80,6 +80,7 @@ impl ElasticSearchBackend {
         ts_start: &Option<String>,
         ts_end: &Option<String>,
         tags: &Option<String>,
+        codes: &Option<String>,
         min_susp: &Option<usize>,
         max_susp: &Option<usize>,
         misconf: &Option<bool>,
@@ -192,6 +193,21 @@ impl ElasticSearchBackend {
                         must_not_terms.push(json!({"term":{"tags":new_t}}))
                     } else {
                         must_terms.push(json!({"term":{"tags":t}}))
+                    }
+                }
+            }
+            _ => {}
+        }
+        match codes {
+            Some(codes_string) => {
+                let codes_lst: Vec<&str> = codes_string.split(",").collect::<Vec<&str>>();
+                for t in codes_lst {
+                    if t.starts_with("!") {
+                        // negative match
+                        let new_t = t.trim_start_matches('!');
+                        must_not_terms.push(json!({"term":{"inference.event_codes":new_t}}))
+                    } else {
+                        must_terms.push(json!({"term":{"inference.event_codes":t}}))
                     }
                 }
             }

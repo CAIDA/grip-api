@@ -81,7 +81,7 @@ pub fn json_pfx_event_by_id(
     }
 }
 
-#[get("/json/events?<event_type>&<ts_start>&<ts_end>&<draw>&<start>&<length>&<asns>&<pfxs>&<tags>&<min_susp>&<max_susp>&<misconf>&<misconf_type>")]
+#[get("/json/events?<event_type>&<ts_start>&<ts_end>&<draw>&<start>&<length>&<asns>&<pfxs>&<tags>&<codes>&<min_susp>&<max_susp>&<misconf>&<misconf_type>")]
 pub fn json_list_events(
     event_type: Option<String>,
     ts_start: Option<String>,
@@ -92,6 +92,7 @@ pub fn json_list_events(
     asns: Option<String>,
     pfxs: Option<String>,
     tags: Option<String>,
+    codes: Option<String>,
     min_susp: Option<usize>,
     max_susp: Option<usize>,
     misconf: Option<bool>,
@@ -109,6 +110,7 @@ pub fn json_list_events(
             &ts_start,
             &ts_end,
             &tags,
+            &codes,
             &min_susp,
             &max_susp,
             &misconf,
