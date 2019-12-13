@@ -89,7 +89,10 @@ impl ElasticSearchBackend {
         // event type default to "*"
         let mut etype = "*".to_owned();
         if let Some(et) = event_type {
-            etype = et.to_owned();
+            etype = match et.as_str() {
+                "all" => "*".to_owned(),
+                _ => et.to_owned(),
+            }
         }
 
         let mut query_from = 0;
