@@ -8,7 +8,7 @@ pub struct SharedData {
 
 /// process raw event from elasticsearch and convert the event into filtered data.
 /// not all information is necessary for frontend processing
-pub fn process_raw_event(value: &Value, include_tr: bool) -> Value {
+pub fn process_raw_event(value: &Value, include_tr: bool, include_details: bool) -> Value {
     let mut event = json!({});
     // filter easy fields
     for field in vec![
@@ -26,7 +26,11 @@ pub fn process_raw_event(value: &Value, include_tr: bool) -> Value {
         event[field] = value[field].to_owned();
     }
 
-    let pfx_events = process_pfx_events(value["pfx_events"].as_array().unwrap(), include_tr);
+    let pfx_events = process_pfx_events(
+        value["pfx_events"].as_array().unwrap(),
+        include_tr,
+        include_details,
+    );
 
     let victims = match event["inference"]["victims"].as_array() {
         Some(p) => p.to_owned(),
@@ -54,7 +58,7 @@ pub fn process_raw_event(value: &Value, include_tr: bool) -> Value {
 /// - all prefixes
 /// - victim ases
 /// - attacker ases
-fn process_pfx_events(value: &Vec<Value>, include_tr: bool) -> Vec<Value> {
+fn process_pfx_events(value: &Vec<Value>, include_tr: bool, include_details: bool) -> Vec<Value> {
     let mut prefixes: Vec<String> = vec![];
     let mut pfx_events: Vec<Value> = vec![];
     for raw_pfx_event in value {
@@ -66,6 +70,9 @@ fn process_pfx_events(value: &Vec<Value>, include_tr: bool) -> Vec<Value> {
         }
         if include_tr {
             pfx_event["traceroutes"] = raw_pfx_event["traceroutes"]["msms"].to_owned();
+        }
+        if include_details {
+            pfx_event["details"] = raw_pfx_event["details"].to_owned();
         }
 
         // set traceroute available

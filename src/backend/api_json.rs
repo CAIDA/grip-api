@@ -42,7 +42,7 @@ pub fn json_event_by_id(id: &RawStr, base_url: State<SharedData>) -> Json<Value>
     match backend.get_event_by_id(id) {
         // Ok(event) => Json(json!({"data":event.results[0]["pfx_events"].to_owned()}).to_owned()),
         Ok(event) => {
-            let e = process_raw_event(&event.results[0], true);
+            let e = process_raw_event(&event.results[0], true, true);
             Json(json!(e))
         }
         Err(_e) => Json(json!({ "error": format!("Cannot find event {}", id) })),
@@ -120,7 +120,7 @@ pub fn json_list_events(
     let res_data: Vec<Value> = query_result
         .results
         .iter()
-        .map(|v| process_raw_event(v, false))
+        .map(|v| process_raw_event(v, false, false))
         .collect();
     let object = json!(
         {
