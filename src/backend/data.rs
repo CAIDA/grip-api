@@ -1,4 +1,4 @@
-use serde_json::{json, Value};
+use serde_json::{json, Map, Value};
 
 /// shared state across rocket threads
 pub struct SharedData {
@@ -72,7 +72,12 @@ fn process_pfx_events(value: &Vec<Value>, include_tr: bool, include_details: boo
             pfx_event["traceroutes"] = raw_pfx_event["traceroutes"]["msms"].to_owned();
         }
         if include_details {
-            pfx_event["details"] = raw_pfx_event["details"].to_owned();
+            let mut details_map: Map<String, Value> =
+                serde_json::from_value(raw_pfx_event["details"].to_owned()).unwrap();
+            for field in vec!["sub_aspaths", "super_aspaths", "aspaths"] {
+                details_map.remove(field);
+            }
+            pfx_event["details"] = Value::Object(details_map);
         }
 
         // set traceroute available
