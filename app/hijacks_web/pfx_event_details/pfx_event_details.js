@@ -254,7 +254,9 @@ function clean_graph(path_lst){
             if(has_cycle){
                 break
             }
-            new_path_lst.push(newpath)
+        }
+        if(!has_cycle){
+            new_path_lst.push(newpath);
         }
     });
 
