@@ -83,6 +83,8 @@ impl ElasticSearchBackend {
         codes: &Option<String>,
         min_susp: &Option<usize>,
         max_susp: &Option<usize>,
+        min_duration: &Option<usize>,
+        max_duration: &Option<usize>,
         misconf: &Option<bool>,
         misconf_type: &Option<String>,
     ) -> Result<SearchResult, Box<dyn Error>> {
@@ -128,6 +130,15 @@ impl ElasticSearchBackend {
                 json!(min.to_owned() as i32);
         }
         must_terms.push(json!({ "range": suspicion_filter }));
+
+        let mut duration_filter = json!({"duration": {}});
+        if let Some(max) = max_duration {
+            duration_filter["duration"]["lte"] = json!(max.to_owned() as i32);
+        }
+        if let Some(min) = min_duration {
+            duration_filter["duration"]["gte"] = json!(min.to_owned() as i32);
+        }
+        must_terms.push(json!({ "range": duration_filter }));
 
         if let Some(mis) = misconf {
             must_terms.push(json!({"term": {"inference.misconfiguration": mis}}));
