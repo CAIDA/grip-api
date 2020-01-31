@@ -62,6 +62,15 @@ pub fn json_get_blacklist() -> Json<Value> {
     Json(json!(blacklist))
 }
 
+#[get("/json/asndrop")]
+pub fn json_get_asndrop() -> Json<Value> {
+    let asndrop: Value = reqwest::get(format!("http://10.250.203.3:5000/asndrop").as_str())
+        .unwrap()
+        .json()
+        .unwrap();
+    Json(json!(asndrop))
+}
+
 #[get("/json/event/id/<id>")]
 pub fn json_event_by_id(id: &RawStr, base_url: State<SharedData>) -> Json<Value> {
     let backend_res = ElasticSearchBackend::new(&base_url.es_url);
