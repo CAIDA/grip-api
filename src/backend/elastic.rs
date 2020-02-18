@@ -164,18 +164,25 @@ impl ElasticSearchBackend {
         must_terms.push(json!({ "range": suspicion_filter }));
 
         let mut duration_filter = json!({"duration": {}});
+        let mut has_duration = false;
         if let Some(max) = max_duration {
             duration_filter["duration"]["lte"] = json!(max.to_owned() as i32);
+            has_duration = true;
         }
         if let Some(min) = min_duration {
             duration_filter["duration"]["gte"] = json!(min.to_owned() as i32);
+            has_duration = true;
         }
-        must_terms.push(json!({ "range": duration_filter }));
+        if has_duration {
+            // NOTE: only push duration filter if we specified duration, otherwise events without a
+            // a duration field will not show up in the search results
+            must_terms.push(json!({ "range": duration_filter }));
+        }
 
         if let Some(mis) = misconf {
             must_terms.push(json!({"term": {"inference.misconfiguration": mis}}));
-            must_not_terms.push(json!({"match":{"tags":"newcomer-is-sibling"}}));
-            must_not_terms.push(json!({"match":{"tags":"newcomer-is-friend"}}));
+            // must_not_terms.push(json!({"match":{"tags":"newcomer-is-sibling"}}));
+            // must_not_terms.push(json!({"match":{"tags":"newcomer-is-friend"}}));
             let mut mistype = "all";
             if let Some(t) = misconf_type {
                 mistype = t.as_str();
@@ -275,6 +282,7 @@ impl ElasticSearchBackend {
         });
 
         // DEBUG line below
+        // println!("{}", serde_json::to_string_pretty(&query)?);
 
         let res = self
             .es_client
