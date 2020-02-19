@@ -152,6 +152,9 @@ impl ElasticSearchBackend {
         let mut must_not_terms = vec![];
         must_not_terms.push(json!({ "match": { "position": "FINISHED" } }));
 
+        // inference structure must exist first
+        must_terms.push(json!({"exists":{"field": "inference"}}));
+
         let mut suspicion_filter = json!({"inference.suspicion.suspicion_level": {}});
         if let Some(max) = max_susp {
             suspicion_filter["inference.suspicion.suspicion_level"]["lte"] =
