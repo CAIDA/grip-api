@@ -32,6 +32,7 @@
 
 #[allow(unused_imports)]
 use chrono::{Datelike, Duration, Timelike, Utc};
+use rocket::response::Redirect;
 use rocket_contrib::json::Json;
 use serde_json::json;
 use serde_json::Value;
@@ -70,4 +71,10 @@ pub fn json_get_hegemony(asn: usize) -> Json<Value> {
     );
     println!("{}", url);
     Json(request_for_json(&url))
+}
+
+/// load index page
+#[get("/tags")]
+pub fn page_tags_redirect() -> Redirect {
+    Redirect::to("https://dev.hicube.caida.org/feeds/hijacks/tags")
 }

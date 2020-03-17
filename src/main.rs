@@ -42,8 +42,6 @@ use std::io::Cursor;
 use structopt::StructOpt;
 
 use hijacks_dashboard::backend::api_external::*;
-//use hijacks_dashboard::backend::api_hi3::*;
-//use hijacks_dashboard::backend::api_page::*;
 use hijacks_dashboard::backend::api_json::*;
 use hijacks_dashboard::backend::api_stats::*;
 use hijacks_dashboard::backend::data::SharedData;
@@ -121,6 +119,7 @@ fn main() {
                 //                hi3_page_event_details,
                 //                hi3_page_traceroutes_page,
                 //                files,
+                page_tags_redirect,
                 json_event_by_id,
                 json_pfx_event_by_id,
                 json_list_events,
