@@ -42,9 +42,9 @@ use std::io::Cursor;
 use structopt::StructOpt;
 
 use hijacks_dashboard::backend::api_external::*;
-use hijacks_dashboard::backend::api_hi3::*;
+//use hijacks_dashboard::backend::api_hi3::*;
+//use hijacks_dashboard::backend::api_page::*;
 use hijacks_dashboard::backend::api_json::*;
-use hijacks_dashboard::backend::api_page::*;
 use hijacks_dashboard::backend::api_stats::*;
 use hijacks_dashboard::backend::data::SharedData;
 use rocket::Config;
@@ -107,20 +107,20 @@ fn main() {
         .mount(
             "/",
             routes![
-                page_index,
-                page_event_list,
-                page_suspicious_event_list,
-                page_grey_event_list,
-                page_benign_event_list,
-                page_misconf_event_list,
-                page_event_details,
-                page_traceroutes_page,
-                hi3_page_event_list,
-                hi3_page_event_details,
-                hi3_page_traceroutes_page,
-                page_blacklist,
-                page_tags,
-                files,
+                //                page_index,
+                //                page_event_list,
+                //                page_suspicious_event_list,
+                //                page_grey_event_list,
+                //                page_benign_event_list,
+                //                page_misconf_event_list,
+                //                page_event_details,
+                //                page_traceroutes_page,
+                //                page_blacklist,
+                //                page_tags,
+                //                hi3_page_event_list,
+                //                hi3_page_event_details,
+                //                hi3_page_traceroutes_page,
+                //                files,
                 json_event_by_id,
                 json_pfx_event_by_id,
                 json_list_events,
