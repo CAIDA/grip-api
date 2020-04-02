@@ -82,7 +82,7 @@ impl ElasticSearchBackend {
         let datetime = DateTime::<Utc>::from(d);
 
         let query = format!(
-            "http://clayface.caida.org:9200/observatory-events-{}-{}-{:02}/event_result/{}",
+            "http://clayface.caida.org:9200/observatory-events-{}-{}-{:02}/_doc/{}",
             event_type,
             datetime.year(),
             datetime.month(),
@@ -98,7 +98,24 @@ impl ElasticSearchBackend {
                 total: 1,
             });
         } else {
-            Err(Box::new(MyError("Oops".into())))
+            let query = format!(
+                "http://clayface.caida.org:9200/observatory-events-{}-{}-{:02}/event_result/{}",
+                event_type,
+                datetime.year(),
+                datetime.month(),
+                id
+            );
+            let doc: Value = reqwest::get(query.as_str()).unwrap().json().unwrap();
+            if doc["found"] == true {
+                let mut document = doc["_source"].clone();
+                document["url"] = Value::String(query);
+                return Ok(SearchResult {
+                    results: vec![document],
+                    total: 1,
+                });
+            } else {
+                Err(Box::new(MyError("Oops".into())))
+            }
         }
     }
 
