@@ -34,6 +34,8 @@
     Utilities
 */
 
+use chrono::{DateTime, NaiveDateTime, Utc};
+use lazy_static::lazy_static;
 use regex::Regex;
 use serde_json::Value;
 
@@ -103,5 +105,51 @@ pub fn filter_pfx_events_by_fingerprint<'a>(
             return None;
         }
         _ => return None,
+    }
+}
+
+lazy_static! {
+    static ref OLD_FORMAT: Regex = Regex::new(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$").unwrap();
+}
+
+/// convert time string into a serde::Value.
+///
+/// the time string can be either a rfc3339 formatted string or a string representing the epoch
+/// time in milliseconds.
+///
+/// expect:
+/// -  2020-04-09T23:52
+/// -  2020-04-09 23:52:00
+/// -  1586476363000
+///
+/// output:
+/// -  2020-04-09 23:52:00
+pub fn convert_time_str(ts_str: &String) -> String {
+    match OLD_FORMAT.is_match(ts_str) {
+        true => {
+            let ts_vec = ts_str.split("T").collect::<Vec<&str>>();
+            format!("{} {}:00", ts_vec[0], ts_vec[1])
+        }
+        false => match ts_str.parse::<i64>() {
+            Ok(ts) => {
+                let dt =
+                    DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(ts / 1000, 0), Utc);
+                dt.format("%Y-%m-%d %H:%M:00").to_string()
+            }
+            Err(_) => ts_str.to_owned(),
+        },
+    }
+}
+#[cfg(test)]
+mod tests {
+    use crate::backend::utils::convert_time_str;
+
+    #[test]
+    fn it_works() {
+        // GMT: Thursday, April 9, 2020 23:52:43
+        // Your time zone: Thursday, April 9, 2020 16:52:43 GMT-07:00 DST
+        let value1 = convert_time_str(&"1586476363000".to_owned());
+        let value2 = convert_time_str(&"2020-04-09T23:52".to_owned());
+        assert_eq!(value1, value2)
     }
 }

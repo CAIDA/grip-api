@@ -36,16 +36,11 @@ use std::error::Error;
 use std::time::{Duration, UNIX_EPOCH};
 
 use elastic::prelude::*;
-use lazy_static::lazy_static;
 use serde_json::json;
 use serde_json::Value;
 
 use crate::backend::errors::MyError;
-use regex::Regex;
-
-lazy_static! {
-    static ref OLD_FORMAT: Regex = Regex::new(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$").unwrap();
-}
+use crate::backend::utils::*;
 
 pub struct ElasticSearchBackend {
     es_client: SyncClient,
@@ -54,16 +49,6 @@ pub struct ElasticSearchBackend {
 pub struct SearchResult {
     pub results: Vec<Value>,
     pub total: u64,
-}
-
-fn convert_time_str(ts_str: &String) -> String {
-    match OLD_FORMAT.is_match(ts_str) {
-        true => {
-            let ts_vec = ts_str.split("T").collect::<Vec<&str>>();
-            format!("{} {}:00", ts_vec[0], ts_vec[1])
-        }
-        false => ts_str.to_owned(),
-    }
 }
 
 impl ElasticSearchBackend {
