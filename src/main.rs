@@ -37,7 +37,6 @@ use rocket::fairing::{Fairing, Info, Kind};
 use rocket::http::{ContentType, Header, Method};
 use rocket::{routes, Rocket};
 use rocket::{Request, Response};
-use rocket_contrib::templates::Template;
 use std::io::Cursor;
 use structopt::StructOpt;
 
@@ -104,7 +103,6 @@ fn get_rocket(directory: Option<String>) -> Rocket {
         .mount(
             "/",
             routes![
-                page_tags_redirect,
                 json_event_by_id,
                 json_pfx_event_by_id,
                 json_list_events,
@@ -132,7 +130,6 @@ fn get_rocket(directory: Option<String>) -> Rocket {
                 resource_dir,
             }))
         }))
-        .attach(Template::fairing())
 }
 
 fn main() {
