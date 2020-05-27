@@ -67,7 +67,7 @@ impl ElasticSearchBackend {
         let datetime = DateTime::<Utc>::from(d);
 
         let query = format!(
-            "http://clayface.caida.org:9200/observatory-events-{}-{}-{:02}/_doc/{}",
+            "http://clayface.caida.org:9200/observatory-v2-events-{}-{}-{:02}/_doc/{}",
             event_type,
             datetime.year(),
             datetime.month(),
@@ -84,7 +84,7 @@ impl ElasticSearchBackend {
             });
         } else {
             let query = format!(
-                "http://clayface.caida.org:9200/observatory-events-{}-{}-{:02}/event_result/{}",
+                "http://clayface.caida.org:9200/observatory-v2-events-{}-{}-{:02}/event_result/{}",
                 event_type,
                 datetime.year(),
                 datetime.month(),
