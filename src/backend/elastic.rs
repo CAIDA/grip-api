@@ -119,8 +119,6 @@ impl ElasticSearchBackend {
         max_susp: &Option<usize>,
         min_duration: &Option<usize>,
         max_duration: &Option<usize>,
-        misconf: &Option<bool>,
-        misconf_type: &Option<String>,
     ) -> Result<SearchResult, Box<dyn Error>> {
         // event type default to "*"
         let mut etype = "*".to_owned();
