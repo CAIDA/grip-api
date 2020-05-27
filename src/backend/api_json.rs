@@ -171,12 +171,10 @@ pub fn json_list_events(
     let object = json!(
         {
             "data": res_data,
-            // "data": query_result.results,
             "draw": draw,
             "recordsTotal": query_result.total,
             "recordsFiltered": query_result.total,
         }
     );
-    // println!("{}", serde_json::to_string_pretty(&object).unwrap());
     Json(object.to_owned())
 }
