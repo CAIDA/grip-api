@@ -31,9 +31,7 @@
 // MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 pub mod api_external;
-pub mod api_hi3;
 pub mod api_json;
-pub mod api_page;
 pub mod api_stats;
 pub mod data;
 pub mod elastic;

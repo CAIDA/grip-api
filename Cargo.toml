@@ -1,10 +1,13 @@
 [package]
 name = "hijacks_dashboard"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Mingwei Zhang <mingwei@caida.org>"]
 edition = "2018"
 
 [dependencies]
+# general
+regex = "1"
+
 # webframework
 rocket = "0.4.2"
 reqwest = "0.9.19"
@@ -12,10 +15,6 @@ reqwest = "0.9.19"
 # elasticsearch
 elastic = "0.21.0-pre.5"
 elastic_derive = "~0.21.0-pre.5"
-
-# templating
-# maud = {version = "0.19.0", features = ["rocket"]}
-regex = "1"
 
 # serialization
 serde = {version="1.0", features=["derive"]}
@@ -33,4 +32,4 @@ lazy_static = "1.4.0"
 [dependencies.rocket_contrib]
 version = "0.4.0"
 default-features = false
-features = ["json", "tera_templates"]
+features = ["json"]
