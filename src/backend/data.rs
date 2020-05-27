@@ -84,7 +84,7 @@ fn process_pfx_events(value: &Vec<Value>, include_tr: bool, include_details: boo
         // build some basic fields
         for field in vec!["tags", "finished_ts", "inferences"] {
             if let Some(value) = raw_pfx_event.get(field) {
-                pfx_event[field] = value;
+                pfx_event[field] = value.to_owned();
             }
         }
         if include_tr {
