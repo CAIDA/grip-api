@@ -58,7 +58,7 @@ impl ElasticSearchBackend {
         Ok(ElasticSearchBackend { es_client: client })
     }
 
-    pub fn get_event_by_id(&self, id: &str) -> Result<SearchResult, Box<dyn Error>> {
+    pub fn get_event_by_id(&self, id: &str) -> Result<Value, Box<dyn Error>> {
         let fields = id.split("-").collect::<Vec<&str>>();
         let event_type: &str = fields[0];
         let view_ts: u64 = fields[1].parse::<u64>().unwrap();
@@ -78,10 +78,7 @@ impl ElasticSearchBackend {
         if doc["found"] == true {
             let mut document = doc["_source"].clone();
             document["url"] = Value::String(query);
-            return Ok(SearchResult {
-                results: vec![document],
-                total: 1,
-            });
+            return Ok(document);
         } else {
             let query = format!(
                 "http://clayface.caida.org:9200/observatory-v2-events-{}-{}-{:02}/event_result/{}",
@@ -94,10 +91,7 @@ impl ElasticSearchBackend {
             if doc["found"] == true {
                 let mut document = doc["_source"].clone();
                 document["url"] = Value::String(query);
-                return Ok(SearchResult {
-                    results: vec![document],
-                    total: 1,
-                });
+                return Ok(document);
             } else {
                 Err(Box::new(MyError("Oops".into())))
             }
