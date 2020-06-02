@@ -83,7 +83,7 @@ pub fn json_event_by_id(id: &RawStr, base_url: State<SharedData>) -> Json<Value>
     match backend.get_event_by_id(id) {
         // Ok(event) => Json(json!({"data":event.results[0]["pfx_events"].to_owned()}).to_owned()),
         Ok(event) => {
-            let e = process_raw_event(&event.results[0], true, true);
+            let e = process_raw_event(&event, true, true);
             Json(json!(e))
         }
         Err(_e) => Json(json!({ "error": format!("Cannot find event {}", id) })),
@@ -105,8 +105,21 @@ pub fn json_pfx_event_by_id(
 
     match backend.get_event_by_id(id) {
         Ok(event) => {
-            match filter_pfx_events_by_fingerprint(fingerprint.as_str(), &event.results[0]) {
-                Some(event) => Json(json!(event.to_owned())),
+            let victims = match event["summary"]["inference_result"]["victims"].as_array() {
+                Some(v) => json!(v),
+                None => json!([]),
+            };
+            let attackers = match event["summary"]["inference_result"]["attackers"].as_array() {
+                Some(v) => json!(v),
+                None => json!([]),
+            };
+            match filter_pfx_events_by_fingerprint(fingerprint.as_str(), &event) {
+                Some(v) => {
+                    let mut pfx_event = v.clone();
+                    pfx_event["victims"] = victims;
+                    pfx_event["attackers"] = attackers;
+                    Json(json!(pfx_event))
+                }
                 None => Json(json!(
                     {
                         "error": "Cannot find prefix event"
