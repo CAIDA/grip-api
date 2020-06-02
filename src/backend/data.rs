@@ -99,14 +99,6 @@ fn process_pfx_events(value: &Vec<Value>, include_tr: bool, include_details: boo
             pfx_event["details"] = Value::Object(details_map);
         }
 
-        // set traceroute available
-        pfx_event["tr_available"] = json!(raw_pfx_event["traceroutes"]["msms"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .any(|msm| msm["results"].as_array().unwrap().len() > 0));
-        pfx_event["tr_worthy"] = raw_pfx_event["traceroutes"]["worthy"].to_owned();
-
         // set prefix and sub/super-prefix
         match raw_pfx_event["details"]["prefix"].as_str() {
             Some(p) => {
