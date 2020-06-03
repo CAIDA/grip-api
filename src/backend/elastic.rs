@@ -214,9 +214,9 @@ impl ElasticSearchBackend {
                     if t.starts_with("!") {
                         // negative match
                         let new_t = t.trim_start_matches('!');
-                        must_not_terms.push(json!({"term":{"tags":new_t}}))
+                        must_not_terms.push(json!({"term":{"summary.tags":new_t}}))
                     } else {
-                        must_terms.push(json!({"term":{"tags":t}}))
+                        must_terms.push(json!({"term":{"summary.tags":t}}))
                     }
                 }
             }
