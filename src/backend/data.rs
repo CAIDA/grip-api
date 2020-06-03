@@ -88,7 +88,7 @@ fn process_pfx_events(value: &Vec<Value>, include_tr: bool, include_details: boo
             }
         }
         if include_tr {
-            pfx_event["traceroutes"] = raw_pfx_event["traceroutes"]["msms"].to_owned();
+            pfx_event["traceroutes"] = raw_pfx_event["traceroutes"].to_owned();
         }
         if include_details {
             let mut details_map: Map<String, Value> =
