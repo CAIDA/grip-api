@@ -44,15 +44,16 @@ pub fn process_raw_event(value: &Value, include_tr: bool, include_details: bool)
     let mut event = json!({});
     // filter easy fields
     for field in vec![
+        "id",
         "event_type",
         "view_ts",
         "finished_ts",
+        "insert_ts",
+        "last_modified_ts",
         "duration",
         "external",
-        "id",
         "tr_metrics",
-        "tags",
-        "inference",
+        "event_metrics",
         "summary",
     ] {
         event[field] = value[field].to_owned();
@@ -64,23 +65,7 @@ pub fn process_raw_event(value: &Value, include_tr: bool, include_details: bool)
         include_details,
     );
 
-    let victims = match event["inference"]["victims"].as_array() {
-        Some(p) => p.to_owned(),
-        _ => vec![],
-    };
-    let attackers = match event["inference"]["attackers"].as_array() {
-        Some(p) => p.to_owned(),
-        _ => vec![],
-    };
-    let prefixes = match event["summary"]["prefixes"].as_array() {
-        Some(p) => p.to_owned(),
-        _ => vec![],
-    };
-
     event["pfx_events"] = json!(pfx_events);
-    event["prefixes"] = json!(prefixes);
-    event["victims"] = json!(victims);
-    event["attackers"] = json!(attackers);
     event["debug"] = extract_debug_info(value, &event);
     event
 }
@@ -97,11 +82,13 @@ fn process_pfx_events(value: &Vec<Value>, include_tr: bool, include_details: boo
         let mut pfx_event = json!({});
 
         // build some basic fields
-        for field in vec!["tags", "finished_ts"] {
-            pfx_event[field] = raw_pfx_event[field].to_owned();
+        for field in vec!["tags", "finished_ts", "inferences"] {
+            if let Some(value) = raw_pfx_event.get(field) {
+                pfx_event[field] = value.to_owned();
+            }
         }
         if include_tr {
-            pfx_event["traceroutes"] = raw_pfx_event["traceroutes"]["msms"].to_owned();
+            pfx_event["traceroutes"] = raw_pfx_event["traceroutes"].to_owned();
         }
         if include_details {
             let mut details_map: Map<String, Value> =
@@ -111,20 +98,6 @@ fn process_pfx_events(value: &Vec<Value>, include_tr: bool, include_details: boo
             }
             pfx_event["details"] = Value::Object(details_map);
         }
-
-        // set traceroute available
-        if raw_pfx_event["traceroutes"]["msms"]
-            .as_array()
-            .unwrap()
-            .len()
-            > 0
-        {
-            pfx_event["tr_available"] = json!(true);
-        } else {
-            pfx_event["tr_available"] = json!(false);
-        }
-
-        pfx_event["tr_worthy"] = raw_pfx_event["traceroutes"]["worthy"].to_owned();
 
         // set prefix and sub/super-prefix
         match raw_pfx_event["details"]["prefix"].as_str() {
@@ -145,10 +118,11 @@ fn process_pfx_events(value: &Vec<Value>, include_tr: bool, include_details: boo
 
         pfx_events.push(pfx_event);
 
-        if pfx_events.len() > 20 {
-            // do not display more than 20 pfx events
-            break;
-        }
+        // FIXME: the following check could explain why we're seeing less events in the ui.
+        // if pfx_events.len() > 20 {
+        //     // do not display more than 20 pfx events
+        //     break;
+        // }
     }
 
     pfx_events

@@ -138,7 +138,7 @@ pub fn json_pfx_event_by_id(
 #[get(
     "/json/events?\
      <event_type>&<ts_start>&<ts_end>&<draw>&<start>&<length>&<asns>&<pfxs>&\
-     <tags>&<codes>&<min_susp>&<max_susp>&<misconf>&<misconf_type>&\
+     <tags>&<codes>&<min_susp>&<max_susp>&\
      <min_duration>&<max_duration>"
 )]
 pub fn json_list_events(
@@ -154,8 +154,6 @@ pub fn json_list_events(
     codes: Option<String>,
     min_susp: Option<usize>,
     max_susp: Option<usize>,
-    misconf: Option<bool>,
-    misconf_type: Option<String>,
     min_duration: Option<usize>,
     max_duration: Option<usize>,
     base_url: State<SharedData>,
@@ -176,8 +174,6 @@ pub fn json_list_events(
             &max_susp,
             &min_duration,
             &max_duration,
-            &misconf,
-            &misconf_type,
         )
         .unwrap();
     let res_data: Vec<Value> = query_result
@@ -188,12 +184,10 @@ pub fn json_list_events(
     let object = json!(
         {
             "data": res_data,
-            // "data": query_result.results,
             "draw": draw,
             "recordsTotal": query_result.total,
             "recordsFiltered": query_result.total,
         }
     );
-    // println!("{}", serde_json::to_string_pretty(&object).unwrap());
     Json(object.to_owned())
 }

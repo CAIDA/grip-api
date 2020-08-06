@@ -35,9 +35,8 @@
 use rocket::fairing::AdHoc;
 use rocket::fairing::{Fairing, Info, Kind};
 use rocket::http::{ContentType, Header, Method};
-use rocket::routes;
+use rocket::{routes, Rocket};
 use rocket::{Request, Response};
-use rocket_contrib::templates::Template;
 use std::io::Cursor;
 use structopt::StructOpt;
 
@@ -83,10 +82,9 @@ struct Opt {
     directory: Option<String>,
 }
 
-fn main() {
-    let opts = Opt::from_args();
+fn get_rocket(directory: Option<String>) -> Rocket {
     let resource_dir: String;
-    match opts.directory {
+    match directory {
         Some(d) => resource_dir = d,
         None => resource_dir = "./".to_owned(),
     };
@@ -105,21 +103,6 @@ fn main() {
         .mount(
             "/",
             routes![
-                //                page_index,
-                //                page_event_list,
-                //                page_suspicious_event_list,
-                //                page_grey_event_list,
-                //                page_benign_event_list,
-                //                page_misconf_event_list,
-                //                page_event_details,
-                //                page_traceroutes_page,
-                //                page_blacklist,
-                //                page_tags,
-                //                hi3_page_event_list,
-                //                hi3_page_event_details,
-                //                hi3_page_traceroutes_page,
-                //                files,
-                page_tags_redirect,
                 json_event_by_id,
                 json_pfx_event_by_id,
                 json_list_events,
@@ -147,6 +130,24 @@ fn main() {
                 resource_dir,
             }))
         }))
-        .attach(Template::fairing())
-        .launch();
+}
+
+fn main() {
+    let opts = Opt::from_args();
+    get_rocket(opts.directory).launch();
+}
+
+#[cfg(test)]
+mod test {
+    use crate::get_rocket;
+    use rocket::http::Status;
+    use rocket::local::Client;
+
+    #[test]
+    fn test_basic_api() {
+        let client = Client::new(get_rocket(None)).expect("valid rocket instance");
+        let options = "/json/events?length=10&start=0&ts_start=2020-05-20T18%3A39&ts_end=2020-05-27T18%3A39&min_susp=80&max_susp=100&event_type=moas";
+        let mut response = client.get(options).dispatch();
+        assert_eq!(response.status(), Status::Ok);
+    }
 }

@@ -67,7 +67,7 @@ impl ElasticSearchBackend {
         let datetime = DateTime::<Utc>::from(d);
 
         let query = format!(
-            "http://clayface.caida.org:9200/observatory-events-{}-{}-{:02}/_doc/{}",
+            "http://clayface.caida.org:9200/observatory-v2-events-{}-{}-{:02}/_doc/{}",
             event_type,
             datetime.year(),
             datetime.month(),
@@ -81,7 +81,7 @@ impl ElasticSearchBackend {
             return Ok(document);
         } else {
             let query = format!(
-                "http://clayface.caida.org:9200/observatory-events-{}-{}-{:02}/event_result/{}",
+                "http://clayface.caida.org:9200/observatory-v2-events-{}-{}-{:02}/event_result/{}",
                 event_type,
                 datetime.year(),
                 datetime.month(),
@@ -113,8 +113,6 @@ impl ElasticSearchBackend {
         max_susp: &Option<usize>,
         min_duration: &Option<usize>,
         max_duration: &Option<usize>,
-        misconf: &Option<bool>,
-        misconf_type: &Option<String>,
     ) -> Result<SearchResult, Box<dyn Error>> {
         // event type default to "*"
         let mut etype = "*".to_owned();
@@ -149,15 +147,16 @@ impl ElasticSearchBackend {
         must_not_terms.push(json!({ "match": { "position": "FINISHED" } }));
 
         // inference structure must exist first
-        must_terms.push(json!({"exists":{"field": "inference"}}));
+        must_terms.push(json!({"exists":{"field": "summary.inference_result.primary_inference"}}));
 
-        let mut suspicion_filter = json!({"inference.suspicion.suspicion_level": {}});
+        let mut suspicion_filter =
+            json!({"summary.inference_result.primary_inference.suspicion_level": {}});
         if let Some(max) = max_susp {
-            suspicion_filter["inference.suspicion.suspicion_level"]["lte"] =
+            suspicion_filter["summary.inference_result.primary_inference.suspicion_level"]["lte"] =
                 json!(max.to_owned() as i32);
         }
         if let Some(min) = min_susp {
-            suspicion_filter["inference.suspicion.suspicion_level"]["gte"] =
+            suspicion_filter["summary.inference_result.primary_inference.suspicion_level"]["gte"] =
                 json!(min.to_owned() as i32);
         }
         must_terms.push(json!({ "range": suspicion_filter }));
@@ -176,33 +175,6 @@ impl ElasticSearchBackend {
             // NOTE: only push duration filter if we specified duration, otherwise events without a
             // a duration field will not show up in the search results
             must_terms.push(json!({ "range": duration_filter }));
-        }
-
-        if let Some(mis) = misconf {
-            must_terms.push(json!({"term": {"inference.misconfiguration": mis}}));
-            // must_not_terms.push(json!({"match":{"tags":"newcomer-is-sibling"}}));
-            // must_not_terms.push(json!({"match":{"tags":"newcomer-is-friend"}}));
-            let mut mistype = "all";
-            if let Some(t) = misconf_type {
-                mistype = t.as_str();
-            }
-            match mistype {
-                "all" => {}
-                "asn_prepend" => {
-                    must_terms.push(json!({"term":{"tags":"newcomer-small-asn"}}));
-                    must_terms.push(json!({"term":{"tags":"all-newcomers-next-to-an-oldcomer"}}));
-                }
-                "fatfinger_prefix" => {
-                    must_terms.push(json!({"term":{"tags":"prefix-small-edit-distance"}}));
-                }
-                "fatfinger_asn" => {
-                    must_terms.push(json!({"term":{"tags":"origin-small-edit-distance"}}));
-                }
-                "reserved_space" => {
-                    must_terms.push(json!({"term":{"tags":"reserved-space"}}));
-                }
-                _ => {}
-            }
         }
 
         match pfxs {
@@ -242,9 +214,9 @@ impl ElasticSearchBackend {
                     if t.starts_with("!") {
                         // negative match
                         let new_t = t.trim_start_matches('!');
-                        must_not_terms.push(json!({"term":{"tags":new_t}}))
+                        must_not_terms.push(json!({"term":{"summary.tags":new_t}}))
                     } else {
-                        must_terms.push(json!({"term":{"tags":t}}))
+                        must_terms.push(json!({"term":{"summary.tags":t}}))
                     }
                 }
             }
@@ -257,9 +229,11 @@ impl ElasticSearchBackend {
                     if t.starts_with("!") {
                         // negative match
                         let new_t = t.trim_start_matches('!');
-                        must_not_terms.push(json!({"term":{"inference.event_codes":new_t}}))
+                        must_not_terms.push(json!({"term":{"summary.inference_result.inferences.inference_id":new_t}}))
                     } else {
-                        must_terms.push(json!({"term":{"inference.event_codes":t}}))
+                        must_terms.push(
+                            json!({"term":{"summary.inference_result.inferences.inference_id":t}}),
+                        )
                     }
                 }
             }
@@ -286,7 +260,7 @@ impl ElasticSearchBackend {
         let res = self
             .es_client
             .search::<Value>()
-            .index(format!("observatory-events-{}-*", etype))
+            .index(format!("observatory-v2-events-{}-*", etype))
             .body(query)
             .send()?;
 
