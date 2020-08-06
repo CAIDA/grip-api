@@ -9,6 +9,7 @@ clear:
 install: clear build
 	sudo service bgphijacks-dashboard stop
 	sudo install -p --backup=none -v -m 0755 target/release/hijacks_dashboard /usr/local/bin/bgphijacks-dashboard
+	sudo cp -r Rocket.toml $(APP_DIR)/
 	sudo service bgphijacks-dashboard start
 
 clean:
