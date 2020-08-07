@@ -33,6 +33,8 @@ struct Opts {
     min_duration: Option<usize>,
     #[clap(long)]
     max_duration: Option<usize>,
+    #[clap(short, long)]
+    pretty_print: bool,
 }
 
 fn main() {
@@ -69,5 +71,10 @@ fn main() {
             "data": res_data,
         }
     );
-    println!("{}", serde_json::to_string_pretty(&object).unwrap());
+
+    if opts.pretty_print {
+        println!("{}", serde_json::to_string_pretty(&object).unwrap());
+    } else {
+        println!("{}", serde_json::to_string(&object).unwrap());
+    }
 }
