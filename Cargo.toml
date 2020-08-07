@@ -1,6 +1,6 @@
 [package]
 name = "hijacks_dashboard"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Mingwei Zhang <mingwei@caida.org>"]
 edition = "2018"
 

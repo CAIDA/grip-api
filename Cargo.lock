@@ -759,7 +759,7 @@ dependencies = [
 
 [[package]]
 name = "hijacks_dashboard"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "chrono 0.4.13 (registry+https://github.com/rust-lang/crates.io-index)",
  "clap 3.0.0-beta.1 (registry+https://github.com/rust-lang/crates.io-index)",
