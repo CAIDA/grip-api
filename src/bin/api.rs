@@ -147,7 +147,7 @@ mod test {
     fn test_basic_api() {
         let client = Client::new(get_rocket(None)).expect("valid rocket instance");
         let options = "/json/events?length=10&start=0&ts_start=2020-05-20T18%3A39&ts_end=2020-05-27T18%3A39&min_susp=80&max_susp=100&event_type=moas";
-        let mut response = client.get(options).dispatch();
+        let response = client.get(options).dispatch();
         assert_eq!(response.status(), Status::Ok);
     }
 }

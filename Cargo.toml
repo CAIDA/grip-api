@@ -1,8 +1,16 @@
 [package]
 name = "hijacks_dashboard"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Mingwei Zhang <mingwei@caida.org>"]
 edition = "2018"
+
+[[bin]]
+name = "hijacks-dashboard"
+path = "src/bin/api.rs"
+
+[[bin]]
+name = "hijacks-cli"
+path = "src/bin/cli.rs"
 
 [dependencies]
 # general
@@ -25,6 +33,7 @@ serde_derive = "1.0"
 config = "0.9"
 toml = "0.4"
 structopt = "0.2"
+clap= "3.0.0-beta.1"
 
 chrono = "0.4.11"
 lazy_static = "1.4.0"
@@ -33,3 +42,4 @@ lazy_static = "1.4.0"
 version = "0.4.5"
 default-features = false
 features = ["json"]
+
