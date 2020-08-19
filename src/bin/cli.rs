@@ -7,34 +7,49 @@ use clap::Clap;
 #[derive(Debug, Clap)]
 #[clap()]
 struct Opts {
+    /// Event type to search for
     #[clap(long)]
     event_type: Option<String>,
+    /// Starting index for pagination
     #[clap(long)]
     start: Option<usize>,
+    /// Maximum number of events to find
     #[clap(long)]
     max: Option<usize>,
+    /// Event asns, comma-separated string
     #[clap(long)]
     asns: Option<String>,
+    /// Event prefixes, comma-separated string
     #[clap(long)]
     pfxs: Option<String>,
+    /// Minimum start timestamp of for an event
     #[clap(long)]
     ts_start: Option<String>,
+    /// Maximum  start timestamp of for an event
     #[clap(long)]
     ts_end: Option<String>,
+    /// Event tags, comma-separated string
     #[clap(long)]
     tags: Option<String>,
+    /// Event codes, comma-separated string
     #[clap(long)]
     codes: Option<String>,
+    /// Minimum suspicion level of an event
     #[clap(long)]
     min_susp: Option<usize>,
+    /// Maximum suspicion level of an event
     #[clap(long)]
     max_susp: Option<usize>,
+    /// Minimum duration of an event
     #[clap(long)]
     min_duration: Option<usize>,
+    /// Maximum duration of an event
     #[clap(long)]
     max_duration: Option<usize>,
+    /// Pretty print the resulting JSON object
     #[clap(short, long)]
     pretty_print: bool,
+    /// Slimmed-down version of the JSON object
     #[clap(short, long)]
     slim: bool,
 }
