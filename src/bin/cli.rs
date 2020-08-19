@@ -1,6 +1,6 @@
 use hijacks_dashboard::backend::data::process_raw_event;
-use serde_json::{Value,json};
 use hijacks_dashboard::backend::elastic::ElasticSearchBackend;
+use serde_json::{json, Value};
 
 use clap::Clap;
 
@@ -35,6 +35,28 @@ struct Opts {
     max_duration: Option<usize>,
     #[clap(short, long)]
     pretty_print: bool,
+    #[clap(short, long)]
+    slim: bool,
+}
+
+/// Convert a raw object to a slim object
+fn slim_result(value: &Value) -> Value {
+    let mut event = json!({});
+    // filter easy fields
+    for field in vec!["id", "event_type", "view_ts", "finished_ts", "summary"] {
+        event[field] = value[field].to_owned();
+    }
+
+    event["url"] = json!(format!(
+        "https://dev.hicube.caida.org/feeds/hijacks/events/{}/{}",
+        value["event_type"].as_str().unwrap(), value["id"].as_str().unwrap()
+    ));
+
+    if let Some(asrank) = value["external"].get("asrank") {
+        event["asinfo"] = asrank.to_owned();
+    }
+
+    event
 }
 
 fn main() {
@@ -56,13 +78,16 @@ fn main() {
             &opts.max_susp,
             &opts.min_duration,
             &opts.max_duration,
-        ).unwrap();
+        )
+        .unwrap();
 
-    let res_data: Vec<Value> = query_result
-        .results
-        .iter()
-        .map(|v| process_raw_event(v, false, false))
-        .collect();
+    let res_iter = query_result.results.iter();
+    let res_data: Vec<Value> = match opts.slim {
+        true => res_iter.map(|v| slim_result(v)).collect::<Vec<Value>>(),
+        false => res_iter
+            .map(|v| process_raw_event(v, false, false))
+            .collect::<Vec<Value>>(),
+    };
 
     let object = json!(
         {
