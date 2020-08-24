@@ -52,6 +52,9 @@ struct Opts {
     /// Slimmed-down version of the JSON object
     #[clap(short, long)]
     slim: bool,
+    /// Count matches only
+    #[clap(short, long)]
+    count: bool,
 }
 
 /// Convert a raw object to a slim object
@@ -74,10 +77,9 @@ fn slim_result(value: &Value) -> Value {
     event
 }
 
-fn main() {
-    let opts: Opts = Opts::parse();
-    let backend = ElasticSearchBackend::new("http://clayface.caida.org:9200").unwrap();
+fn search(opts: &Opts) -> Value {
 
+    let backend = ElasticSearchBackend::new("http://clayface.caida.org:9200").unwrap();
     let query_result = backend
         .list_events(
             &opts.event_type,
@@ -95,7 +97,6 @@ fn main() {
             &opts.max_duration,
         )
         .unwrap();
-
     let res_iter = query_result.results.iter();
     let res_data: Vec<Value> = match opts.slim {
         true => res_iter.map(|v| slim_result(v)).collect::<Vec<Value>>(),
@@ -103,14 +104,48 @@ fn main() {
             .map(|v| process_raw_event(v, false, false))
             .collect::<Vec<Value>>(),
     };
-
-    let object = json!(
+    json!(
         {
             "cnt_total": query_result.total,
             "cnt_returned": res_data.len(),
             "data": res_data,
         }
-    );
+    )
+}
+
+fn count(opts: &Opts) -> Value {
+
+    let backend = ElasticSearchBackend::new("http://clayface.caida.org:9200").unwrap();
+    let query_result = backend
+        .count_events(
+            &opts.event_type,
+            &opts.asns,
+            &opts.pfxs,
+            &opts.ts_start,
+            &opts.ts_end,
+            &opts.tags,
+            &opts.codes,
+            &opts.min_susp,
+            &opts.max_susp,
+            &opts.min_duration,
+            &opts.max_duration,
+        )
+        .unwrap();
+    json!({"count":query_result.count})
+}
+
+
+fn main() {
+    let opts: Opts = Opts::parse();
+
+    let object = match &opts.count {
+        true => {
+            count(&opts)
+        },
+        false => {
+            search(&opts)
+        }
+    };
 
     if opts.pretty_print {
         println!("{}", serde_json::to_string_pretty(&object).unwrap());
