@@ -34,6 +34,7 @@ use chrono::prelude::DateTime;
 use chrono::Utc;
 use std::error::Error;
 use std::time::{Duration, UNIX_EPOCH};
+use std::collections::HashMap;
 
 use elastic::prelude::*;
 use serde_json::json;
@@ -49,6 +50,10 @@ pub struct ElasticSearchBackend {
 pub struct SearchResult {
     pub results: Vec<Value>,
     pub total: u64,
+}
+
+pub struct CountResult {
+    pub count: u64,
 }
 
 impl ElasticSearchBackend {
@@ -301,6 +306,41 @@ impl ElasticSearchBackend {
         Ok(SearchResult {
             results: res_vec,
             total: res.total(),
+        })
+    }
+
+    pub fn count_events(
+        &self,
+        event_type: &Option<String>,
+        asns: &Option<String>,
+        pfxs: &Option<String>,
+        ts_start: &Option<String>,
+        ts_end: &Option<String>,
+        tags: &Option<String>,
+        codes: &Option<String>,
+        min_susp: &Option<usize>,
+        max_susp: &Option<usize>,
+        min_duration: &Option<usize>,
+        max_duration: &Option<usize>,
+    ) -> Result<CountResult, Box<dyn Error>> {
+        // event type default to "*"
+        let mut etype = "*".to_owned();
+        if let Some(et) = event_type {
+            etype = match et.as_str() {
+                "all" => "*".to_owned(),
+                _ => et.to_owned(),
+            }
+        }
+
+        let mut query = HashMap::new();
+        query.insert("query", self.build_query(asns, pfxs, ts_start, ts_end, tags, codes, min_susp, max_susp, min_duration, max_duration));
+
+        let client = reqwest::Client::new();
+        let res: Value = client.post(format!("http://clayface.caida.org:9200/observatory-v2-events-{}-*/_count", etype).as_str())
+                        .json(&query)
+                        .send().unwrap().json().unwrap();
+        Ok(CountResult {
+            count: res["count"].as_u64().unwrap(),
         })
     }
 }
