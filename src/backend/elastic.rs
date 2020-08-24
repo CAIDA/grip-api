@@ -98,11 +98,8 @@ impl ElasticSearchBackend {
         }
     }
 
-    pub fn list_events(
+    fn build_query (
         &self,
-        event_type: &Option<String>,
-        start: &Option<usize>,
-        max: &Option<usize>,
         asns: &Option<String>,
         pfxs: &Option<String>,
         ts_start: &Option<String>,
@@ -113,21 +110,8 @@ impl ElasticSearchBackend {
         max_susp: &Option<usize>,
         min_duration: &Option<usize>,
         max_duration: &Option<usize>,
-    ) -> Result<SearchResult, Box<dyn Error>> {
-        // event type default to "*"
-        let mut etype = "*".to_owned();
-        if let Some(et) = event_type {
-            etype = match et.as_str() {
-                "all" => "*".to_owned(),
-                _ => et.to_owned(),
-            }
-        }
-
-        let mut query_from = 0;
-        if let Some(s) = start {
-            query_from = s.to_owned() as i32;
-        }
-
+    ) -> Value {
+        // time range filter
         let mut range_filter = json!({"view_ts":{}});
         if let Some(start_str) = ts_start {
             range_filter["view_ts"]["gte"] = json!(convert_time_str(start_str));
@@ -135,11 +119,6 @@ impl ElasticSearchBackend {
         if let Some(end_str) = ts_end {
             range_filter["view_ts"]["lte"] = json!(convert_time_str(end_str));
         }
-
-        let max_entries = match max {
-            Some(n) => n.to_owned() as i32,
-            None => 100 as i32,
-        };
 
         // match must terms
         let mut must_terms = vec![];
@@ -177,6 +156,7 @@ impl ElasticSearchBackend {
             must_terms.push(json!({ "range": duration_filter }));
         }
 
+        // prefixes filter
         match pfxs {
             Some(prefixes_string) => {
                 let pfx_lst: Vec<&str> = prefixes_string.split(",").collect();
@@ -192,6 +172,8 @@ impl ElasticSearchBackend {
             }
             _ => {}
         }
+
+        // asns filter
         match asns {
             Some(asn_string) => {
                 let asn_lst: Vec<&str> = asn_string.split(",").collect();
@@ -207,6 +189,8 @@ impl ElasticSearchBackend {
             }
             _ => {}
         }
+
+        // tags filter
         match tags {
             Some(tags_string) => {
                 let tags_lst: Vec<&str> = tags_string.split(",").collect::<Vec<&str>>();
@@ -222,6 +206,8 @@ impl ElasticSearchBackend {
             }
             _ => {}
         }
+
+        // codes filter
         match codes {
             Some(codes_string) => {
                 let codes_lst: Vec<&str> = codes_string.split(",").collect::<Vec<&str>>();
@@ -240,9 +226,8 @@ impl ElasticSearchBackend {
             _ => {}
         }
 
-        let query: serde_json::Value = json!({
-            "from":query_from, "size":max_entries,
-            "query": {
+        json!(
+            {
                 "bool": {
                     "must": must_terms,
                     "must_not": must_not_terms,
@@ -250,12 +235,53 @@ impl ElasticSearchBackend {
                         "range": range_filter
                     }
                 }
-            },
-            "sort": { "view_ts": { "order": "desc" }}
-        });
+            }
+        )
+    }
 
-        // DEBUG line below
-        // println!("{}", serde_json::to_string_pretty(&query)?);
+    pub fn list_events(
+        &self,
+        event_type: &Option<String>,
+        start: &Option<usize>,
+        max: &Option<usize>,
+        asns: &Option<String>,
+        pfxs: &Option<String>,
+        ts_start: &Option<String>,
+        ts_end: &Option<String>,
+        tags: &Option<String>,
+        codes: &Option<String>,
+        min_susp: &Option<usize>,
+        max_susp: &Option<usize>,
+        min_duration: &Option<usize>,
+        max_duration: &Option<usize>,
+    ) -> Result<SearchResult, Box<dyn Error>> {
+        // event type default to "*"
+        let mut etype = "*".to_owned();
+        if let Some(et) = event_type {
+            etype = match et.as_str() {
+                "all" => "*".to_owned(),
+                _ => et.to_owned(),
+            }
+        }
+
+        let mut query_from = 0;
+        if let Some(s) = start {
+            query_from = s.to_owned() as i32;
+        }
+
+        let max_entries = match max {
+            Some(n) => n.to_owned() as i32,
+            None => 100 as i32,
+        };
+
+        let query: serde_json::Value = json!(
+            {
+                "from":query_from,
+                "size":max_entries,
+                "query":self.build_query(asns, pfxs, ts_start, ts_end, tags, codes, min_susp, max_susp, min_duration, max_duration),
+                "sort": { "view_ts": { "order": "desc" }}
+            }
+        );
 
         let res = self
             .es_client
