@@ -105,11 +105,11 @@ pub fn json_pfx_event_by_id(
 
     match backend.get_event_by_id(id) {
         Ok(event) => {
-            let victims = match event["summary"]["inference_result"]["victims"].as_array() {
+            let victims = match event["summary"]["victims"].as_array() {
                 Some(v) => json!(v),
                 None => json!([]),
             };
-            let attackers = match event["summary"]["inference_result"]["attackers"].as_array() {
+            let attackers = match event["summary"]["attackers"].as_array() {
                 Some(v) => json!(v),
                 None => json!([]),
             };
