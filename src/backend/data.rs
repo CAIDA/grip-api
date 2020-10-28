@@ -35,7 +35,6 @@ use serde_json::{json, Map, Value};
 /// shared state across rocket threads
 pub struct SharedData {
     pub es_url: String,
-    pub resource_dir: String,
 }
 
 /// process raw event from elasticsearch and convert the event into filtered data.

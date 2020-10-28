@@ -1,5 +1,5 @@
-use hijacks_dashboard::backend::data::process_raw_event;
-use hijacks_dashboard::backend::elastic::ElasticSearchBackend;
+use grip_api::backend::data::process_raw_event;
+use grip_api::backend::elastic::ElasticSearchBackend;
 use serde_json::{json, Value};
 
 use clap::Clap;

@@ -38,14 +38,12 @@ use rocket::http::{ContentType, Header, Method};
 use rocket::{routes, Rocket};
 use rocket::{Request, Response};
 use std::io::Cursor;
-use structopt::StructOpt;
 
-use hijacks_dashboard::backend::api_external::*;
-use hijacks_dashboard::backend::api_json::*;
-use hijacks_dashboard::backend::api_stats::*;
-use hijacks_dashboard::backend::data::SharedData;
+use grip_api::backend::api_external::*;
+use grip_api::backend::api_json::*;
+use grip_api::backend::api_stats::*;
+use grip_api::backend::data::SharedData;
 use rocket::Config;
-use std::collections::HashMap;
 
 pub struct CORS();
 
@@ -75,27 +73,8 @@ impl Fairing for CORS {
     }
 }
 
-#[derive(StructOpt, Debug)]
-#[structopt(raw(setting = "structopt::clap::AppSettings::ColoredHelp"))]
-struct Opt {
-    #[structopt(short = "d")]
-    directory: Option<String>,
-}
-
-fn get_rocket(directory: Option<String>) -> Rocket {
-    let resource_dir: String;
-    match directory {
-        Some(d) => resource_dir = d,
-        None => resource_dir = "./".to_owned(),
-    };
-
+fn get_rocket() -> Rocket {
     let mut config = Config::active().unwrap();
-    let mut extra_config = HashMap::new();
-    extra_config.insert(
-        "template_dir".to_owned(),
-        format!("{}/templates", &resource_dir).into(),
-    );
-    config.set_extras(extra_config);
     config.set_address("0.0.0.0").unwrap();
     // config.set_port(8001);
 
@@ -127,25 +106,22 @@ fn get_rocket(directory: Option<String>) -> Rocket {
             // pass in tags
             Ok(rocket.manage(SharedData {
                 es_url,
-                resource_dir,
             }))
         }))
 }
 
 fn main() {
-    let opts = Opt::from_args();
-    get_rocket(opts.directory).launch();
+    get_rocket().launch();
 }
 
 #[cfg(test)]
 mod test {
     use crate::get_rocket;
-    use rocket::http::Status;
-    use rocket::local::Client;
+        use rocket::{local::Client, http::Status};
 
     #[test]
     fn test_basic_api() {
-        let client = Client::new(get_rocket(None)).expect("valid rocket instance");
+        let client = Client::new(get_rocket()).expect("valid rocket instance");
         let options = "/json/events?length=10&start=0&ts_start=2020-05-20T18%3A39&ts_end=2020-05-27T18%3A39&min_susp=80&max_susp=100&event_type=moas";
         let response = client.get(options).dispatch();
         assert_eq!(response.status(), Status::Ok);

@@ -1,15 +1,15 @@
 [package]
-name = "hijacks_dashboard"
+name = "grip_api"
 version = "0.2.1"
 authors = ["Mingwei Zhang <mingwei@caida.org>"]
 edition = "2018"
 
 [[bin]]
-name = "hijacks-dashboard"
+name = "grip-api"
 path = "src/bin/api.rs"
 
 [[bin]]
-name = "hijacks-cli"
+name = "grip-cli"
 path = "src/bin/cli.rs"
 
 [dependencies]
