@@ -1,6 +1,5 @@
-# BGP Observatory API
-
-Web API backend for CAIDA BGP Observatory Project.
+# GRIP API
+Web API backend for CAIDA Global Routing Intelligence Platform Project.
 
 ## Configuration Files
 
