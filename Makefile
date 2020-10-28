@@ -1,16 +1,14 @@
-APP_DIR	= /var/lib/bgphijacks-dashboard
+setup-rust:
+	curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly-2020-01-01 -y
 
-build:
+build: setup-rust
 	$(HOME)/.cargo/bin/cargo build --release
 
-clear:
-	sudo rm -rf $(APP_DIR)/*
-
-install: clear build
-	sudo service bgphijacks-dashboard stop
-	sudo install -p --backup=none -v -m 0755 target/release/hijacks_dashboard /usr/local/bin/bgphijacks-dashboard
-	sudo cp -r Rocket.toml $(APP_DIR)/
-	sudo service bgphijacks-dashboard start
+install: build
+	sudo service grip-api stop
+	sudo install -p --backup=none -v -m 0755 target/release/grip-api /usr/local/bin/grip-api
+	sudo install -p --backup=none -v -m 0755 target/release/grip-cli /usr/local/bin/grip-cli
+	sudo service grip-api start
 
 clean:
 	cargo clean

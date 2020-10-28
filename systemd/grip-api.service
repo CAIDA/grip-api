@@ -1,0 +1,18 @@
+[Unit]
+Description=GRIP API
+# OnFailure=grip-failure@api.service
+
+[Service]
+Type=simple
+User=grip
+Group=grip
+ExecStart=/usr/local/bin/grip-api -d /var/lib/grip-api
+# ExecStartPre=/usr/local/bin/bgphijacks-ops-event -o start -T deployment,start,systemd \
+#     -e all -c dashboard -m "dashboard service started"
+# ExecStop=/usr/local/bin/bgphijacks-ops-event -o stop -T deployment,stop,systemd \
+#     -e all -c dashboard -m "dashboard service stopped"
+Restart=on-failure
+SyslogIdentifier=grip-api
+
+[Install]
+WantedBy=multi-user.target
