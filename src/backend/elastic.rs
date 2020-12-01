@@ -72,7 +72,7 @@ impl ElasticSearchBackend {
         let datetime = DateTime::<Utc>::from(d);
 
         let query = format!(
-            "http://clayface.caida.org:9200/observatory-v2-events-{}-{}-{:02}/_doc/{}",
+            "http://clayface.caida.org:9200/observatory-v3-events-{}-{}-{:02}/_doc/{}",
             event_type,
             datetime.year(),
             datetime.month(),
@@ -86,7 +86,7 @@ impl ElasticSearchBackend {
             return Ok(document);
         } else {
             let query = format!(
-                "http://clayface.caida.org:9200/observatory-v2-events-{}-{}-{:02}/event_result/{}",
+                "http://clayface.caida.org:9200/observatory-v3-events-{}-{}-{:02}/event_result/{}",
                 event_type,
                 datetime.year(),
                 datetime.month(),
@@ -203,9 +203,9 @@ impl ElasticSearchBackend {
                     if t.starts_with("!") {
                         // negative match
                         let new_t = t.trim_start_matches('!');
-                        must_not_terms.push(json!({"term":{"summary.tags":new_t}}))
+                        must_not_terms.push(json!({"term":{"summary.tags.name":new_t}}))
                     } else {
-                        must_terms.push(json!({"term":{"summary.tags":t}}))
+                        must_terms.push(json!({"term":{"summary.tags.name":t}}))
                     }
                 }
             }
@@ -292,7 +292,7 @@ impl ElasticSearchBackend {
         let res = self
             .es_client
             .search::<Value>()
-            .index(format!("observatory-v2-events-{}-*", etype))
+            .index(format!("observatory-v3-events-{}-*", etype))
             .body(query)
             .send()?;
 
@@ -337,7 +337,7 @@ impl ElasticSearchBackend {
         query.insert("query", self.build_query(asns, pfxs, ts_start, ts_end, tags, codes, min_susp, max_susp, min_duration, max_duration));
 
         let client = reqwest::Client::new();
-        let res: Value = client.post(format!("http://clayface.caida.org:9200/observatory-v2-events-{}-*/_count", etype).as_str())
+        let res: Value = client.post(format!("http://clayface.caida.org:9200/observatory-v3-events-{}-*/_count", etype).as_str())
                         .json(&query)
                         .send().unwrap().json().unwrap();
         Ok(CountResult {
