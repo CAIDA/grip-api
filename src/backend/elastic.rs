@@ -283,6 +283,7 @@ impl ElasticSearchBackend {
             {
                 "from":query_from,
                 "size":max_entries,
+                "track_total_hits": true,
                 "query":self.build_query(asns, pfxs, ts_start, ts_end, tags, codes, min_susp, max_susp, min_duration, max_duration),
                 "sort": { "view_ts": { "order": "desc" }}
             }
