@@ -50,7 +50,6 @@ pub fn process_raw_event(value: &Value, include_tr: bool, include_details: bool)
         "insert_ts",
         "last_modified_ts",
         "duration",
-        "external",
         "tr_metrics",
         "event_metrics",
         "summary",
