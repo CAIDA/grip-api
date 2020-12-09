@@ -36,10 +36,10 @@ struct Opts {
     codes: Option<String>,
     /// Minimum suspicion level of an event
     #[clap(long)]
-    min_susp: Option<usize>,
+    min_susp: Option<isize>,
     /// Maximum suspicion level of an event
     #[clap(long)]
-    max_susp: Option<usize>,
+    max_susp: Option<isize>,
     /// Minimum duration of an event
     #[clap(long)]
     min_duration: Option<usize>,

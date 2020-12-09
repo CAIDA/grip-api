@@ -152,10 +152,11 @@ pub fn json_list_events(
     pfxs: Option<String>,
     tags: Option<String>,
     codes: Option<String>,
-    min_susp: Option<usize>,
-    max_susp: Option<usize>,
+    min_susp: Option<isize>,
+    max_susp: Option<isize>,
     min_duration: Option<usize>,
     max_duration: Option<usize>,
+    full: Option<bool>,
     base_url: State<SharedData>,
 ) -> Json<Value> {
     let backend = ElasticSearchBackend::new(&base_url.es_url).unwrap();

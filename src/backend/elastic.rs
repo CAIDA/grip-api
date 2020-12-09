@@ -111,8 +111,8 @@ impl ElasticSearchBackend {
         ts_end: &Option<String>,
         tags: &Option<String>,
         codes: &Option<String>,
-        min_susp: &Option<usize>,
-        max_susp: &Option<usize>,
+        min_susp: &Option<isize>,
+        max_susp: &Option<isize>,
         min_duration: &Option<usize>,
         max_duration: &Option<usize>,
     ) -> Value {
@@ -255,8 +255,8 @@ impl ElasticSearchBackend {
         ts_end: &Option<String>,
         tags: &Option<String>,
         codes: &Option<String>,
-        min_susp: &Option<usize>,
-        max_susp: &Option<usize>,
+        min_susp: &Option<isize>,
+        max_susp: &Option<isize>,
         min_duration: &Option<usize>,
         max_duration: &Option<usize>,
     ) -> Result<SearchResult, Box<dyn Error>> {
@@ -319,8 +319,8 @@ impl ElasticSearchBackend {
         ts_end: &Option<String>,
         tags: &Option<String>,
         codes: &Option<String>,
-        min_susp: &Option<usize>,
-        max_susp: &Option<usize>,
+        min_susp: &Option<isize>,
+        max_susp: &Option<isize>,
         min_duration: &Option<usize>,
         max_duration: &Option<usize>,
     ) -> Result<CountResult, Box<dyn Error>> {
