@@ -52,6 +52,9 @@ struct Opts {
     /// Slimmed-down version of the JSON object
     #[clap(short, long)]
     slim: bool,
+    /// Return full events including traceroutes and AS paths
+    #[clap(short, long)]
+    full: bool,
     /// Count matches only
     #[clap(short, long)]
     count: bool,
@@ -101,7 +104,12 @@ fn search(opts: &Opts) -> Value {
     let res_data: Vec<Value> = match opts.slim {
         true => res_iter.map(|v| slim_result(v)).collect::<Vec<Value>>(),
         false => res_iter
-            .map(|v| process_raw_event(v, false, false))
+            .map(|v|
+                 match opts.full {
+                     true => {v.to_owned()}
+                     false => {process_raw_event(v, opts.full, opts.full)}
+                 }
+            )
             .collect::<Vec<Value>>(),
     };
     json!(

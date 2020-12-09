@@ -71,8 +71,8 @@ pub fn json_get_asndrop() -> Json<Value> {
     Json(json!(asndrop))
 }
 
-#[get("/json/event/id/<id>")]
-pub fn json_event_by_id(id: &RawStr, base_url: State<SharedData>) -> Json<Value> {
+#[get("/json/event/id/<id>?<full>")]
+pub fn json_event_by_id(id: &RawStr, full: bool, base_url: State<SharedData>) -> Json<Value> {
     let backend_res = ElasticSearchBackend::new(&base_url.es_url);
 
     let backend = match backend_res {
@@ -83,7 +83,10 @@ pub fn json_event_by_id(id: &RawStr, base_url: State<SharedData>) -> Json<Value>
     match backend.get_event_by_id(id) {
         // Ok(event) => Json(json!({"data":event.results[0]["pfx_events"].to_owned()}).to_owned()),
         Ok(event) => {
-            let e = process_raw_event(&event, true, true);
+            let e = match full{
+                true => {event}
+                false => {process_raw_event(&event, true, true)}
+            };
             Json(json!(e))
         }
         Err(_e) => Json(json!({ "error": format!("Cannot find event {}", id) })),
@@ -139,7 +142,7 @@ pub fn json_pfx_event_by_id(
     "/json/events?\
      <event_type>&<ts_start>&<ts_end>&<draw>&<start>&<length>&<asns>&<pfxs>&\
      <tags>&<codes>&<min_susp>&<max_susp>&\
-     <min_duration>&<max_duration>"
+     <min_duration>&<max_duration>&<full>"
 )]
 pub fn json_list_events(
     event_type: Option<String>,
@@ -156,7 +159,7 @@ pub fn json_list_events(
     max_susp: Option<isize>,
     min_duration: Option<usize>,
     max_duration: Option<usize>,
-    full: Option<bool>,
+    full: bool,
     base_url: State<SharedData>,
 ) -> Json<Value> {
     let backend = ElasticSearchBackend::new(&base_url.es_url).unwrap();
@@ -177,11 +180,20 @@ pub fn json_list_events(
             &max_duration,
         )
         .unwrap();
-    let res_data: Vec<Value> = query_result
-        .results
-        .iter()
-        .map(|v| process_raw_event(v, false, false))
-        .collect();
+
+
+    let res_data: Vec<Value> = match full{
+        true => {
+            query_result.results
+        }
+        false => {
+            query_result
+                .results
+                .iter()
+                .map(|v| process_raw_event(v, full, full))
+                .collect()
+        }
+    };
     let object = json!(
         {
             "data": res_data,
