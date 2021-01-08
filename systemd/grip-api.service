@@ -3,8 +3,8 @@ Description=GRIP API
 
 [Service]
 Type=simple
-User=grip
-Group=grip
+User=bgp
+Group=bgp
 ExecStart=/usr/local/bin/grip-api
 Restart=on-failure
 SyslogIdentifier=grip-api
