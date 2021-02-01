@@ -90,6 +90,7 @@ fn get_rocket() -> Rocket {
                 json_stats_total,
                 json_get_tags,
                 json_get_blacklist,
+                json_get_blocklist,
                 json_get_asndrop,
                 json_get_hegemony,
                 json_get_asrank,
