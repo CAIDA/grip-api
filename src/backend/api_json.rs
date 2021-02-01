@@ -62,6 +62,15 @@ pub fn json_get_blacklist() -> Json<Value> {
     Json(json!(blacklist))
 }
 
+#[get("/json/blocklist")]
+pub fn json_get_blocklist() -> Json<Value> {
+    let blacklist: Value = reqwest::get(format!("http://10.250.203.3:5000/blacklist").as_str())
+        .unwrap()
+        .json()
+        .unwrap();
+    Json(json!({"blocklist": blacklist["blacklist"]}))
+}
+
 #[get("/json/asndrop")]
 pub fn json_get_asndrop() -> Json<Value> {
     let asndrop: Value = reqwest::get(format!("http://10.250.203.3:5000/asndrop").as_str())
