@@ -55,6 +55,9 @@ struct Opts {
     /// Return full events including traceroutes and AS paths
     #[clap(short, long)]
     full: bool,
+    /// Whether to include events that overlaps with the time range in query
+    #[clap(short, long)]
+    overlap: bool,
     /// Count matches only
     #[clap(short, long)]
     count: bool,
@@ -98,6 +101,7 @@ fn search(opts: &Opts) -> Value {
             &opts.max_susp,
             &opts.min_duration,
             &opts.max_duration,
+            opts.overlap,
         )
         .unwrap();
     let res_iter = query_result.results.iter();
@@ -137,6 +141,7 @@ fn count(opts: &Opts) -> Value {
             &opts.max_susp,
             &opts.min_duration,
             &opts.max_duration,
+            opts.overlap,
         )
         .unwrap();
     json!({"count":query_result.count})
