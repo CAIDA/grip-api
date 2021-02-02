@@ -1,6 +1,6 @@
 [package]
 name = "grip_api"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["Mingwei Zhang <mingwei@caida.org>"]
 edition = "2018"
 

@@ -115,15 +115,108 @@ impl ElasticSearchBackend {
         max_susp: &Option<isize>,
         min_duration: &Option<usize>,
         max_duration: &Option<usize>,
+        include_overlap: bool,
     ) -> Value {
-        // time range filter
-        let mut range_filter = json!({"view_ts":{}});
+
+        // time range filters
+        let mut should_filters = vec![];
+        let mut must_filters = vec![];
         if let Some(start_str) = ts_start {
-            range_filter["view_ts"]["gte"] = json!(convert_time_str(start_str));
+            if include_overlap {
+                // we want events after start_ts, there are two cases:
+                // 1. event start time after start_ts
+                should_filters.push(json!(
+                    {
+                        "range": {
+                            "view_ts": {
+                                "gte": json!(convert_time_str(start_str))
+                            }
+                        }
+                    }
+                ));
+                // 2. event start time before start_ts and
+                //   - either finished time after start_ts
+                //   - or no finished time (i.e. ongoing event)
+                should_filters.push(json!(
+                    {
+                        "bool": {
+                            "must": [
+                                {
+                                    "range": {
+                                        "view_ts": {
+                                            "lt": json!(convert_time_str(start_str))
+                                        }
+                                    }
+                                },
+                                {
+                                    "bool": {
+                                        "should": [
+                                            // case 1: finished_ts after start time
+                                            {
+                                                "range": {
+                                                    "finished_ts": {
+                                                        "gte": json!(convert_time_str(start_str))
+                                                    }
+                                                }
+                                            },
+                                            // case 2: finished_ts not exist (ongoing)
+                                            {
+                                                "bool" : {
+                                                    "must_not": {
+                                                        "exists": {
+                                                            "field": "finished_ts"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ));
+
+                must_filters.push(json!(
+                    {
+                        "bool": {
+                            "should": should_filters
+                        }
+                    }
+                ))
+            } else {
+                // we only check event start time
+                must_filters.push(json!(
+                    {
+                        "range": {
+                            "view_ts": {
+                                "gte": json!(convert_time_str(start_str))
+                            }
+                        }
+                    }
+                ));
+            }
         }
         if let Some(end_str) = ts_end {
-            range_filter["view_ts"]["lte"] = json!(convert_time_str(end_str));
+            // we want events before end_ts:
+            // - event start time must before end_ts, finished time does not matter
+            must_filters.push(json!(
+                {
+                    "range": {
+                        "view_ts": {
+                            "lte": json!(convert_time_str(end_str))
+                        }
+
+                    }
+                }
+            ));
         }
+        let filter = json!({
+                "bool": {
+                    "must": must_filters
+                }
+            }
+        );
 
         // match must terms
         let mut must_terms = vec![];
@@ -236,9 +329,7 @@ impl ElasticSearchBackend {
                 "bool": {
                     "must": must_terms,
                     "must_not": must_not_terms,
-                    "filter": {
-                        "range": range_filter
-                    }
+                    "filter": filter
                 }
             }
         )
@@ -259,6 +350,7 @@ impl ElasticSearchBackend {
         max_susp: &Option<isize>,
         min_duration: &Option<usize>,
         max_duration: &Option<usize>,
+        include_overlap: bool,
     ) -> Result<SearchResult, Box<dyn Error>> {
         // event type default to "*"
         let mut etype = "*".to_owned();
@@ -279,15 +371,17 @@ impl ElasticSearchBackend {
             None => 100 as i32,
         };
 
+        dbg!(&include_overlap);
         let query: serde_json::Value = json!(
             {
                 "from":query_from,
                 "size":max_entries,
                 "track_total_hits": true,
-                "query":self.build_query(asns, pfxs, ts_start, ts_end, tags, codes, min_susp, max_susp, min_duration, max_duration),
+                "query":self.build_query(asns, pfxs, ts_start, ts_end, tags, codes, min_susp, max_susp, min_duration, max_duration, include_overlap),
                 "sort": { "view_ts": { "order": "desc" }}
             }
         );
+        dbg!(query.to_string());
 
         let res = self
             .es_client
@@ -323,6 +417,7 @@ impl ElasticSearchBackend {
         max_susp: &Option<isize>,
         min_duration: &Option<usize>,
         max_duration: &Option<usize>,
+        include_overlap: bool,
     ) -> Result<CountResult, Box<dyn Error>> {
         // event type default to "*"
         let mut etype = "*".to_owned();
@@ -334,7 +429,7 @@ impl ElasticSearchBackend {
         }
 
         let mut query = HashMap::new();
-        query.insert("query", self.build_query(asns, pfxs, ts_start, ts_end, tags, codes, min_susp, max_susp, min_duration, max_duration));
+        query.insert("query", self.build_query(asns, pfxs, ts_start, ts_end, tags, codes, min_susp, max_susp, min_duration, max_duration, include_overlap));
 
         let client = reqwest::Client::new();
         let res: Value = client.post(format!("http://clayface.caida.org:9200/observatory-v3-events-{}-*/_count", etype).as_str())

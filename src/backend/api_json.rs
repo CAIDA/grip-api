@@ -151,7 +151,7 @@ pub fn json_pfx_event_by_id(
     "/json/events?\
      <event_type>&<ts_start>&<ts_end>&<draw>&<start>&<length>&<asns>&<pfxs>&\
      <tags>&<codes>&<min_susp>&<max_susp>&\
-     <min_duration>&<max_duration>&<full>"
+     <min_duration>&<max_duration>&<full>&<overlap>"
 )]
 pub fn json_list_events(
     event_type: Option<String>,
@@ -169,6 +169,7 @@ pub fn json_list_events(
     min_duration: Option<usize>,
     max_duration: Option<usize>,
     full: bool,
+    overlap: bool,
     base_url: State<SharedData>,
 ) -> Json<Value> {
     let backend = ElasticSearchBackend::new(&base_url.es_url).unwrap();
@@ -187,6 +188,7 @@ pub fn json_list_events(
             &max_susp,
             &min_duration,
             &max_duration,
+            overlap,
         )
         .unwrap();
 
