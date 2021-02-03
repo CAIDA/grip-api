@@ -371,7 +371,6 @@ impl ElasticSearchBackend {
             None => 100 as i32,
         };
 
-        dbg!(&include_overlap);
         let query: serde_json::Value = json!(
             {
                 "from":query_from,
@@ -381,7 +380,6 @@ impl ElasticSearchBackend {
                 "sort": { "view_ts": { "order": "desc" }}
             }
         );
-        dbg!(query.to_string());
 
         let res = self
             .es_client
