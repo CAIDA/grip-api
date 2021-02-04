@@ -36,10 +36,10 @@ struct Opts {
     codes: Option<String>,
     /// Minimum suspicion level of an event
     #[clap(long)]
-    min_susp: Option<usize>,
+    min_susp: Option<isize>,
     /// Maximum suspicion level of an event
     #[clap(long)]
-    max_susp: Option<usize>,
+    max_susp: Option<isize>,
     /// Minimum duration of an event
     #[clap(long)]
     min_duration: Option<usize>,
@@ -52,6 +52,12 @@ struct Opts {
     /// Slimmed-down version of the JSON object
     #[clap(short, long)]
     slim: bool,
+    /// Return full events including traceroutes and AS paths
+    #[clap(short, long)]
+    full: bool,
+    /// Whether to include events that overlaps with the time range in query
+    #[clap(short, long)]
+    overlap: bool,
     /// Count matches only
     #[clap(short, long)]
     count: bool,
@@ -95,13 +101,19 @@ fn search(opts: &Opts) -> Value {
             &opts.max_susp,
             &opts.min_duration,
             &opts.max_duration,
+            opts.overlap,
         )
         .unwrap();
     let res_iter = query_result.results.iter();
     let res_data: Vec<Value> = match opts.slim {
         true => res_iter.map(|v| slim_result(v)).collect::<Vec<Value>>(),
         false => res_iter
-            .map(|v| process_raw_event(v, false, false))
+            .map(|v|
+                 match opts.full {
+                     true => {v.to_owned()}
+                     false => {process_raw_event(v, opts.full, opts.full)}
+                 }
+            )
             .collect::<Vec<Value>>(),
     };
     json!(
@@ -129,6 +141,7 @@ fn count(opts: &Opts) -> Value {
             &opts.max_susp,
             &opts.min_duration,
             &opts.max_duration,
+            opts.overlap,
         )
         .unwrap();
     json!({"count":query_result.count})
