@@ -32,9 +32,9 @@
 
 use chrono::prelude::DateTime;
 use chrono::Utc;
+use std::collections::HashMap;
 use std::error::Error;
 use std::time::{Duration, UNIX_EPOCH};
-use std::collections::HashMap;
 
 use elastic::prelude::*;
 use serde_json::json;
@@ -103,7 +103,7 @@ impl ElasticSearchBackend {
         }
     }
 
-    fn build_query (
+    fn build_query(
         &self,
         asns: &Option<String>,
         pfxs: &Option<String>,
@@ -117,7 +117,6 @@ impl ElasticSearchBackend {
         max_duration: &Option<usize>,
         include_overlap: bool,
     ) -> Value {
-
         // time range filters
         let mut should_filters = vec![];
         let mut must_filters = vec![];
@@ -351,6 +350,7 @@ impl ElasticSearchBackend {
         min_duration: &Option<usize>,
         max_duration: &Option<usize>,
         include_overlap: bool,
+        brief: bool,
     ) -> Result<SearchResult, Box<dyn Error>> {
         // event type default to "*"
         let mut etype = "*".to_owned();
@@ -371,7 +371,7 @@ impl ElasticSearchBackend {
             None => 100 as i32,
         };
 
-        let query: serde_json::Value = json!(
+        let mut query: serde_json::Value = json!(
             {
                 "from":query_from,
                 "size":max_entries,
@@ -380,6 +380,10 @@ impl ElasticSearchBackend {
                 "sort": { "view_ts": { "order": "desc" }}
             }
         );
+
+        if brief {
+            query["_source"] = json!(["*_ts", "id", "summary", "event_type"])
+        }
 
         let res = self
             .es_client
@@ -427,12 +431,37 @@ impl ElasticSearchBackend {
         }
 
         let mut query = HashMap::new();
-        query.insert("query", self.build_query(asns, pfxs, ts_start, ts_end, tags, codes, min_susp, max_susp, min_duration, max_duration, include_overlap));
+        query.insert(
+            "query",
+            self.build_query(
+                asns,
+                pfxs,
+                ts_start,
+                ts_end,
+                tags,
+                codes,
+                min_susp,
+                max_susp,
+                min_duration,
+                max_duration,
+                include_overlap,
+            ),
+        );
 
         let client = reqwest::Client::new();
-        let res: Value = client.post(format!("http://clayface.caida.org:9200/observatory-v3-events-{}-*/_count", etype).as_str())
-                        .json(&query)
-                        .send().unwrap().json().unwrap();
+        let res: Value = client
+            .post(
+                format!(
+                    "http://clayface.caida.org:9200/observatory-v3-events-{}-*/_count",
+                    etype
+                )
+                .as_str(),
+            )
+            .json(&query)
+            .send()
+            .unwrap()
+            .json()
+            .unwrap();
         Ok(CountResult {
             count: res["count"].as_u64().unwrap(),
         })

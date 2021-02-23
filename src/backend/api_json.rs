@@ -92,9 +92,9 @@ pub fn json_event_by_id(id: &RawStr, full: bool, base_url: State<SharedData>) ->
     match backend.get_event_by_id(id) {
         // Ok(event) => Json(json!({"data":event.results[0]["pfx_events"].to_owned()}).to_owned()),
         Ok(event) => {
-            let e = match full{
-                true => {event}
-                false => {process_raw_event(&event, true, true)}
+            let e = match full {
+                true => event,
+                false => process_raw_event(&event, true, true),
             };
             Json(json!(e))
         }
@@ -189,21 +189,17 @@ pub fn json_list_events(
             &min_duration,
             &max_duration,
             overlap,
+            false,
         )
         .unwrap();
 
-
-    let res_data: Vec<Value> = match full{
-        true => {
-            query_result.results
-        }
-        false => {
-            query_result
-                .results
-                .iter()
-                .map(|v| process_raw_event(v, full, full))
-                .collect()
-        }
+    let res_data: Vec<Value> = match full {
+        true => query_result.results,
+        false => query_result
+            .results
+            .iter()
+            .map(|v| process_raw_event(v, full, full))
+            .collect(),
     };
     let object = json!(
         {
