@@ -351,6 +351,7 @@ impl ElasticSearchBackend {
         max_duration: &Option<usize>,
         include_overlap: bool,
         brief: bool,
+        debug: bool,
     ) -> Result<SearchResult, Box<dyn Error>> {
         // event type default to "*"
         let mut etype = "*".to_owned();
@@ -385,10 +386,15 @@ impl ElasticSearchBackend {
             query["_source"] = json!(["*_ts", "id", "summary", "event_type"])
         }
 
+        let index = match debug {
+            true => format!("observatory-v3-test-events-{}-*", etype),
+            false => format!("observatory-v3-events-{}-*", etype),
+        };
+
         let res = self
             .es_client
             .search::<Value>()
-            .index(format!("observatory-v3-events-{}-*", etype))
+            .index(index)
             .body(query)
             .send()?;
 
@@ -420,6 +426,7 @@ impl ElasticSearchBackend {
         min_duration: &Option<usize>,
         max_duration: &Option<usize>,
         include_overlap: bool,
+        debug: bool,
     ) -> Result<CountResult, Box<dyn Error>> {
         // event type default to "*"
         let mut etype = "*".to_owned();
@@ -449,14 +456,18 @@ impl ElasticSearchBackend {
         );
 
         let client = reqwest::Client::new();
+        let url = match debug {
+            true => format!(
+                "http://clayface.caida.org:9200/observatory-v3-test-events-{}-*/_count",
+                etype
+            ),
+            false => format!(
+                "http://clayface.caida.org:9200/observatory-v3-events-{}-*/_count",
+                etype
+            ),
+        };
         let res: Value = client
-            .post(
-                format!(
-                    "http://clayface.caida.org:9200/observatory-v3-events-{}-*/_count",
-                    etype
-                )
-                .as_str(),
-            )
+            .post(url.as_str())
             .json(&query)
             .send()
             .unwrap()

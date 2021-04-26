@@ -62,6 +62,9 @@ struct Opts {
     /// Retrieve brief information only
     #[clap(short, long)]
     brief: bool,
+    /// Retrieve events from debug indcies
+    #[clap(short, long)]
+    debug: bool,
 }
 
 /// Convert a raw object to a brief object
@@ -113,6 +116,7 @@ fn search(opts: &Opts) -> Value {
             &opts.max_duration,
             opts.overlap,
             opts.brief,
+            opts.debug,
         )
         .unwrap();
     let res_iter = query_result.results.iter();
@@ -150,6 +154,7 @@ fn count(opts: &Opts) -> Value {
             &opts.min_duration,
             &opts.max_duration,
             opts.overlap,
+            opts.debug,
         )
         .unwrap();
     json!({"count":query_result.count})

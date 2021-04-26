@@ -190,6 +190,7 @@ pub fn json_list_events(
             &max_duration,
             overlap,
             false,
+            false,
         )
         .unwrap();
 
