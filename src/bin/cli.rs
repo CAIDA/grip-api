@@ -98,7 +98,6 @@ fn brief_result(value: &Value) -> Value {
 
 fn search(opts: &Opts) -> Value {
     let backend = ElasticSearchBackend::new("http://clayface.caida.org:9200").unwrap();
-    dbg!(&opts);
     let query_result = backend
         .list_events(
             &opts.event_type,
@@ -125,7 +124,7 @@ fn search(opts: &Opts) -> Value {
         false => res_iter
             .map(|v| match opts.full {
                 true => v.to_owned(),
-                false => process_raw_event(v, opts.full, opts.full),
+                false => process_raw_event(v, opts.full, opts.full, true),
             })
             .collect::<Vec<Value>>(),
     };

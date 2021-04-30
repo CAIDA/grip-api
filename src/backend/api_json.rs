@@ -94,7 +94,7 @@ pub fn json_event_by_id(id: &RawStr, full: bool, base_url: State<SharedData>) ->
         Ok(event) => {
             let e = match full {
                 true => event,
-                false => process_raw_event(&event, true, true),
+                false => process_raw_event(&event, true, true, true),
             };
             Json(json!(e))
         }
@@ -200,7 +200,7 @@ pub fn json_list_events(
         false => query_result
             .results
             .iter()
-            .map(|v| process_raw_event(v, full, full))
+            .map(|v| process_raw_event(v, full, full, full))
             .collect(),
     };
     let object = json!(

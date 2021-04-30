@@ -39,7 +39,12 @@ pub struct SharedData {
 
 /// process raw event from elasticsearch and convert the event into filtered data.
 /// not all information is necessary for frontend processing
-pub fn process_raw_event(value: &Value, include_tr: bool, include_details: bool) -> Value {
+pub fn process_raw_event(
+    value: &Value,
+    include_tr: bool,
+    include_details: bool,
+    include_extra: bool,
+) -> Value {
     let mut event = json!({});
     // filter easy fields
     for field in vec![
@@ -62,6 +67,7 @@ pub fn process_raw_event(value: &Value, include_tr: bool, include_details: bool)
         value["pfx_events"].as_array().unwrap(),
         include_tr,
         include_details,
+        include_extra,
     );
 
     event["pfx_events"] = json!(pfx_events);
@@ -74,7 +80,12 @@ pub fn process_raw_event(value: &Value, include_tr: bool, include_details: bool)
 /// - all prefixes
 /// - victim ases
 /// - attacker ases
-fn process_pfx_events(value: &Vec<Value>, include_tr: bool, include_details: bool) -> Vec<Value> {
+fn process_pfx_events(
+    value: &Vec<Value>,
+    include_tr: bool,
+    include_details: bool,
+    include_extra: bool,
+) -> Vec<Value> {
     let mut prefixes: Vec<String> = vec![];
     let mut pfx_events: Vec<Value> = vec![];
     for raw_pfx_event in value {
@@ -96,6 +107,9 @@ fn process_pfx_events(value: &Vec<Value>, include_tr: bool, include_details: boo
                 details_map.remove(field);
             }
             pfx_event["details"] = Value::Object(details_map);
+        }
+        if include_extra {
+            pfx_event["extra"] = raw_pfx_event["extra"].to_owned();
         }
 
         // set prefix and sub/super-prefix
