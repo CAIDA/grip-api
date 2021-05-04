@@ -50,8 +50,6 @@ struct Opts {
     #[clap(short, long)]
     pretty_print: bool,
     /// Slimmed-down version of the JSON object
-    #[clap(short, long)]
-    slim: bool,
     /// Return full events including traceroutes and AS paths
     #[clap(short, long)]
     full: bool,
@@ -61,19 +59,34 @@ struct Opts {
     /// Count matches only
     #[clap(short, long)]
     count: bool,
+    /// Retrieve brief information only
+    #[clap(short, long)]
+    brief: bool,
+    /// Retrieve events from debug indcies
+    #[clap(short, long)]
+    debug: bool,
 }
 
-/// Convert a raw object to a slim object
-fn slim_result(value: &Value) -> Value {
+/// Convert a raw object to a brief object
+fn brief_result(value: &Value) -> Value {
     let mut event = json!({});
     // filter easy fields
-    for field in vec!["id", "event_type", "view_ts", "finished_ts", "summary"] {
+    for field in vec![
+        "id",
+        "event_type",
+        "view_ts",
+        "finished_ts",
+        "insert_ts",
+        "last_modified_ts",
+        "summary",
+    ] {
         event[field] = value[field].to_owned();
     }
 
     event["url"] = json!(format!(
         "https://dev.hicube.caida.org/feeds/hijacks/events/{}/{}",
-        value["event_type"].as_str().unwrap(), value["id"].as_str().unwrap()
+        value["event_type"].as_str().unwrap(),
+        value["id"].as_str().unwrap()
     ));
 
     if let Some(asrank) = value["external"].get("asrank") {
@@ -84,7 +97,6 @@ fn slim_result(value: &Value) -> Value {
 }
 
 fn search(opts: &Opts) -> Value {
-
     let backend = ElasticSearchBackend::new("http://clayface.caida.org:9200").unwrap();
     let query_result = backend
         .list_events(
@@ -102,18 +114,18 @@ fn search(opts: &Opts) -> Value {
             &opts.min_duration,
             &opts.max_duration,
             opts.overlap,
+            opts.brief,
+            opts.debug,
         )
         .unwrap();
     let res_iter = query_result.results.iter();
-    let res_data: Vec<Value> = match opts.slim {
-        true => res_iter.map(|v| slim_result(v)).collect::<Vec<Value>>(),
+    let res_data: Vec<Value> = match opts.brief {
+        true => res_iter.map(|v| brief_result(v)).collect::<Vec<Value>>(),
         false => res_iter
-            .map(|v|
-                 match opts.full {
-                     true => {v.to_owned()}
-                     false => {process_raw_event(v, opts.full, opts.full)}
-                 }
-            )
+            .map(|v| match opts.full {
+                true => v.to_owned(),
+                false => process_raw_event(v, opts.full, opts.full, true),
+            })
             .collect::<Vec<Value>>(),
     };
     json!(
@@ -126,7 +138,6 @@ fn search(opts: &Opts) -> Value {
 }
 
 fn count(opts: &Opts) -> Value {
-
     let backend = ElasticSearchBackend::new("http://clayface.caida.org:9200").unwrap();
     let query_result = backend
         .count_events(
@@ -142,22 +153,18 @@ fn count(opts: &Opts) -> Value {
             &opts.min_duration,
             &opts.max_duration,
             opts.overlap,
+            opts.debug,
         )
         .unwrap();
     json!({"count":query_result.count})
 }
 
-
 fn main() {
     let opts: Opts = Opts::parse();
 
     let object = match &opts.count {
-        true => {
-            count(&opts)
-        },
-        false => {
-            search(&opts)
-        }
+        true => count(&opts),
+        false => search(&opts),
     };
 
     if opts.pretty_print {

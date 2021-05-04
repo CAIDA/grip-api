@@ -132,8 +132,13 @@ pub fn convert_time_str(ts_str: &String) -> String {
         }
         false => match ts_str.parse::<i64>() {
             Ok(ts) => {
-                let dt =
-                    DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(ts / 1000, 0), Utc);
+                let dt = match ts > 100000000000 {
+                    // if it is 2 digits more than current unix time; it should be a unixtime in microsecond
+                    true => {
+                        DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(ts / 1000, 0), Utc)
+                    }
+                    false => DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(ts, 0), Utc),
+                };
                 dt.format("%Y-%m-%d %H:%M:00").to_string()
             }
             Err(_) => ts_str.to_owned(),

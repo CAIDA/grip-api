@@ -92,9 +92,9 @@ pub fn json_event_by_id(id: &RawStr, full: bool, base_url: State<SharedData>) ->
     match backend.get_event_by_id(id) {
         // Ok(event) => Json(json!({"data":event.results[0]["pfx_events"].to_owned()}).to_owned()),
         Ok(event) => {
-            let e = match full{
-                true => {event}
-                false => {process_raw_event(&event, true, true)}
+            let e = match full {
+                true => event,
+                false => process_raw_event(&event, true, true, true),
             };
             Json(json!(e))
         }
@@ -116,29 +116,29 @@ pub fn json_pfx_event_by_id(
     };
 
     match backend.get_event_by_id(id) {
-        Ok(event) => {
-            let victims = match event["summary"]["victims"].as_array() {
-                Some(v) => json!(v),
-                None => json!([]),
-            };
-            let attackers = match event["summary"]["attackers"].as_array() {
-                Some(v) => json!(v),
-                None => json!([]),
-            };
-            match filter_pfx_events_by_fingerprint(fingerprint.as_str(), &event) {
-                Some(v) => {
-                    let mut pfx_event = v.clone();
-                    pfx_event["victims"] = victims;
-                    pfx_event["attackers"] = attackers;
-                    Json(json!(pfx_event))
+        Ok(event) => match filter_pfx_events_by_fingerprint(fingerprint.as_str(), &event) {
+            Some(v) => {
+                let mut pfx_event = v.clone();
+                if !pfx_event.as_object().unwrap().contains_key("victims") {
+                    pfx_event["victims"] = match event["summary"]["victims"].as_array() {
+                        Some(v) => json!(v),
+                        None => json!([]),
+                    };
                 }
-                None => Json(json!(
-                    {
-                        "error": "Cannot find prefix event"
-                    }
-                )),
+                if !pfx_event.as_object().unwrap().contains_key("attackers") {
+                    pfx_event["attackers"] = match event["summary"]["attackers"].as_array() {
+                        Some(v) => json!(v),
+                        None => json!([]),
+                    };
+                }
+                Json(json!(pfx_event))
             }
-        }
+            None => Json(json!(
+                {
+                    "error": "Cannot find prefix event"
+                }
+            )),
+        },
         Err(_e) => Json(json!(
         {
             "error": "Cannot find event"
@@ -151,7 +151,7 @@ pub fn json_pfx_event_by_id(
     "/json/events?\
      <event_type>&<ts_start>&<ts_end>&<draw>&<start>&<length>&<asns>&<pfxs>&\
      <tags>&<codes>&<min_susp>&<max_susp>&\
-     <min_duration>&<max_duration>&<full>&<overlap>"
+     <min_duration>&<max_duration>&<full>&<overlap>&<debug>"
 )]
 pub fn json_list_events(
     event_type: Option<String>,
@@ -170,6 +170,7 @@ pub fn json_list_events(
     max_duration: Option<usize>,
     full: bool,
     overlap: bool,
+    debug: bool,
     base_url: State<SharedData>,
 ) -> Json<Value> {
     let backend = ElasticSearchBackend::new(&base_url.es_url).unwrap();
@@ -189,21 +190,18 @@ pub fn json_list_events(
             &min_duration,
             &max_duration,
             overlap,
+            false,
+            debug,
         )
         .unwrap();
 
-
-    let res_data: Vec<Value> = match full{
-        true => {
-            query_result.results
-        }
-        false => {
-            query_result
-                .results
-                .iter()
-                .map(|v| process_raw_event(v, full, full))
-                .collect()
-        }
+    let res_data: Vec<Value> = match full {
+        true => query_result.results,
+        false => query_result
+            .results
+            .iter()
+            .map(|v| process_raw_event(v, full, full, full))
+            .collect(),
     };
     let object = json!(
         {
