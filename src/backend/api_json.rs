@@ -116,29 +116,29 @@ pub fn json_pfx_event_by_id(
     };
 
     match backend.get_event_by_id(id) {
-        Ok(event) => {
-            let victims = match event["summary"]["victims"].as_array() {
-                Some(v) => json!(v),
-                None => json!([]),
-            };
-            let attackers = match event["summary"]["attackers"].as_array() {
-                Some(v) => json!(v),
-                None => json!([]),
-            };
-            match filter_pfx_events_by_fingerprint(fingerprint.as_str(), &event) {
-                Some(v) => {
-                    let mut pfx_event = v.clone();
-                    pfx_event["victims"] = victims;
-                    pfx_event["attackers"] = attackers;
-                    Json(json!(pfx_event))
+        Ok(event) => match filter_pfx_events_by_fingerprint(fingerprint.as_str(), &event) {
+            Some(v) => {
+                let mut pfx_event = v.clone();
+                if !pfx_event.as_object().unwrap().contains_key("victims") {
+                    pfx_event["victims"] = match event["summary"]["victims"].as_array() {
+                        Some(v) => json!(v),
+                        None => json!([]),
+                    };
                 }
-                None => Json(json!(
-                    {
-                        "error": "Cannot find prefix event"
-                    }
-                )),
+                if !pfx_event.as_object().unwrap().contains_key("attackers") {
+                    pfx_event["attackers"] = match event["summary"]["attackers"].as_array() {
+                        Some(v) => json!(v),
+                        None => json!([]),
+                    };
+                }
+                Json(json!(pfx_event))
             }
-        }
+            None => Json(json!(
+                {
+                    "error": "Cannot find prefix event"
+                }
+            )),
+        },
         Err(_e) => Json(json!(
         {
             "error": "Cannot find event"
