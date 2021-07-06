@@ -33,8 +33,7 @@
 // if query_type == "total"{
 // let stats: Value = reqwest::get("http://clayface.caida.org:9200/_cat/indices?format=json").unwrap().json().unwrap();
 // return Json(json!(stats))
-use rocket::http::RawStr;
-use rocket_contrib::json::Json;
+use rocket::serde::json::Json;
 use serde_json::json;
 use serde_json::Value;
 use std::str::FromStr;
@@ -113,7 +112,7 @@ fn get_total_stats() -> Value {
 }
 
 #[get("/json/stats/<event_type>", rank = 2)]
-pub fn json_stats_by_type(event_type: &RawStr) -> Json<Value> {
+pub fn json_stats_by_type(event_type: &str) -> Json<Value> {
     let type_count_today = get_type_count(event_type, true);
     let type_count_total = get_type_count(event_type, false);
     let total_stats = get_total_stats();
@@ -121,7 +120,7 @@ pub fn json_stats_by_type(event_type: &RawStr) -> Json<Value> {
     Json(json!({
     "total":{
         "count": type_count_total["count"],
-        "bytes": total_stats[event_type.as_str()]["bytes"]
+        "bytes": total_stats[event_type]["bytes"]
     },
     "today":{
         "count": type_count_today["count"],
