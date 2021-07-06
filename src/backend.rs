@@ -33,6 +33,7 @@
 pub mod api_external;
 pub mod api_json;
 pub mod api_stats;
+pub mod auth;
 pub mod data;
 pub mod elastic;
 mod errors;
