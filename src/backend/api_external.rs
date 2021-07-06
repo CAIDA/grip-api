@@ -33,7 +33,7 @@
 #[allow(unused_imports)]
 use chrono::{Datelike, Duration, Timelike, Utc};
 use rocket::response::Redirect;
-use rocket_contrib::json::Json;
+use rocket::serde::json::Json;
 use serde_json::json;
 use serde_json::Value;
 
