@@ -31,7 +31,7 @@
 // MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 use rocket::fairing::{Fairing, Info, Kind};
-use rocket::http::{ContentType, Header, Method};
+use rocket::http::{ContentType, Header, Method, Status};
 use rocket::routes;
 use rocket::serde::Deserialize;
 use rocket::{Request, Response};
@@ -54,20 +54,27 @@ impl Fairing for CORS {
     }
 
     async fn on_response<'r>(&self, request: &'r Request<'_>, response: &mut Response<'r>) {
-        if request.method() == Method::Options || response.content_type() == Some(ContentType::JSON)
-        {
+        dbg!(request.method());
+        if request.method() == Method::Options {
             response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
             response.set_header(Header::new(
                 "Access-Control-Allow-Methods",
                 "POST, GET, OPTIONS",
             ));
-            response.set_header(Header::new("Access-Control-Allow-Headers", "Content-Type"));
+            response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
+            response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
+            response.set_status(Status::Ok);
+        }
+        dbg!(response.content_type());
+        if response.content_type() == Some(ContentType::JSON) {
+            response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
+            response.set_header(Header::new(
+                "Access-Control-Allow-Methods",
+                "POST, GET, OPTIONS",
+            ));
+            response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
             response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
         }
-        // if request.method() == Method::Options {
-        //     response.set_header(ContentType::Plain);
-        //     response.set_sized_body(Cursor::new(""));
-        // }
     }
 }
 

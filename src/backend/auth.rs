@@ -59,7 +59,7 @@ use serde_json::{Map, Value};
 /// ```
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
-    pub aud: String, // Optional. Audience
+    pub aud: Value,  // Optional. Audience
     pub exp: usize, // Required (validate_exp defaults to true in validation). Expiration time (as UTC timestamp)
     pub iat: usize, // Optional. Issued at (as UTC timestamp)
     pub iss: String, // Optional. Issuer
@@ -78,8 +78,8 @@ pub struct Claims {
 /// 2. use the `kid` field to find corresponding key from the given keys (`jwks`)
 /// 3. validate the token using [`jsonwebtoken`] library
 /// 4. return [`Claims`] if the validation succeeded, otherwise return reutrn `Err(String)`
-pub fn validate_token(token: &str, rsa_n: &str, rsa_e: &str) -> Result<Claims, String> {
-    match decode::<Claims>(
+pub fn validate_token(token: &str, rsa_n: &str, rsa_e: &str) -> Result<Value, String> {
+    match decode::<Value>(
         &token,
         &DecodingKey::from_rsa_components(rsa_n, rsa_e),
         &Validation::new(Algorithm::RS256),
