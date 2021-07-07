@@ -36,6 +36,7 @@ use rocket::routes;
 use rocket::serde::Deserialize;
 use rocket::{Request, Response};
 
+use grip_api::backend::api_auth::*;
 use grip_api::backend::api_external::*;
 use grip_api::backend::api_json::*;
 use grip_api::backend::api_stats::*;
@@ -107,6 +108,7 @@ async fn main() {
                 json_get_asndrop,
                 json_get_hegemony,
                 json_get_asrank,
+                sensitive,
             ],
         )
         .manage(SharedData {
