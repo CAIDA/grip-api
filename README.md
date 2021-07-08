@@ -1,6 +1,6 @@
 # GRIP API
 
-Web API backend for CAIDA Global Routing Intelligence Platform Project.
+Web API backend for the Global Routing Intelligence Platform Project.
 
 ## Configuration Files
 
