@@ -35,7 +35,6 @@
  */
 
 use crate::backend::data::SharedData;
-use auth0_rs::error::Auth0Error;
 use auth0_rs::Auth0;
 use rocket::http::Status;
 use rocket::request::{FromRequest, Outcome, Request};
