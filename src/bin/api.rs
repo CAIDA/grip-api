@@ -36,6 +36,7 @@ use rocket::routes;
 use rocket::serde::Deserialize;
 use rocket::{Request, Response};
 
+use auth0_rs::Auth0;
 use grip_api::backend::api_auth::*;
 use grip_api::backend::api_external::*;
 use grip_api::backend::api_json::*;
@@ -54,7 +55,7 @@ impl Fairing for CORS {
     }
 
     async fn on_response<'r>(&self, request: &'r Request<'_>, response: &mut Response<'r>) {
-        dbg!(request.method());
+        // allow preflight checking
         if request.method() == Method::Options {
             response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
             response.set_header(Header::new(
@@ -65,7 +66,8 @@ impl Fairing for CORS {
             response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
             response.set_status(Status::Ok);
         }
-        dbg!(response.content_type());
+
+        // allow JSON response
         if response.content_type() == Some(ContentType::JSON) {
             response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
             response.set_header(Header::new(
@@ -91,14 +93,16 @@ async fn main() {
     }
 
     let figment = rocket.figment();
-    // let elastic_url =
-    //     std::env::var("ELASTIC_URL").unwrap_or("http://clayface.caida.org:9200".to_string());
     let config: Config = figment
         .extract()
         .expect("failed to extract configuration parameters");
+    let res = reqwest::get("https://mingwei.us.auth0.com/.well-known/jwks.json")
+        .unwrap()
+        .text()
+        .unwrap();
+    let auth0 = Auth0::new(res.as_str()).unwrap();
 
     dbg!(&config);
-
     rocket
         .mount(
             "/",
@@ -120,6 +124,7 @@ async fn main() {
         )
         .manage(SharedData {
             es_url: config.elastic_url,
+            auth0,
         })
         .attach(CORS())
         .launch()
