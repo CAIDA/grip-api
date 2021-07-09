@@ -80,9 +80,9 @@ impl<'r> FromRequest<'r> for ApiKey<'r> {
             .unwrap();
 
         match req.headers().get_one("authorization") {
-            None => Outcome::Failure((Status::BadRequest, ApiKeyError::Missing)),
+            None => Outcome::Failure((Status::Unauthorized, ApiKeyError::Missing)),
             Some(key) if is_valid(key, auth0) => Outcome::Success(ApiKey("SECRET CODE")),
-            Some(_) => Outcome::Failure((Status::BadRequest, ApiKeyError::Invalid)),
+            Some(_) => Outcome::Failure((Status::Unauthorized, ApiKeyError::Invalid)),
         }
     }
 }
