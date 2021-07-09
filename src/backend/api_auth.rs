@@ -34,10 +34,13 @@
  *
  */
 
-use crate::backend::auth::validate_token;
+use crate::backend::data::SharedData;
+use auth0_rs::error::Auth0Error;
+use auth0_rs::Auth0;
 use rocket::http::Status;
-use rocket::request::{self, FromRequest, Outcome, Request};
+use rocket::request::{FromRequest, Outcome, Request};
 use rocket::serde::json::Json;
+use rocket::State;
 use serde_json::json;
 use serde_json::Value;
 
@@ -49,9 +52,6 @@ pub enum ApiKeyError {
     Invalid,
 }
 
-const RSA_N: &str = "nmaWAMzKICx_Ja7FvyaQcfzsFIc3zXJS0qOYsQW3INDTCfCDnvgmVGqIrsyJot83svjm5WL8n3cgkaWWGVQ4FOykgmwdIcgfov9ieSmTUnoVcmpBs1HA9QehAC65E3fe1F4V4cpj01vDjiP-hM092IOpR48KSRu6vOw23_0QE_VGlxzcq5su9ujU8QYP63apeqDPUMw1GmMGd_QgAEIGbwXSJt5IB6RKFO2-gFPVylBu1W9tVmZb-yoP5LoqX-LaZ5JZ3O5304E5-nxNhhXq-f2Z65VSpApACFkIS7_jNksXHsjBMqt50OdN0qPSYMeYC6jzPxHMTGrE1ojPqLoX6w";
-const RSA_E: &str = "AQAB";
-
 #[rocket::async_trait]
 impl<'r> FromRequest<'r> for ApiKey<'r> {
     type Error = ApiKeyError;
@@ -59,24 +59,36 @@ impl<'r> FromRequest<'r> for ApiKey<'r> {
     async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
         /// Returns true if `key` is a valid API key string.
         /// A valid key string should look like "Bearer xxxxxxxx..."
-        fn is_valid(key: &str) -> bool {
+        fn is_valid(key: &str, auth0: &Auth0) -> bool {
             let vec = key.split_whitespace().collect::<Vec<&str>>();
             if vec.len() != 2 {
                 dbg!("invalid bearer");
                 return false;
             }
-            validate_token(vec[1], RSA_N, RSA_E).is_ok()
+            match auth0.validate_token(vec[1]) {
+                Ok(_) => true,
+                Err(e) => {
+                    dbg!(e.into_kind());
+                    false
+                }
+            }
         }
+
+        let auth0 = req
+            .guard::<&State<SharedData>>()
+            .await
+            .map(|shared| &shared.auth0)
+            .unwrap();
 
         match req.headers().get_one("authorization") {
             None => Outcome::Failure((Status::BadRequest, ApiKeyError::Missing)),
-            Some(key) if is_valid(key) => Outcome::Success(ApiKey("SECRET CODE")),
+            Some(key) if is_valid(key, auth0) => Outcome::Success(ApiKey("SECRET CODE")),
             Some(_) => Outcome::Failure((Status::BadRequest, ApiKeyError::Invalid)),
         }
     }
 }
 
 #[get("/sensitive")]
-pub fn sensitive(key: ApiKey<'_>) -> Json<Value> {
+pub fn sensitive(_key: ApiKey<'_>) -> Json<Value> {
     Json(json!("SENSITIVE CODE VALIDATED BY BACKEND API"))
 }
