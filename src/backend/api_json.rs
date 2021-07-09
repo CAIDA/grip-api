@@ -30,9 +30,8 @@
 // IS" BASIS, AND THE UNIVERSITY OF CALIFORNIA HAS NO OBLIGATIONS TO PROVIDE
 // MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
-use rocket::http::RawStr;
+use rocket::serde::json::Json;
 use rocket::State;
-use rocket_contrib::json::Json;
 use serde_json::json;
 use serde_json::Value;
 
@@ -81,7 +80,7 @@ pub fn json_get_asndrop() -> Json<Value> {
 }
 
 #[get("/json/event/id/<id>?<full>")]
-pub fn json_event_by_id(id: &RawStr, full: bool, base_url: State<SharedData>) -> Json<Value> {
+pub fn json_event_by_id(id: &str, full: bool, base_url: &State<SharedData>) -> Json<Value> {
     let backend_res = ElasticSearchBackend::new(&base_url.es_url);
 
     let backend = match backend_res {
@@ -104,9 +103,9 @@ pub fn json_event_by_id(id: &RawStr, full: bool, base_url: State<SharedData>) ->
 
 #[get("/json/pfx_event/id/<id>/<fingerprint>")]
 pub fn json_pfx_event_by_id(
-    id: &RawStr,
-    fingerprint: &RawStr,
-    base_url: State<SharedData>,
+    id: &str,
+    fingerprint: &str,
+    base_url: &State<SharedData>,
 ) -> Json<Value> {
     let backend_res = ElasticSearchBackend::new(&base_url.es_url);
 
@@ -116,7 +115,7 @@ pub fn json_pfx_event_by_id(
     };
 
     match backend.get_event_by_id(id) {
-        Ok(event) => match filter_pfx_events_by_fingerprint(fingerprint.as_str(), &event) {
+        Ok(event) => match filter_pfx_events_by_fingerprint(fingerprint, &event) {
             Some(v) => {
                 let mut pfx_event = v.clone();
                 if !pfx_event.as_object().unwrap().contains_key("victims") {
@@ -171,7 +170,7 @@ pub fn json_list_events(
     full: bool,
     overlap: bool,
     debug: bool,
-    base_url: State<SharedData>,
+    base_url: &State<SharedData>,
 ) -> Json<Value> {
     let backend = ElasticSearchBackend::new(&base_url.es_url).unwrap();
     let query_result = backend

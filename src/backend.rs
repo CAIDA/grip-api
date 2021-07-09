@@ -30,9 +30,11 @@
 // IS" BASIS, AND THE UNIVERSITY OF CALIFORNIA HAS NO OBLIGATIONS TO PROVIDE
 // MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
+pub mod api_auth;
 pub mod api_external;
 pub mod api_json;
 pub mod api_stats;
+// pub mod auth;
 pub mod data;
 pub mod elastic;
 mod errors;

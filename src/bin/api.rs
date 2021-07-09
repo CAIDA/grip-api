@@ -30,23 +30,22 @@
 // IS" BASIS, AND THE UNIVERSITY OF CALIFORNIA HAS NO OBLIGATIONS TO PROVIDE
 // MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
-#![feature(proc_macro_hygiene)]
-
-use rocket::fairing::AdHoc;
 use rocket::fairing::{Fairing, Info, Kind};
-use rocket::http::{ContentType, Header, Method};
-use rocket::{routes, Rocket};
+use rocket::http::{ContentType, Header, Method, Status};
+use rocket::routes;
+use rocket::serde::Deserialize;
 use rocket::{Request, Response};
-use std::io::Cursor;
 
+use auth0_rs::Auth0;
+use grip_api::backend::api_auth::*;
 use grip_api::backend::api_external::*;
 use grip_api::backend::api_json::*;
 use grip_api::backend::api_stats::*;
 use grip_api::backend::data::SharedData;
-use rocket::Config;
 
 pub struct CORS();
 
+#[rocket::async_trait]
 impl Fairing for CORS {
     fn info(&self) -> Info {
         Info {
@@ -55,30 +54,56 @@ impl Fairing for CORS {
         }
     }
 
-    fn on_response(&self, request: &Request, response: &mut Response) {
-        if request.method() == Method::Options || response.content_type() == Some(ContentType::JSON)
-        {
+    async fn on_response<'r>(&self, request: &'r Request<'_>, response: &mut Response<'r>) {
+        // allow preflight checking
+        if request.method() == Method::Options {
             response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
             response.set_header(Header::new(
                 "Access-Control-Allow-Methods",
                 "POST, GET, OPTIONS",
             ));
-            response.set_header(Header::new("Access-Control-Allow-Headers", "Content-Type"));
+            response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
             response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
+            response.set_status(Status::Ok);
         }
-        if request.method() == Method::Options {
-            response.set_header(ContentType::Plain);
-            response.set_sized_body(Cursor::new(""));
+
+        // allow JSON response
+        if response.content_type() == Some(ContentType::JSON) {
+            response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
+            response.set_header(Header::new(
+                "Access-Control-Allow-Methods",
+                "POST, GET, OPTIONS",
+            ));
+            response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
+            response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
         }
     }
 }
 
-fn get_rocket() -> Rocket {
-    let mut config = Config::active().unwrap();
-    config.set_address("0.0.0.0").unwrap();
-    // config.set_port(8001);
+#[rocket::main]
+#[allow(unused_must_use)]
+async fn main() {
+    let rocket = rocket::build();
 
-    rocket::custom(config.clone())
+    #[derive(Deserialize, Debug)]
+    struct Config {
+        address: String,
+        port: u16,
+        elastic_url: String,
+    }
+
+    let figment = rocket.figment();
+    let config: Config = figment
+        .extract()
+        .expect("failed to extract configuration parameters");
+    let res = reqwest::get("https://mingwei.us.auth0.com/.well-known/jwks.json")
+        .unwrap()
+        .text()
+        .unwrap();
+    let auth0 = Auth0::new(res.as_str()).unwrap();
+
+    dbg!(&config);
+    rocket
         .mount(
             "/",
             routes![
@@ -94,31 +119,22 @@ fn get_rocket() -> Rocket {
                 json_get_asndrop,
                 json_get_hegemony,
                 json_get_asrank,
+                sensitive,
             ],
         )
+        .manage(SharedData {
+            es_url: config.elastic_url,
+            auth0,
+        })
         .attach(CORS())
-        .attach(AdHoc::on_attach("get elastic search url", |rocket| {
-            // set ElasticSearch URL
-            let es_url = rocket
-                .config()
-                .get_str("elastic_url")
-                .unwrap_or("http://clayface.caida.org:9200")
-                .to_string();
-            // pass in tags
-            Ok(rocket.manage(SharedData {
-                es_url,
-            }))
-        }))
-}
-
-fn main() {
-    get_rocket().launch();
+        .launch()
+        .await;
 }
 
 #[cfg(test)]
 mod test {
     use crate::get_rocket;
-        use rocket::{local::Client, http::Status};
+    use rocket::{http::Status, local::Client};
 
     #[test]
     fn test_basic_api() {
