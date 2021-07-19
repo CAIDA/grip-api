@@ -35,11 +35,13 @@
  */
 
 use crate::backend::data::SharedData;
+use crate::backend::mailer::Mailer;
 use auth0_rs::Auth0;
 use rocket::http::Status;
 use rocket::request::{FromRequest, Outcome, Request};
 use rocket::serde::json::Json;
 use rocket::State;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 use serde_json::Value;
 
@@ -90,4 +92,21 @@ impl<'r> FromRequest<'r> for ApiKey<'r> {
 #[get("/sensitive")]
 pub fn sensitive(_key: ApiKey<'_>) -> Json<Value> {
     Json(json!("SENSITIVE CODE VALIDATED BY BACKEND API"))
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Feedback {
+    pub feedback_type: String,
+    pub feedback_details: String,
+    pub event_id: String,
+    pub from_name: String,
+    pub from_email: String,
+}
+
+#[post("/feedback", format = "application/json", data = "<feedback>")]
+pub fn feedback(feedback: Json<Feedback>, _key: ApiKey<'_>) -> Json<Value> {
+    match Mailer::new().unwrap().send(&feedback) {
+        Ok(_) => Json(json!("success")),
+        Err(_) => Json(json!("failed")),
+    }
 }

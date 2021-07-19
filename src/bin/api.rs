@@ -120,6 +120,7 @@ async fn main() {
                 json_get_hegemony,
                 json_get_asrank,
                 sensitive,
+                feedback,
             ],
         )
         .manage(SharedData {
