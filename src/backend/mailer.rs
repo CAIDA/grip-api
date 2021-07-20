@@ -105,7 +105,7 @@ impl Mailer {
                 println!("Email sent successfully!");
                 Ok(())
             }
-            Err(e) => Err(MailError {
+            Err(_) => Err(MailError {
                 kind: Kind::MailSendError,
             }),
         }

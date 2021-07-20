@@ -96,7 +96,8 @@ async fn main() {
     let config: Config = figment
         .extract()
         .expect("failed to extract configuration parameters");
-    let res = reqwest::get("https://mingwei.us.auth0.com/.well-known/jwks.json")
+
+    let res = reqwest::get(std::env::var("JWKS_URL").unwrap().as_str())
         .unwrap()
         .text()
         .unwrap();
