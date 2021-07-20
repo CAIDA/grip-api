@@ -38,4 +38,5 @@ pub mod api_stats;
 pub mod data;
 pub mod elastic;
 mod errors;
+mod mailer;
 mod utils;

@@ -41,3 +41,6 @@ lazy_static = "1.4.0"
 # authentication
 # jsonwebtoken = "7.2.0"
 auth0_rs = "0.2.0"
+
+# mail
+lettre = "0.10.0-rc.3"

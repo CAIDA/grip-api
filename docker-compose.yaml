@@ -6,3 +6,11 @@ services:
     ports:
       - "8000:8000"
     restart: unless-stopped
+    environment:
+      # User authentication
+      - JWKS_URL=${JWKS_URL}
+      # Email feedback
+      - MAIL_USER_EMAIL=${MAIL_USER_EMAIL}
+      - MAIL_SMTP_PASSWORD=${MAIL_SMTP_PASSWORD}
+      - MAIL_SMTP_USERNAME=${MAIL_SMTP_USERNAME}
+      - MAIL_SMTP_ENDPOINT=${MAIL_SMTP_ENDPOINT}
