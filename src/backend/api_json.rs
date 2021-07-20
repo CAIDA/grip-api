@@ -39,6 +39,8 @@ use crate::backend::data::*;
 use crate::backend::elastic::ElasticSearchBackend;
 use crate::backend::utils::*;
 
+const DATA_COPYRIGHT: &str = "This data is Copyright (c) 2018 The Regents of the University of California. All Rights Reserved.";
+
 /*
 JSON QUERY APIS
 */
@@ -95,7 +97,7 @@ pub fn json_event_by_id(id: &str, full: bool, base_url: &State<SharedData>) -> J
                 true => event,
                 false => process_raw_event(&event, true, true, true),
             };
-            Json(json!(e))
+            Json(post_process(json!(e)))
         }
         Err(_e) => Json(json!({ "error": format!("Cannot find event {}", id) })),
     }
@@ -130,7 +132,7 @@ pub fn json_pfx_event_by_id(
                         None => json!([]),
                     };
                 }
-                Json(json!(pfx_event))
+                Json(post_process(json!(pfx_event)))
             }
             None => Json(json!(
                 {
@@ -150,7 +152,7 @@ pub fn json_pfx_event_by_id(
     "/json/events?\
      <event_type>&<ts_start>&<ts_end>&<draw>&<start>&<length>&<asns>&<pfxs>&\
      <tags>&<codes>&<min_susp>&<max_susp>&\
-     <min_duration>&<max_duration>&<full>&<overlap>&<debug>"
+     <min_duration>&<max_duration>&<full>&<overlap>&<debug>&<brief>"
 )]
 pub fn json_list_events(
     event_type: Option<String>,
@@ -170,6 +172,7 @@ pub fn json_list_events(
     full: bool,
     overlap: bool,
     debug: bool,
+    brief: bool,
     base_url: &State<SharedData>,
 ) -> Json<Value> {
     let backend = ElasticSearchBackend::new(&base_url.es_url).unwrap();
@@ -189,7 +192,7 @@ pub fn json_list_events(
             &min_duration,
             &max_duration,
             overlap,
-            false,
+            brief,
             debug,
         )
         .unwrap();
@@ -210,5 +213,13 @@ pub fn json_list_events(
             "recordsFiltered": query_result.total,
         }
     );
-    Json(object.to_owned())
+    Json(post_process(object.to_owned()))
+}
+
+fn post_process(mut data: Value) -> Value {
+    if let Value::Object(mut m) = data {
+        m.insert("copyright".to_string(), json!(DATA_COPYRIGHT));
+        return json!(m);
+    }
+    return data;
 }
