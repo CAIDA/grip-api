@@ -30,13 +30,12 @@
 // IS" BASIS, AND THE UNIVERSITY OF CALIFORNIA HAS NO OBLIGATIONS TO PROVIDE
 // MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
-use grip_api::backend::data::process_raw_event;
-use grip_api::backend::elastic::ElasticSearchBackend;
-use serde_json::{json, Value};
+use serde::Serialize;
+use serde_json::Value;
 
 use clap::Clap;
 
-#[derive(Debug, Clap)]
+#[derive(Debug, Clap, Serialize)]
 #[clap()]
 struct Opts {
     /// Event type to search for
@@ -47,7 +46,7 @@ struct Opts {
     start: Option<usize>,
     /// Maximum number of events to find
     #[clap(long)]
-    max: Option<usize>,
+    length: Option<usize>,
     /// Event asns, comma-separated string
     #[clap(long)]
     asns: Option<String>,
@@ -99,109 +98,109 @@ struct Opts {
     debug: bool,
 }
 
-/// Convert a raw object to a brief object
-fn brief_result(value: &Value) -> Value {
-    let mut event = json!({});
-    // filter easy fields
-    for field in vec![
-        "id",
-        "event_type",
-        "view_ts",
-        "finished_ts",
-        "insert_ts",
-        "last_modified_ts",
-        "summary",
-    ] {
-        event[field] = value[field].to_owned();
-    }
-
-    event["url"] = json!(format!(
-        "https://dev.hicube.caida.org/feeds/hijacks/events/{}/{}",
-        value["event_type"].as_str().unwrap(),
-        value["id"].as_str().unwrap()
-    ));
-
-    if let Some(asrank) = value["external"].get("asrank") {
-        event["asinfo"] = asrank.to_owned();
-    }
-
-    event
-}
-
-fn search(opts: &Opts) -> Value {
-    let backend = ElasticSearchBackend::new("http://clayface.caida.org:9200").unwrap();
-    let query_result = backend
-        .list_events(
-            &opts.event_type,
-            &opts.start,
-            &opts.max,
-            &opts.asns,
-            &opts.pfxs,
-            &opts.ts_start,
-            &opts.ts_end,
-            &opts.tags,
-            &opts.codes,
-            &opts.min_susp,
-            &opts.max_susp,
-            &opts.min_duration,
-            &opts.max_duration,
-            opts.overlap,
-            opts.brief,
-            opts.debug,
-        )
-        .unwrap();
-    let res_iter = query_result.results.iter();
-    let res_data: Vec<Value> = match opts.brief {
-        true => res_iter.map(|v| brief_result(v)).collect::<Vec<Value>>(),
-        false => res_iter
-            .map(|v| match opts.full {
-                true => v.to_owned(),
-                false => process_raw_event(v, opts.full, opts.full, true),
-            })
-            .collect::<Vec<Value>>(),
-    };
-    json!(
-        {
-            "cnt_total": query_result.total,
-            "cnt_returned": res_data.len(),
-            "data": res_data,
+macro_rules! push_param {
+    ($opts: expr, $dst: expr, $params: expr) => {
+        let data = serde_json::to_value($opts).unwrap();
+        for param in $params {
+            if let Some(d) = data.get(param) {
+                match d {
+                    Value::String(x) => {
+                        $dst.push(format!("{}={}", param, x));
+                    }
+                    Value::Number(x) => {
+                        $dst.push(format!("{}={}", param, x));
+                    }
+                    Value::Bool(x) => {
+                        if *x {
+                            $dst.push(format!("{}", param));
+                        }
+                    }
+                    _ => {}
+                }
+            }
         }
-    )
+    };
 }
 
-fn count(opts: &Opts) -> Value {
-    let backend = ElasticSearchBackend::new("http://clayface.caida.org:9200").unwrap();
-    let query_result = backend
-        .count_events(
-            &opts.event_type,
-            &opts.asns,
-            &opts.pfxs,
-            &opts.ts_start,
-            &opts.ts_end,
-            &opts.tags,
-            &opts.codes,
-            &opts.min_susp,
-            &opts.max_susp,
-            &opts.min_duration,
-            &opts.max_duration,
-            opts.overlap,
-            opts.debug,
-        )
-        .unwrap();
-    json!({"count":query_result.count})
+fn construct_parameters(opts: &Opts) -> String {
+    let mut params: Vec<String> = vec![];
+    push_param!(
+        opts,
+        params,
+        [
+            "event_type",
+            "start",
+            "length",
+            "asns",
+            "pfxs",
+            "ts_start",
+            "ts_end",
+            "tags",
+            "codes",
+            "min_susp",
+            "max_susp",
+            "min_duration",
+            "max_duration",
+            "overlap",
+            "brief",
+            "full",
+        ]
+    );
+    params.join("&")
+}
+
+fn search(base_url: &str, opts: &Opts) -> Value {
+    let params = construct_parameters(&opts);
+    let res = reqwest::get(format!("{}?{}", base_url, params).as_str());
+    res.unwrap().json().unwrap()
 }
 
 fn main() {
     let opts: Opts = Opts::parse();
+    let base_url =
+        std::env::var("API_BASE_URL").unwrap_or("https://api.grip.caida.org/dev".to_string());
 
-    let object = match &opts.count {
-        true => count(&opts),
-        false => search(&opts),
-    };
-
+    let search_url = format!("{}/json/events", base_url);
+    let object = search(search_url.as_str(), &opts);
     if opts.pretty_print {
         println!("{}", serde_json::to_string_pretty(&object).unwrap());
     } else {
         println!("{}", serde_json::to_string(&object).unwrap());
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_params() {
+        let opts = Opts {
+            event_type: Some("moas".to_string()),
+            start: None,
+            length: Some(1),
+            asns: None,
+            pfxs: None,
+            ts_start: None,
+            ts_end: None,
+            tags: None,
+            codes: None,
+            min_susp: None,
+            max_susp: None,
+            min_duration: None,
+            max_duration: None,
+            pretty_print: false,
+            full: false,
+            overlap: false,
+            count: false,
+            brief: true,
+            debug: false,
+        };
+
+        let res = construct_parameters(&opts);
+
+        assert_eq!(res, "event_type=moas&length=1&brief");
+        let v = search("https://api.grip.caida.org/dev/json/events", &opts);
+        println!("{}", serde_json::to_string_pretty(&v).unwrap());
     }
 }
