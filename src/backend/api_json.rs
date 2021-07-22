@@ -216,7 +216,7 @@ pub fn json_list_events(
     Json(post_process(object.to_owned()))
 }
 
-fn post_process(mut data: Value) -> Value {
+fn post_process(data: Value) -> Value {
     if let Value::Object(mut m) = data {
         m.insert("copyright".to_string(), json!(DATA_COPYRIGHT));
         return json!(m);
