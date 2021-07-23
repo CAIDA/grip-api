@@ -101,7 +101,7 @@ struct Opts {
 macro_rules! push_param {
     ($opts: expr, $dst: expr, $params: expr) => {
         let data = serde_json::to_value($opts).unwrap();
-        for param in $params {
+        for param in $params.iter() {
             if let Some(d) = data.get(param) {
                 match d {
                     Value::String(x) => {
