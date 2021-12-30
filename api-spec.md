@@ -1,8 +1,8 @@
 # Basic Information
 
-  - Base API URL: <https://api.grip.caida.org/v1/>
+  - Base API URL: <https://api.grip.caida.org/dev/>
   - Current Prototype Web Interface:
-    <https://dev.hicube.caida.org/feeds/hijacks>
+    <https://grip-dev.caida.org>
 
 # Events Data
 
@@ -14,12 +14,12 @@ objects, each containing a matching detected event.
 
 ### Endpoint
 
-<https://api.grip.caida.org/v1/json/events>
+<https://api.grip.caida.org/dev/json/events>
 
 Example:
 
   - Default front-page query:
-      - [example query](https://api.grip.caida.org/v1/json/events?length=10&start=0&ts_start=2020-08-09T19%3A03&ts_end=2020-08-10T19%3A03&min_susp=80&max_susp=100&event_type=moas)
+      - [example query](https://api.grip.caida.org/dev/json/events?length=10&start=0&ts_start=2020-08-09T19%3A03&ts_end=2020-08-10T19%3A03&min_susp=80&max_susp=100&event_type=moas)
       - Search for 10 suspicious MOAS events during one-day period
         (August 9 to August 10).
 
@@ -47,10 +47,10 @@ Retrieve detail information for a specific event by ID.
 
 ### Endpoint:
 
-<https://api.grip.caida.org/v1/json/event/id/>
+<https://api.grip.caida.org/dev/json/event/id/>
 
 Example:
-<https://api.grip.caida.org/v1/json/event/id/moas-1605039900-207384_48282>
+<https://api.grip.caida.org/dev/json/event/id/moas-1605039900-207384_48282>
 
 ## Prefix Event Details
 
@@ -64,12 +64,12 @@ We encode the prefixes by replacing `/` with `-`. For example,
 
 ### Endpoint
 
-<https://api.grip.caida.org/v1/json/pfx_event/id/> where `pfxs` are
+<https://api.grip.caida.org/dev/json/pfx_event/id/> where `pfxs` are
 encoded prefixes in the event separated with `_`
 
 Example:
 
-<https://api.grip.caida.org/v1/json/pfx_event/id/moas-1605039900-207384_48282/178.208.78.0-24>
+<https://api.grip.caida.org/dev/json/pfx_event/id/moas-1605039900-207384_48282/178.208.78.0-24>
 
 ## JSON Responses
 
@@ -163,8 +163,8 @@ Example:
 
 ### Endpoint
 
-  - <https://api.grip.caida.org/v1/json/blocklist>
-  - <https://api.grip.caida.org/v1/json/asndrop>
+  - <https://api.grip.caida.org/dev/json/blocklist>
+  - <https://api.grip.caida.org/dev/json/asndrop>
 
 ### Data format
 
@@ -176,7 +176,7 @@ Example:
 
 ### **Endpoint**
 
-<https://api.grip.caida.org/v1/json/tags>
+<https://api.grip.caida.org/dev/json/tags>
 
 ### **Data format**
 
